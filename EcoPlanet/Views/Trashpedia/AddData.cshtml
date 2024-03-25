@@ -1,0 +1,43 @@
+﻿@model EcoPlanet.Models.Trashpedia
+<center>
+    <h1>Add Data Example:</h1> 
+    <hr />
+    <form asp-action="AddData" method="post">
+        <table> 
+            <tr> 
+                <th><label asp-for="Name"></label> </th>
+                <td><input asp-for="Name" required /></td>
+                <td><span asp-validation-for="Name"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Materials"></label> </th>
+                <td><input asp-for="Materials" required /></td>
+                <td><span asp-validation-for="Materials"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Actions"></label> </th>
+                <td><input asp-for="Actions" required /></td>
+                <td><span asp-validation-for="Actions"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Alternatives"></label> </th>
+                <td><input asp-for="Alternatives" required /></td>
+                <td><span asp-validation-for="Alternatives"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Images"></label> </th>
+                <td><input asp-for="Images" required /></td>
+                <td><span asp-validation-for="Images"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="CreatedAt"></label> </th>
+                <td><input asp-for="CreatedAt" required /></td>
+                <td><span asp-validation-for="CreatedAt"></span></td>
+            </tr>
+            <tr> 
+                <td colspan="2"> 
+                   <input type="submit" name="submit" value="Add Data to table" /> 
+                </td> 
+            </tr>
+    </form>
+</center>

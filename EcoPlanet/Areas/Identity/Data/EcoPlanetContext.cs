@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using EcoPlanet.Models;
 
 namespace EcoPlanet.Data;
 
@@ -11,6 +12,8 @@ public class EcoPlanetContext : IdentityDbContext<EcoPlanetUser>
         : base(options)
     {
     }
+
+    public DbSet<Trashpedia> TrashpediaTable { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

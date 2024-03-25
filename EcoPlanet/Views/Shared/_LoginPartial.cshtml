@@ -8,6 +8,10 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
+         <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia"> View Trashpedia  List</a>
+    </li>
+
+    <li class="nav-item">
         <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
     </li>
     <li class="nav-item">
