@@ -1,7 +1,19 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using EcoPlanet.Data;
+using EcoPlanet.Areas.Identity.Data;
+
+
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("EcoPlanetContextConnection") ?? throw new InvalidOperationException("Connection string 'EcoPlanetContextConnection' not found.");
+
+builder.Services.AddDbContext<EcoPlanetContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddDefaultIdentity<EcoPlanetUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<EcoPlanetContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -17,11 +29,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
 
 app.Run();
