@@ -10,6 +10,7 @@ using EcoPlanet.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
 {
@@ -59,6 +60,25 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Required(ErrorMessage = "Please Provide Your Full Name Before Submitting The Form")]
+            [StringLength(256,ErrorMessage = "Please Enter Your Name Between 5 - 30 Characters", MinimumLength = 5)]
+            [Display(Name = "Your Full Name")] //label
+
+            public string fullname { get; set; }
+
+
+            [Required]
+            [Display(Name = "Your DOB")]
+            [DataType(DataType.Date)]
+
+            public DateTime DoB { get; set; }
+
+            [Required]
+            [DataType(DataType.MultilineText)]
+            [Display(Name = "Your Address")]
+
+            public string Address { get; set; }
         }
 
         private async Task LoadAsync(EcoPlanetUser user)
@@ -70,7 +90,11 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                fullname = user.FullName,
+                DoB = user.DOB,
+                Address = user.Address,
+
             };
         }
 
@@ -111,6 +135,22 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            if(Input.fullname != user.FullName)
+            {
+                user.FullName = Input.fullname;
+            }
+
+            if(Input.DoB != user.DOB)
+            {
+                user.DOB = Input.DoB;
+            }
+
+            if(Input.Address != user.Address)
+            {
+                user.Address = Input.Address;
+            }
+
+            await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
