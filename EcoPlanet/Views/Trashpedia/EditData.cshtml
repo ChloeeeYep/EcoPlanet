@@ -1,9 +1,12 @@
 ﻿@model EcoPlanet.Models.Trashpedia
 
 <div class="form-container">
-    <h1>Add Trashpedia</h1>
+    <h1>Edit Trashpedia</h1>
     <hr />
-    <form asp-action="AddData" method="post">
+    <form method="post" asp-action="UpdateData" asp-controller="Trashpedia">
+        <div class="form-group">
+            <input asp-for="Id" hidden />
+        </div>
         <div class="form-group">
             <label asp-for="Name"></label>
             <input asp-for="Name" required />
@@ -30,7 +33,7 @@
             <span asp-validation-for="Images"></span>
         </div>
         <div class="form-group submit-group">
-            <input type="submit" name="submit" value="Create" />
+            <button type="submit" class="btn-update">Update</button>
         </div>
     </form>
 </div>
@@ -61,7 +64,6 @@
 
     input[type="text"],
     input[type="date"],
-    input[type="submit"],
     textarea {
         width: 100%;
         padding: 10px;
@@ -75,21 +77,27 @@
         min-height: 100px; /* Initial height of the textarea */
     }
 
-    input[type="submit"] {
+    .btn-update {
         background-color: #4CAF50;
         color: white;
         border: none;
         padding: 12px 20px;
         margin-top: 10px;
-        cursor: pointer;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        resize: vertical;
     }
 
-    input[type="submit"]:hover {
+     .btn-update:hover {
         background-color: #45a049;
-    }
+     }
 
     span.validation-message {
         color: #a94442;
         font-size: 12px;
     }
 </style>
+
