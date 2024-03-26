@@ -22,6 +22,12 @@
             <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia">View Trashpedia List</a>
         </li>
     }
+    else if (user.UserType == 'S')
+    {
+        <li class="nav-item">
+            <a id="addgoods" class="nav-link text-dark" asp-action="Index" asp-controller="Goods">Manage Goods</a>
+        </li>
+    }
 
     //Common Items
     <li class="nav-item">

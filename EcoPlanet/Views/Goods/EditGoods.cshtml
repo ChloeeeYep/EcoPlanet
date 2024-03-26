@@ -1,0 +1,73 @@
+﻿@model EcoPlanet.Models.Goods
+
+<center>
+	<h1> Edit Goods Information</h1>
+	<br /><hr />
+	<form method="post" asp-action="UpdateGoods" asp-controller="Goods">
+		<table border="1">
+			<tr>
+				<th><label asp-for="goodsId"></label></th>
+				<td><input asp-for="goodsId" readonly/></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsType"></label></th>
+				<td>
+					<select asp-for="goodsType" required>
+						<option value="">Select Category</option>
+						<option value="Breads">Breads</option>
+						<option value="Bakeries">Bakeries</option>
+						<option value="Beverages">Beverages</option>
+						<option value="Biscuits">Biscuits</option>
+						<option value="Others">Others</option>
+					</select>
+				</td>
+				<td><span asp-validation-for="goodsType"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsName"></label></th>
+				<td><input asp-for="goodsName" /></td>
+				<td><span asp-validation-for="goodsName"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsDescriptions"></label></th>
+				<td><input asp-for="goodsDescriptions" /></td>
+				<td><span asp-validation-for="goodsDescriptions"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsPrice"></label></th>
+				<td><input asp-for="goodsPrice" /></td>
+				<td><span asp-validation-for="goodsPrice"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsQuantity"></label></th>
+				<td><input asp-for="goodsQuantity" /></td>
+				<td><span asp-validation-for="goodsQuantity"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsExpiry"></label></th>
+				<td><input asp-for="goodsExpiry" /></td>
+				<td><span asp-validation-for="goodsExpiry"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsStatus"></label></th>
+				<td><input asp-for="goodsStatus" /></td>
+				<td><span asp-validation-for="goodsStatus"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsImage"></label></th>
+				<td><input asp-for="goodsImage" /></td>
+				<td><span asp-validation-for="goodsImage"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="SellerId"></label></th>
+				<td><input type = "hidden" asp-for="SellerId" /></td>
+				<td><span asp-validation-for="SellerId"></span></td>
+			</tr>
+			<tr>
+				<td colspan="3" style="text-align:center">
+					<button type ="submit" class="btn-info">Update Goods</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+</center>

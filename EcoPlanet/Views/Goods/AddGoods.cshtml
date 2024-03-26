@@ -1,0 +1,84 @@
+﻿@model EcoPlanet.Models.Goods
+@using Microsoft.AspNetCore.Identity
+@using EcoPlanet.Areas.Identity.Data
+
+@inject SignInManager<EcoPlanetUser> SignInManager
+@inject UserManager<EcoPlanetUser> UserManager
+
+@{
+	var user = await UserManager.GetUserAsync(User);
+	string currentUserId = user.Email;
+}
+
+<center>
+	<h1>Add New Goods</h1>
+	<br /><hr />
+	<form asp-action="AddGoods" method="post">
+		<table>
+			<tr>
+				<th><label asp-for="goodsType"></label></th>
+				<td>
+					<select asp-for="goodsType" required>
+						<option value="">Select Category</option>
+						<option value="Breads">Breads</option>
+						<option value="Bakeries">Bakeries</option>
+						<option value="Beverages">Beverages</option>
+						<option value="Biscuits">Biscuits</option>
+						<option value="Others">Others</option>
+					</select>
+				</td>
+				<td><span asp-validation-for="goodsType"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsName"></label></th>
+				<td><input asp-for="goodsName" required /></td>
+				<td><span asp-validation-for="goodsName"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsDescriptions"></label></th>
+				<td><input asp-for="goodsDescriptions" required /></td>
+				<td><span asp-validation-for="goodsDescriptions"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsExpiry"></label></th>
+				<td><input asp-for="goodsExpiry" required /></td>
+				<td><span asp-validation-for="goodsExpiry"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsPrice"></label></th>
+				<td><input asp-for="goodsPrice" required /></td>
+				<td><span asp-validation-for="goodsPrice"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsQuantity"></label></th>
+				<td><input asp-for="goodsQuantity" required /></td>
+				<td><span asp-validation-for="goodsQuantity"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsStatus"></label></th>
+				<td>
+					<select asp-for="goodsStatus" required>
+						<option value="">Select Status</option>
+						<option value="Available">Available</option>
+						<option value="Unavailable">Unavailable</option>
+					</select>
+				</td>
+				<td><span asp-validation-for="goodsStatus"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="goodsImage"></label></th>
+				<td><input asp-for="goodsImage" required /></td>
+				<td><span asp-validation-for="goodsImage"></span></td>
+			</tr>
+			<tr>
+				<td> <input type="hidden" asp-for="SellerId" value="@currentUserId" /></td>
+				<td><span asp-validation-for="SellerId"></span></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<input type="submit" name="submit" value="Submit" />
+				</td>
+			</tr>
+		</table>
+	</form>
+</center>
