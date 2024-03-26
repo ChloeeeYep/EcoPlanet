@@ -7,10 +7,23 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-    <li class="nav-item">
-         <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia"> View Trashpedia  List</a>
-    </li>
+    // Get the user asynchronously
+    var user = await UserManager.GetUserAsync(User);
+    // Check the user type and render different items
+    @if (user.UserType == 'A')
+    {
+            <li class="nav-item">
+                <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia"> Manage Trashpedia </a>
+            </li>
+    }
+    else if (user.UserType == 'U')
+    {
+        <li class="nav-item">
+            <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia">View Trashpedia List</a>
+        </li>
+    }
 
+    //Common Items
     <li class="nav-item">
         <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
     </li>
