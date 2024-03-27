@@ -1,9 +1,8 @@
-﻿@model EcoPlanet.Models.Goods
+﻿@model EcoPlanet.Models.Products
 
 <style>
 	form {
 		max-width: 600px;
-
 	}
 
 	table {
@@ -57,9 +56,9 @@
 		cursor: pointer;
 	}
 
-	button.btn-info:hover {
-		background-color: #357ABD;
-	}
+		button.btn-info:hover {
+			background-color: #357ABD;
+		}
 
 	/* This targets the td elements that contain the span for validation message */
 	td:has(> span[data-valmsg-for]:empty) {
@@ -76,76 +75,70 @@
 		display: none;
 	}
 
-
 </style>
 <center>
-	<h1> Edit Goods Information</h1>
+	<h1> Edit Products Information</h1>
 	<br /><hr />
-	<form method="post" asp-action="UpdateGoods" asp-controller="Goods">
+	<form method="post" asp-action="UpdateProducts" asp-controller="Products">
 		<table border="1">
 			<tr>
-				<th><label asp-for="goodsId">No</label></th>
-				<td><input asp-for="goodsId" readonly/></td>
+				<th><label asp-for="productsId">No</label></th>
+				<td><input asp-for="productsId" readonly /></td>
 			</tr>
 			<tr>
-				<th><label asp-for="goodsType">Type</label></th>
+				<th><label asp-for="productsType"></label></th>
 				<td>
-					<select asp-for="goodsType" required>
+					<select asp-for="productsType" required>
 						<option value="">Select Category</option>
-						<option value="Breads">Breads</option>
-						<option value="Bakeries">Bakeries</option>
-						<option value="Beverages">Beverages</option>
-						<option value="Biscuits">Biscuits</option>
+						<option value="Home Goods">Home Goods</option>
+						<option value="Clothing and Accessories">Clothing and Accessories</option>
+						<option value="Personal Care and Beauty">Personal Care and Beauty</option>
+						<option value="Food and Beverages">Food and Beverages</option>
 						<option value="Others">Others</option>
 					</select>
 				</td>
-				<td><span asp-validation-for="goodsType" ></span></td>
+				<td><span asp-validation-for="productsType"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="goodsName">Name</label></th>
-				<td><input asp-for="goodsName" required /></td>
-				<td><span asp-validation-for="goodsName"></span></td>
+				<th><label asp-for="productsName">Name</label></th>
+				<td><input asp-for="productsName" required /></td>
+				<td><span asp-validation-for="productsName"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="goodsDescriptions">Descriptions</label></th>
-				<td><input asp-for="goodsDescriptions" required /></td>
-				<td><span asp-validation-for="goodsDescriptions"></span></td>
+				<th><label asp-for="productsDescriptions">Descriptions</label></th>
+				<td><input asp-for="productsDescriptions" required /></td>
+				<td><span asp-validation-for="productsDescriptions"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="goodsPrice">Price</label></th>
-				<td><input asp-for="goodsPrice" required /></td>
-				<td><span asp-validation-for="goodsPrice"></span></td>
+				<th><label asp-for="productsPrice">Price</label></th>
+				<td><input asp-for="productsPrice" required /></td>
+				<td><span asp-validation-for="productsPrice"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="goodsQuantity">Quantity</label></th>
-				<td><input asp-for="goodsQuantity" required /></td>
-				<td><span asp-validation-for="goodsQuantity"></span></td>
+				<th><label asp-for="productsQuantity">Quantity</label></th>
+				<td><input asp-for="productsQuantity" required /></td>
+				<td><span asp-validation-for="productsQuantity"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="goodsExpiry">Expiry</label></th>
-				<td><input asp-for="goodsExpiry"required /></td>
-				<td><span asp-validation-for="goodsExpiry"></span></td>
+				<th><label asp-for="productsImage">Image</label></th>
+				<td><input asp-for="productsImage" /></td>
+				<td><span asp-validation-for="productsImage"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="goodsImage">Image</label></th>
-				<td><input asp-for="goodsImage" /></td>
-				<td><span asp-validation-for="goodsImage"></span></td>
-			</tr>
-			<tr>
-				<th><label asp-for="goodsStatus">Status</label></th>
+				<th><label asp-for="productsStatus">Status</label></th>
 				<td>
-					<select asp-for="goodsStatus" required>
+					<select asp-for="productsStatus" required>
 						<option value="">Select Status</option>
 						<option value="Available">Available</option>
 						<option value="Unavailable">Unavailable</option>
 					</select>
 				</td>
-				<td><span asp-validation-for="goodsStatus"></span></td>
+				<td><span asp-validation-for="productsStatus"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="SellerId"></label></th>
-				<td><input asp-for="SellerId" /></td>
-				<td><span asp-validation-for="SellerId"></span></td>
+				<th><label asp-for="adminId"></label></th>
+				<td><input asp-for="adminId" /></td>
+				<td><span asp-validation-for="adminId"></span></td>
 			</tr>
 			<tr>
 				<td colspan="2" style="text-align:center">

@@ -2,7 +2,7 @@
     int counter = 1; // Start the counter at 1
 }
 
-@model List<Goods>
+@model List<Products>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -72,9 +72,9 @@
             flex: 0 0 auto; /* Do not allow the buttons to grow or shrink */
         }
 
-        .action-button:hover {
-            color: white;
-        }
+            .action-button:hover {
+                color: white;
+            }
 
         /* Styling for Add button */
         .add {
@@ -99,59 +99,59 @@
             background-color: #dc3545;
         }
 
-        .delete:hover, .delete:focus {
-            background-color: #c82333;
-        }
+            .delete:hover, .delete:focus {
+                background-color: #c82333;
+            }
     </style>
 </head>
 
-    <div class="header-container">
-        <h1>Goods Information</h1>
-        <a asp-action="AddGoods" class="action-button add">Add New Goods</a>
-    </div>
+<div class="header-container">
+    <h1>Products Information</h1>
+    <a asp-action="AddProducts" class="action-button add">Add New Products</a>
+</div>
 
 
-        <div class="table-container">
-	        <table>
-                <thead>
-		            <tr>
-			            <th No.</th>
-			            <th> Category</th>
-			            <th> Name</th>
-			            <th> Descriptions</th>
-			            <th> Expiry Date</th>
-			            <th> Price</th>
-			            <th> Quantity</th>
-			            <th> Status</th>
-			            <th> Image</th>
-			            <th>Actions</th>
-		            </tr>
-                </thead>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th No.</th>
+                <th> Category</th>
+                <th> Name</th>
+                <th> Descriptions</th>
+                <th> Price</th>
+                <th> Quantity</th>
+                <th> Status</th>
+                <th> Image</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
 
-                <tbody>
-		            @foreach(var item in Model)
-		            {
-			            <tr>
-				            <td>@counter</td>
-				            <td>@item.goodsType</td>
-				            <td>@item.goodsName</td>
-				            <td>@item.goodsDescriptions</td>
-                            <td>@item.goodsExpiry.ToString("yyyy-MM-dd")</td>
-				            <td>@item.goodsPrice</td>
-				            <td>@item.goodsQuantity</td>
-				            <td>@item.goodsStatus</td>
-				            <td>@item.goodsImage</td>
-                            <td class="action-buttons">
-                                <a href="@Url.Action("EditGoods", new { goodsId = item.goodsId })" class="action-button edit">Edit</a>
-                                <form action="@Url.Action("DeleteGoods")" method="post">
-                                    <input type="hidden" name="goodsId" value="@item.goodsId" />
-                                    <button type="submit" class="action-button delete">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        counter++;
-                    }
-                </tbody>
-	        </table>
-        </div>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@counter</td>
+                    <td>@item.productsType</td>
+                    <td>@item.productsName</td>
+                    <td>@item.productsDescriptions</td>
+                    <td>@item.productsPrice</td>
+                    <td>@item.productsQuantity</td>
+                    <td>@item.productsStatus</td>
+                    <td>@item.productsImage</td>
+                    <td>@item.createdAt</td>
+                    <td class="action-buttons">
+                        <a href="@Url.Action("EditProducts", new { productsId = item.productsId })" class="action-button edit">Edit</a>
+                        <form action="@Url.Action("DeleteProducts")" method="post">
+                            <input type="hidden" name="productsId" value="@item.productsId" />
+                            <button type="submit" class="action-button delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                counter++;
+            }
+        </tbody>
+    </table>
+</div>
 </html>
