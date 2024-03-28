@@ -2,7 +2,7 @@
     int counter = 1; // Start the counter at 1
 }
 
-@model List<Products>
+@model ProductsViewModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -129,7 +129,7 @@
         </thead>
 
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.ProductsList)
             {
                 <tr>
                     <td>@counter</td>
@@ -139,11 +139,31 @@
                     <td>@item.productsPrice</td>
                     <td>@item.productsQuantity</td>
                     <td>@item.productsStatus</td>
-                    <td>@item.productsImage</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.productsImage))
+                        {
+                            var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.productsImage.Trim());
+
+
+                            if (image != null)
+                            {
+                                string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
+                                <img src="@imageURL" width="100" height="100" />
+                            }
+                            else
+                            {
+                                <span>No Image Found for Key: @item.productsImage</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>No Image Provided</span>
+                        }
+                    </td>
                     <td>@item.createdAt</td>
                     <td class="action-buttons">
-                        <a href="@Url.Action("EditProducts", new { productsId = item.productsId })" class="action-button edit">Edit</a>
-                        <a href="@Url.Action("DeleteProducts", new { productsId = item.productsId })" class="action-button delete">Delete</a>
+                        <a href="@Url.Action("EditProducts", "Products", new { productsId = item.productsId })" class="action-button edit">Edit</a>
+                        <a href="@Url.Action("DeleteProducts", "Products", new { productsId = item.productsId })" class="action-button delete">Delete</a>
                     </td>
                 </tr>
                 counter++;

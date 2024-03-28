@@ -90,7 +90,7 @@
 <center>
 	<h1>Add New Products</h1>
 	<br /><hr />
-	<form asp-action="AddProducts" method="post">
+	<form asp-action="AddProducts" method="post" enctype="multipart/form-data">
 		<table>
 			<tr>
 				<th><label asp-for="productsType"></label></th>
@@ -139,8 +139,7 @@
 			</tr>
 			<tr>
 				<th><label asp-for="productsImage"></label></th>
-				<td><input asp-for="productsImage" required /></td>
-				<td><span asp-validation-for="productsImage"></span></td>
+				<td><input type="file" name="productsImage" accept="image/*" multiple /></td>
 			</tr>
 			<tr>
 				<td> <input type="hidden" asp-for="adminId" value="@currentUserId" /></td>
