@@ -143,10 +143,7 @@
                     <td>@item.createdAt</td>
                     <td class="action-buttons">
                         <a href="@Url.Action("EditProducts", new { productsId = item.productsId })" class="action-button edit">Edit</a>
-                        <form action="@Url.Action("DeleteProducts")" method="post">
-                            <input type="hidden" name="productsId" value="@item.productsId" />
-                            <button type="submit" class="action-button delete">Delete</button>
-                        </form>
+                        <a href="@Url.Action("DeleteProducts", new { productsId = item.productsId })" class="action-button delete">Delete</a>
                     </td>
                 </tr>
                 counter++;

@@ -10,6 +10,82 @@
 	var user = await UserManager.GetUserAsync(User);
 	string currentUserId = user.Email;
 }
+<style>
+	form {
+		max-width: 600px;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 20px 0;
+	}
+
+	th, td {
+		padding: 10px;
+		border: 1px solid #ddd;
+		text-align: left;
+	}
+
+	th {
+		background-color: #f4f4f4;
+	}
+
+	input[type="text"],
+	input[type="number"],
+	input[type="date"],
+	input[type="datetime-local"],
+	select {
+		width: 100%;
+		padding: 8px;
+		margin: 5px 0;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+	}
+
+		input[type="text"]:focus,
+		input[type="number"]:focus,
+		input[type="date"]:focus,
+		input[type="datetime-local"]:focus,
+		select:focus {
+			border-color: #4A90E2;
+			outline: none;
+		}
+
+
+	button.btn-info {
+		width: 100%;
+		background-color: #4A90E2;
+		color: white;
+		padding: 14px 20px;
+		margin: 8px 0;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+		button.btn-info:hover {
+			background-color: #357ABD;
+		}
+
+	/* This targets the td elements that contain the span for validation message */
+	td:has(> span[data-valmsg-for]:empty) {
+		display: none;
+	}
+
+	/* This targets the td elements that contain the span for validation message with content */
+	td:has(> span[data-valmsg-for]:not(:empty)) {
+		display: table-cell; /* This ensures the cell is displayed when there's a validation message */
+	}
+
+	/* This targets empty validation message spans */
+	span[data-valmsg-for]:empty {
+		display: none;
+	}
+
+</style>
 
 <center>
 	<h1>Add New Products</h1>
@@ -71,8 +147,8 @@
 				<td><span asp-validation-for="adminId"></span></td>
 			</tr>
 			<tr>
-				<td colspan="2">
-					<input type="submit" name="submit" value="Submit" />
+				<td colspan="2" style="text-align:center">
+					<button type="submit" class="btn-info">Update</button>
 				</td>
 			</tr>
 		</table>
