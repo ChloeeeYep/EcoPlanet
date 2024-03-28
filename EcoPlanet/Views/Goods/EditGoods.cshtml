@@ -81,7 +81,7 @@
 <center>
 	<h1> Edit Goods Information</h1>
 	<br /><hr />
-	<form method="post" asp-action="UpdateGoods" asp-controller="Goods">
+	<form method="post" asp-action="UpdateGoods" asp-controller="Goods" enctype="multipart/form-data">
 		<table border="1">
 			<tr>
 				<th><label asp-for="goodsId">No</label></th>
@@ -128,8 +128,7 @@
 			</tr>
 			<tr>
 				<th><label asp-for="goodsImage">Image</label></th>
-				<td><input asp-for="goodsImage" /></td>
-				<td><span asp-validation-for="goodsImage"></span></td>
+				<td><input type="file" name="goodsImage" accept="image/" multiple /></td>
 			</tr>
 			<tr>
 				<th><label asp-for="goodsStatus">Status</label></th>

@@ -13,7 +13,7 @@
 <center>
 	<h1>Add New Goods</h1>
 	<br /><hr />
-	<form asp-action="AddGoods" method="post">
+	<form asp-action="AddGoods" method="post" asp-controller="Goods" enctype="multipart/form-data">
 		<table>
 			<tr>
 				<th><label asp-for="goodsType"></label></th>
@@ -67,7 +67,7 @@
 			</tr>
 			<tr>
 				<th><label asp-for="goodsImage"></label></th>
-				<td><input asp-for="goodsImage" required /></td>
+				<td><input type = "file" name ="goodsImage" accept="image/*" multiple /></td>
 				<td><span asp-validation-for="goodsImage"></span></td>
 			</tr>
 			<tr>

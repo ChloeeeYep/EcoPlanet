@@ -1,8 +1,9 @@
 ﻿@{
     int counter = 1; // Start the counter at 1
+
 }
 
-@model List<Goods>
+@model GoodsViewModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -129,7 +130,7 @@
                 </thead>
 
                 <tbody>
-		            @foreach(var item in Model)
+		            @foreach(var item in Model.GoodsList)
 		            {
 			            <tr>
 				            <td>@counter</td>
@@ -140,13 +141,31 @@
 				            <td>@item.goodsPrice</td>
 				            <td>@item.goodsQuantity</td>
 				            <td>@item.goodsStatus</td>
-				            <td>@item.goodsImage</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.goodsImage))
+                                {
+                                    var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.goodsImage.Trim());
+
+
+                                    if (image != null)
+                                    {
+                                        string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
+                                        <img src="@imageURL" width="100" height="100" />
+                                    }
+                                    else
+                                    {
+                                        <span>No Image Found for Key: @item.goodsImage</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>No Image Provided</span>
+                                }
+                            </td>
+
                             <td class="action-buttons">
-                                <a href="@Url.Action("EditGoods", new { goodsId = item.goodsId })" class="action-button edit">Edit</a>
-                                <form action="@Url.Action("DeleteGoods")" method="post">
-                                    <input type="hidden" name="goodsId" value="@item.goodsId" />
-                                    <button type="submit" class="action-button delete">Delete</button>
-                                </form>
+                        <a href="@Url.Action("EditGoods", "Goods", new { goodsId = item.goodsId })" class="action-button edit">Edit</a>
+                        <a href="@Url.Action("DeleteGoods", "Goods", new { goodsId = item.goodsId })" class="action-button delete">Delete</a>
                             </td>
                         </tr>
                         counter++;
@@ -155,3 +174,4 @@
 	        </table>
         </div>
 </html>
+
