@@ -1,95 +1,112 @@
 ﻿@model EcoPlanet.Models.Trashpedia
-
-<div class="form-container">
+<center>
     <h1>Add Trashpedia</h1>
-    <hr />
-    <form asp-action="AddData" method="post">
-        <div class="form-group">
-            <label asp-for="Name"></label>
-            <input asp-for="Name" required />
-            <span asp-validation-for="Name"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Materials"></label>
-            <textarea asp-for="Materials" required></textarea>
-            <span asp-validation-for="Materials"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Actions"></label>
-            <textarea asp-for="Actions" required></textarea>
-            <span asp-validation-for="Actions"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Alternatives"></label>
-            <textarea asp-for="Alternatives" required></textarea>
-            <span asp-validation-for="Alternatives"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Images"></label>
-            <input asp-for="Images" required />
-            <span asp-validation-for="Images"></span>
-        </div>
-        <div class="form-group submit-group">
-            <input type="submit" name="submit" value="Create" />
-        </div>
+    <br /><hr />
+    <form asp-action="AddData" method="post" asp-controller="Trashpedia" enctype="multipart/form-data">
+        <table border="1">
+            <tr>
+                <th><label asp-for="Name"></label></th>
+                <td><input asp-for="Name" required /></td>
+                <td><span asp-validation-for="Name"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Materials"></label></th>
+                <td><textarea asp-for="Materials" required></textarea></td>
+                <td><span asp-validation-for="Materials"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Actions"></label></th>
+                <td><textarea asp-for="Actions" required></textarea></td>
+                <td><span asp-validation-for="Actions"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Alternatives"></label></th>
+                <td><textarea asp-for="Alternatives" required></textarea></td>
+                <td><span asp-validation-for="Alternatives"></span></td>
+            </tr>
+            <tr>
+                <th><label asp-for="Images"></label></th>
+                <td><input type="file" name="Images" accept="image/" multiple /></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center">
+                    <button type="submit" class="btn-info">Create</button>
+                </td>
+            </tr>
+        </table>
     </form>
-</div>
+</center>
 
 <style>
-    .form-container {
-        max-width: 500px;
-        margin: 0 auto;
-        margin-bottom: 50px; /* Add some space at the bottom */
-        padding: 20px;
-        background: #f9f9f9;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
+	form {
+		max-width: 600px;
+	}
 
-    .form-group {
-        margin-bottom: 15px;
-        text-align: left;
-    }
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 20px 0;
+	}
 
-    label {
-        display: block;
-        margin-bottom: 5px;
-        color: #333;
-        font-size: 16px;
-    }
+	th, td {
+		padding: 10px;
+		border: 1px solid #ddd;
+		text-align: left;
+	}
 
-    input[type="text"],
-    input[type="date"],
-    input[type="submit"],
-    textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        resize: vertical; /* Allows the textarea to be resized vertically */
-    }
+	th {
+		background-color: #f4f4f4;
+	}
 
-    textarea {
-        min-height: 100px; /* Initial height of the textarea */
-    }
+	input[type="text"],
+	select {
+		width: 100%;
+		padding: 8px;
+		margin: 5px 0;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+	}
 
-    input[type="submit"] {
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        margin-top: 10px;
-        cursor: pointer;
-    }
+	button.btn-info {
+		width: 100%;
+		background-color: #4A90E2;
+		color: white;
+		padding: 14px 20px;
+		margin: 8px 0;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
 
-    input[type="submit"]:hover {
-        background-color: #45a049;
-    }
+		button.btn-info:hover {
+			background-color: #357ABD;
+		}
 
-    span.validation-message {
-        color: #a94442;
-        font-size: 12px;
-    }
+	/* This targets the td elements that contain the span for validation message */
+	td:has(> span[data-valmsg-for]:empty) {
+		display: none;
+	}
+
+	/* This targets the td elements that contain the span for validation message with content */
+	td:has(> span[data-valmsg-for]:not(:empty)) {
+		display: table-cell; /* This ensures the cell is displayed when there's a validation message */
+	}
+
+	/* This targets empty validation message spans */
+	span[data-valmsg-for]:empty {
+		display: none;
+	}
+
+	textarea {
+		min-height: 100px; /* Initial height of the textarea */
+		width: 100%;
+		padding: 8px;
+		margin: 5px 0;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+	}
 </style>
