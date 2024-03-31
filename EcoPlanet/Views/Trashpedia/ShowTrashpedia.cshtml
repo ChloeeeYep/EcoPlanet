@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "ShowTrashpedia";
+}
+
+@model TrashpediaView
+
+<center>
+    <h1>Trashpedia</h1>
+</center>
+
+<div class="trashpedia-list">
+    @foreach (var item in Model.TrashpediaList)
+    {
+        <div class="trashpedia-item">
+            <div class="trashpedia-name">@item.Name</div>
+            @if (!string.IsNullOrEmpty(item.Images))
+            {
+                var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.Images.Trim());
+
+                if (image != null)
+                {
+                    string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
+                    <a href="@Url.Action("ShowTrashpediaDetails", "Trashpedia", new { id = item.Id })" class="item-link">
+                        <img src="@imageURL" class="item-image" />
+                    </a>
+                }
+                else
+                {
+                    <span>No Image Found for Key: @item.Images</span>
+                }
+            }
+            else
+            {
+                <span>No Image Provided</span>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .trashpedia-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between; /* This will space out the items evenly */
+        margin-top: 20px;
+        padding: 20px;
+    }
+
+    .trashpedia-item {
+        flex: 0 0 calc(20% - 20px); /* Adjust to fit 5 items per row */
+        margin-bottom: 20px; /* Add bottom margin for space between rows */
+        text-align: center;
+        border: 1px solid #84B250; /* Light green border */
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: add shadow for depth */
+    }
+
+    .item-image {
+        max-width: 100%; /* Ensure image is no larger than the container */
+        height: auto; /* Maintain aspect ratio */
+        object-fit: contain; /* Prevent image distortion */
+        margin-bottom: 10px; /* Space below image */
+    }
+
+    .trashpedia-name {
+        font-family: 'Poppins', sans-serif; /* Assuming 'Poppins' is loaded in your project */
+        color: #4E4E4E;
+        font-size: 18.45px; /* Set font size */
+        line-height: 1.2; /* Adjust line-height for readability */
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 5px; /* Space above the image */
+    }
+</style>

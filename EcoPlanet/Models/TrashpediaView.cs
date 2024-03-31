@@ -6,6 +6,7 @@ namespace EcoPlanet.Models
     public class TrashpediaView
     {
         public List<Trashpedia> TrashpediaList { get; set; }
+
         public List<S3Object> ImageList { get; set; }
     }
 }

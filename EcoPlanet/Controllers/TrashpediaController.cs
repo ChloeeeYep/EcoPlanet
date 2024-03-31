@@ -174,29 +174,42 @@ namespace EcoPlanet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateData(Trashpedia trashpedia, List<IFormFile> Images)
         {
-            foreach (var image in Images)
+            // Only update the image if a new image is uploaded.
+            if (Images != null && Images.Count > 0)
             {
-                try
+                foreach (var image in Images)
                 {
-                    List<string> keys = getKeys();
-                    AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
-
-                    //upload to S3
-                    PutObjectRequest request = new PutObjectRequest
+                    try
                     {
-                        InputStream = image.OpenReadStream(),
-                        BucketName = bucketname,
-                        Key = "Images/" + image.FileName, // Specify the S3 key where the image will be stored
-                        CannedACL = S3CannedACL.PublicRead // Set the ACL to allow public read access
-                    };
+                        List<string> keys = getKeys();
+                        AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
 
-                    await agent.PutObjectAsync(request);
+                        //upload to S3
+                        PutObjectRequest request = new PutObjectRequest
+                        {
+                            InputStream = image.OpenReadStream(),
+                            BucketName = bucketname,
+                            Key = "Images/" + image.FileName, // Specify the S3 key where the image will be stored
+                            CannedACL = S3CannedACL.PublicRead // Set the ACL to allow public read access
+                        };
+
+                        await agent.PutObjectAsync(request);
+                        trashpedia.Images = "Images/" + image.FileName;
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest("Error: " + ex.Message);
+                    }
                 }
-                catch (Exception ex)
+            }
+            // If no new image is provided, keep the old image path.
+            else
+            {
+                var existingTrashpedia = await _context.TrashpediaTable.AsNoTracking().FirstOrDefaultAsync(t => t.Id == trashpedia.Id);
+                if (existingTrashpedia != null)
                 {
-                    return BadRequest("Error: " + ex.Message);
+                    trashpedia.Images = existingTrashpedia.Images;
                 }
-                trashpedia.Images = "Images/" + image.FileName;
             }
 
             if (ModelState.IsValid)
@@ -210,6 +223,7 @@ namespace EcoPlanet.Controllers
                 return View("EditData", trashpedia);
             }
         }
+
 
 
         public async Task<IActionResult> DeleteData(int? Id)
@@ -257,8 +271,79 @@ namespace EcoPlanet.Controllers
             }
         }
 
+        public async Task<IActionResult> ShowTrashpedia()
+        {
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
 
+            var trashpedia = await _context.TrashpediaTable.ToListAsync();
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
 
+            //3.read image by image and store to the lists
+            string? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
+            // Create the ViewModel and populate it with tarshpedia and image data
+            var viewModel = new TrashpediaView
+            {
+                TrashpediaList = trashpedia,
+                ImageList = imagelist
+            };
+
+            return View(viewModel);
+        }
+
+        // Add a parameter to your method to accept the id
+        public async Task<IActionResult> ShowTrashpediaDetails(int id)
+        {
+            // Connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            // Fetch the specific Trashpedia item using the provided id
+            var trashpediaItem = await _context.TrashpediaTable.FirstOrDefaultAsync(t => t.Id == id);
+            if (trashpediaItem == null)
+            {
+                // Handle the case where the item is not found
+                return NotFound();
+            }
+
+            // Assume that 'Images' is the property that holds the key of the image in S3
+            string imageKey = trashpediaItem.Images;
+            string imageUrl = $"https://ecoplanet.s3.amazonaws.com/{Uri.EscapeDataString(imageKey)}";
+
+            // Create a ViewModel for the details view
+            var viewModel = new Trashpedia
+            {
+                Name = trashpediaItem.Name,
+                Materials = trashpediaItem.Materials,
+                Actions = trashpediaItem.Actions,
+                Alternatives = trashpediaItem.Alternatives,
+                Images = imageUrl
+            };
+
+            return View(viewModel);
+        }
 
 
     }
