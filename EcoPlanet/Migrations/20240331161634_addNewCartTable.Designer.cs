@@ -4,6 +4,7 @@ using EcoPlanet.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPlanet.Migrations
 {
     [DbContext(typeof(EcoPlanetContext))]
-    partial class EcoPlanetContextModelSnapshot : ModelSnapshot
+    [Migration("20240331161634_addNewCartTable")]
+    partial class addNewCartTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,10 +132,6 @@ namespace EcoPlanet.Migrations
 
                     b.Property<int>("goodsId")
                         .HasColumnType("int");
-
-                    b.Property<string>("goodsImage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("goodsName")
                         .IsRequired()

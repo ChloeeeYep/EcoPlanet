@@ -15,41 +15,41 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal; //for obje
 
 namespace EcoPlanet.Controllers
 {
-	public class GoodsController : Controller
-	{
-		private const string bucketname = "ecoplanet";
+    public class GoodsController : Controller
+    {
+        private const string bucketname = "ecoplanet";
 
-		private readonly EcoPlanetContext _context;
-		private readonly UserManager<EcoPlanetUser> _userManager;
+        private readonly EcoPlanetContext _context;
+        private readonly UserManager<EcoPlanetUser> _userManager;
 
-		//function 1:create a function to retrive the keys back from json file
-		private List<string> getKeys()
-		{
-			//1.1 create empty lists for storing keys
-			List<string> keylist = new List<string>();
+        //function 1:create a function to retrive the keys back from json file
+        private List<string> getKeys()
+        {
+            //1.1 create empty lists for storing keys
+            List<string> keylist = new List<string>();
 
-			//1.2 Get the keys back from json
-			var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
+            //1.2 Get the keys back from json
+            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
 
             IConfigurationRoot conf = builder.Build();
 
-			//1.3 Add the retrived keys to the list
-			keylist.Add(conf["Keys:Key1"]);
-			keylist.Add(conf["Keys:Key2"]);
-			keylist.Add(conf["Keys:Key3"]);
+            //1.3 Add the retrived keys to the list
+            keylist.Add(conf["Keys:Key1"]);
+            keylist.Add(conf["Keys:Key2"]);
+            keylist.Add(conf["Keys:Key3"]);
 
             //1.4 return the key lists
             return keylist;
-		}
+        }
 
-		public GoodsController(EcoPlanetContext context, UserManager<EcoPlanetUser> userManager)
-		{
-			_context = context;
-			_userManager = userManager;
-		}
+        public GoodsController(EcoPlanetContext context, UserManager<EcoPlanetUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
-		public async Task<IActionResult> Index()
-		{
+        public async Task<IActionResult> Index()
+        {
             var user = await _userManager.GetUserAsync(User); // Gets the current logged-in user
             if (user == null)
             {
@@ -65,30 +65,30 @@ namespace EcoPlanet.Controllers
             List<string> keys = getKeys();
             AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
 
-			//2. create empty lists that can store the retrieved images from S3
-			List<S3Object> imagelist = new List<S3Object>();
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
 
-			//3.read image by image and store to the lists
-			string ? nextToken = null;
-			do
-			{
-				//3.1 Create Lists Request
-				ListObjectsRequest request = new ListObjectsRequest
-				{
-					BucketName = bucketname
-				};
+            //3.read image by image and store to the lists
+            string? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
 
-				//3.2 execute the request
-				ListObjectsResponse response = await agent.ListObjectsAsync(request);
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
 
-				//3.3 Store the images from response to the list
-				imagelist.AddRange(response.S3Objects);
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
 
-				//3.4 check the next addressing and store into the next token
-				nextToken = response.NextMarker;
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
 
-			}
-			while (nextToken != null);
+            }
+            while (nextToken != null);
 
             // Create the ViewModel and populate it with goods and image data
             var viewModel = new GoodsViewModel
@@ -100,13 +100,13 @@ namespace EcoPlanet.Controllers
             return View(viewModel);
         }
 
-		public IActionResult AddGoods()
-		{
-			return View();
-		}
+        public IActionResult AddGoods()
+        {
+            return View();
+        }
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddGoods(Goods goods, List<IFormFile> goodsImage)
         {
             // 1. Connect to the AWS account and retrieve keys
@@ -166,23 +166,23 @@ namespace EcoPlanet.Controllers
             return View(goods);
         }
 
-        public async Task<IActionResult> EditGoods(int ? goodsId)
-		{
-			if(goodsId == null)
-			{
-				return NotFound();
-			}
-			var goods = await _context.GoodsTable.FindAsync(goodsId);
+        public async Task<IActionResult> EditGoods(int? goodsId)
+        {
+            if (goodsId == null)
+            {
+                return NotFound();
+            }
+            var goods = await _context.GoodsTable.FindAsync(goodsId);
 
-			if(goods == null)
-			{
-				return BadRequest(goodsId + " is not found in the table");
-			}
-			return View(goods);
-		}
+            if (goods == null)
+            {
+                return BadRequest(goodsId + " is not found in the table");
+            }
+            return View(goods);
+        }
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateGoods(Goods goods, List<IFormFile> goodsImage)
         {
             foreach (var image in goodsImage)
@@ -224,7 +224,7 @@ namespace EcoPlanet.Controllers
             }
         }
 
-        public async Task<IActionResult> DeleteGoods(int ? goodsId)
+        public async Task<IActionResult> DeleteGoods(int? goodsId)
         {
             try
             {
@@ -268,6 +268,100 @@ namespace EcoPlanet.Controllers
                 return BadRequest("Error deleting goods: " + ex.Message);
             }
         }
+
+        public async Task<IActionResult> BrowseGoods()
+        {
+            var goods = await _context.GoodsTable.ToListAsync();
+
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
+
+            //3.read image by image and store to the lists
+            string? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
+            // Create the ViewModel and populate it with goods and image data
+            var viewModel = new GoodsViewModel
+            {
+                GoodsList = goods,
+                ImageList = imagelist
+            };
+
+            return View(viewModel);
+        }
+
+
+        public async Task<IActionResult> GoodsDetails(int goodsId)
+        {
+            var goods = await _context.GoodsTable
+                                          .FirstOrDefaultAsync(g => g.goodsId == goodsId);
+
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
+
+            //3.read image by image and store to the lists
+            string ? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
+            if (goods != null)
+            {
+                var viewModel = new GoodsViewModel
+                {
+                    GoodsList = new List<Goods> { goods },
+                    ImageList = imagelist
+                };
+
+                return View(viewModel);
+            }
+            else
+            {
+                return NotFound();
+            }
+
+        }
     }
-	
 }

@@ -1,0 +1,229 @@
+﻿@model GoodsViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <title> Goods </title>
+</head>
+<body>
+
+    <div class="container">
+        <div class="search-container">
+            <form asp-action="Search" asp-controller="Goods" method="get">
+                <input type="text" name="searchTerm" placeholder="Search products..." class="search-input" />
+                <button type="submit" class="search-button">Search</button>
+            </form>
+        </div>
+
+        @foreach (var category in Model.GoodsList.GroupBy(g => g.goodsType))
+        {
+            <h3>@category.Key</h3>
+            <div class="goods-container">
+                @foreach (var item in category)
+                {
+                    <div class="goods-item">
+                        @if (!string.IsNullOrEmpty(item.goodsImage))
+                        {
+                            var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.goodsImage.Trim());
+
+                            if (image != null)
+                            {
+                                string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
+                                <img src="@imageURL" width="100" height="100" />
+                            }
+                            else
+                            {
+                                <span>No Image Found for Key: @item.goodsImage</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>No Image Provided</span>
+                        }
+                        <div class="goods-details">
+                            <span class="item-name">@item.goodsName</span>
+                            <span class="item-price">RM @item.goodsPrice</span>
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="goodsId" value="@item.goodsId" />
+                                <input type="number" name="quantity" value="1" min="1" max="@item.goodsQuantity" class="form-control" />
+                                <button type="submit" class="btn add-to-cart">Add to cart</button>
+                            </form>
+                            <button class="btn view" onclick="location.href='@Url.Action("GoodsDetails", "Goods", new { goodsId = item.goodsId })'">View</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Cart Icon Button -->
+    <a href="@Url.Action("Index", "Cart")" class="cart-icon-button">
+        <i class="fas fa-shopping-cart"></i>
+    </a>
+</body>
+</html>
+
+<style>
+    .container {
+        width: 80%;
+        margin: 20px auto;
+        max-width: 1200px;
+    }
+
+    .goods-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Increase gap for better spacing */
+    }
+
+    .goods-item {
+        flex: 1;
+        min-width: 250px; /* Minimum width of each card */
+        max-width: 300px; /* Maximum width of each card */
+        border: 1px solid #ccc;
+        padding: 15px;
+        text-align: center;
+        background-color: #fff; /* Set background to white */
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Add some shadow for depth */
+        border-radius: 10px; /* Rounded corners for the cards */
+        transition: 0.3s; /* Transition for hover effect */
+    }
+
+        .goods-item:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); /* Shadow effect on hover */
+        }
+
+    .goods-image {
+        width: 100%;
+        height: auto;
+        border-bottom: none; /* Remove border bottom */
+        margin-bottom: 15px; /* Increase margin bottom */
+    }
+
+    .goods-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Space out the content */
+    }
+
+        .goods-details span {
+            margin-bottom: 10px; /* Add margin to the bottom of each span */
+        }
+
+    .add-to-cart, .view {
+        width: 100%; /* Full width buttons */
+        margin-top: 10px; /* Margin top for spacing between buttons */
+    }
+
+    .add-to-cart {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .add-to-cart:hover {
+        background-color: #0c47a1;
+        color: white;
+    }
+
+    .view {
+        background-color: #7CC59A;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .view:hover {
+        background-color: #19944B;
+        color: white;
+        
+    }
+
+    .item-name {
+        font-weight: bold; /* Make the item name bold */
+        display: block; /* Ensure the name is on its own line */
+        margin-bottom: 5px; /* Space after the name */
+    }
+
+    .item-price {
+        display: block; /* Ensure the price is on its own line */
+        margin-bottom: 10px; /* Space after the price */
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+    }
+
+    .quantity-input {
+        flex: 1;
+        margin-left: 10px; /* Add space between the label and the input */
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px; /* Adjust size as needed */
+    }
+
+    .search-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .search-input {
+        padding: 10px;
+        margin-right: 5px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .search-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .search-button:hover {
+        background-color: #0c47a1;
+    }
+
+
+    .cart-icon-button {
+        position: fixed; /* Fixed position */
+        bottom: 30px; /* 30px from the bottom */
+        right: 30px; /* 30px from the right */
+        background-color: cornflowerblue; /* Blue background */
+        color: white; /* White icon */
+        padding: 15px; /* Padding around the icon */
+        border-radius: 50%; /* Circular button */
+        text-align: center; /* Center the icon */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+        z-index: 1000; /* Ensure it's above other elements */
+        text-decoration: none; /* No underline on the icon */
+    }
+
+        .cart-icon-button:hover {
+            background-color: #0c47a1; /* Darker blue on hover */
+            color: white; /* Keep the icon white on hover */
+        }
+
+        .cart-icon-button i {
+            font-size: 24px; /* Size of the cart icon */
+        }
+
+</style>
+
+

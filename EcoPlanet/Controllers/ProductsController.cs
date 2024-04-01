@@ -177,31 +177,42 @@ namespace EcoPlanet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProducts(Products products, List<IFormFile> productsImage)
         {
-            foreach (var image in productsImage)
+            // Only update the image if a new image is uploaded.
+            if (productsImage != null && productsImage.Count > 0)
             {
-                try
+                foreach (var image in productsImage)
                 {
-                    List<string> keys = getKeys();
-                    AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
-
-                    //upload to S3
-                    PutObjectRequest request = new PutObjectRequest
+                    try
                     {
-                        InputStream = image.OpenReadStream(),
-                        BucketName = bucketname,
-                        Key = "ProductsImage/" + image.FileName, // Specify the S3 key where the image will be stored
-                        CannedACL = S3CannedACL.PublicRead // Set the ACL to allow public read access
-                    };
+                        List<string> keys = getKeys();
+                        AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
 
-                    await agent.PutObjectAsync(request);
+                        //upload to S3
+                        PutObjectRequest request = new PutObjectRequest
+                        {
+                            InputStream = image.OpenReadStream(),
+                            BucketName = bucketname,
+                            Key = "ProductsImage/" + image.FileName, // Specify the S3 key where the image will be stored
+                            CannedACL = S3CannedACL.PublicRead // Set the ACL to allow public read access
+                        };
+
+                        await agent.PutObjectAsync(request);
+                        products.productsImage = "ProductsImage/" + image.FileName;
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest("Error: " + ex.Message);
+                    }
                 }
-                catch (Exception ex)
+            }
+            // If no new image is provided, keep the old image path.
+            else
+            {
+                var existingProducts = await _context.ProductsTable.AsNoTracking().FirstOrDefaultAsync(p => p.productsId == products.productsId);
+                if (existingProducts != null)
                 {
-                    return BadRequest("Error: " + ex.Message);
+                    products.productsImage = existingProducts.productsImage;
                 }
-
-                // Assign the filename (key) to the goodsImage property
-                products.productsImage = "ProductsImage/" + image.FileName;
             }
 
             if (ModelState.IsValid)
@@ -259,6 +270,50 @@ namespace EcoPlanet.Controllers
             {
                 return BadRequest("Error deleting products: " + ex.Message);
             }
+        }
+
+
+        public async Task<IActionResult> BrowseProducts()
+        {
+            var products = await _context.ProductsTable.ToListAsync();
+
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
+
+            //3.read image by image and store to the lists
+            string ? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
+            // Create the ViewModel and populate it with goods and image data
+            var viewModel = new ProductsViewModel
+            {
+                ProductsList = products,
+                ImageList = imagelist
+            };
+
+            return View(viewModel);
         }
 
     }
