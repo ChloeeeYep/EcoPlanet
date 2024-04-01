@@ -1,0 +1,115 @@
+﻿@model EcoPlanet.ViewModels.CartViewModel
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int counter = 1; // Start the counter at 1
+}
+
+<div class="container mt-5">
+    <h2>Shopping Cart</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">No.</th>
+                <th scope="col">Image</th>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Cart.Items)
+            {
+                <tr>
+                    <td>@counter</td>
+                    <td>
+                        @if (Model.ImageUrls.TryGetValue(item.goodsImage.Trim(), out var imageUrl) && !string.IsNullOrEmpty(imageUrl))
+                        {
+                            <img src="@imageUrl" alt="@item.goodsName" style="width:100px;height:100px;" />
+                        }
+                        else
+                        {
+                            <span>No image available</span>
+                        }
+                    </td>
+                    <td>@item.goodsName</td>
+                    <td>@item.goodsPrice</td>
+                    <td>
+                        @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post, new { @class = "quantity-form" }))
+                        {
+                            <input type="hidden" name="cartItemId" value="@item.cartItemId" />
+                            int maxQuantityForItem = Model.MaxQuantities.ContainsKey(item.goodsId) ? Model.MaxQuantities[item.goodsId] : int.MaxValue;
+                            <input type="number" name="quantity" value="@item.goodsQuantity"
+                                   min="1"
+                                   max="@maxQuantityForItem"
+                                   class="form-control quantity-input"
+                                   data-max-quantity="@maxQuantityForItem"
+                                   onchange="quantityChanged(this);" />
+                        }
+                    </td>
+                    <td>@(item.goodsPrice * item.goodsQuantity)</td>
+                    <td>
+                        @using (Html.BeginForm("RemoveFromCart", "Cart", FormMethod.Post))
+                        {
+                            <input type="hidden" name="cartItemId" value="@item.cartItemId" />
+                            <input type="submit" value="Remove" class="btn btn-danger" />
+                        }
+                    </td>
+                </tr>
+                counter++;
+            }
+        </tbody>
+    </table>
+    <div class="text-right float-right">
+        <h3 class="float-right">Total: @Model.Cart.Items.Sum(i => i.goodsPrice * i.goodsQuantity).ToString("C")</h3>
+        <button class="btn btn-success float-right" onclick="location.href='@Url.Action("Checkout", "Order")'">Proceed to Checkout</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function quantityChanged(input) {
+            var maxQuantity = parseInt(input.getAttribute('data-max-quantity'), 10);
+            var inputQuantity = parseInt(input.value, 10);
+
+            // Check if the deletion has already been confirmed
+            if (!input.dataset.deletionConfirmed && inputQuantity === 0) {
+                // Confirm deletion logic
+                var confirmDeletion = confirm('Are you sure you want to remove this item from your cart?');
+                if (confirmDeletion) {
+                    // Mark the deletion as confirmed
+                    input.dataset.deletionConfirmed = 'true';
+                    // Find and click the associated 'Remove' button
+                    var removeButton = input.closest('tr').querySelector('.btn-danger');
+                    removeButton.click();
+                } else {
+                    // Revert to the initial value if deletion is not confirmed
+                    input.value = input.dataset.initialValue;
+                }
+            } else if (inputQuantity > maxQuantity) {
+                alert('The quantity entered exceeds the available stock. The available quantity for this item is only ' + maxQuantity);
+                input.value = input.dataset.initialValue;
+            } else if (inputQuantity > 0) {
+                // If the quantity is within the valid range, submit the form to update the cart
+                input.form.submit();
+            }
+            // Reset the deletionConfirmed flag if the value is not zero
+            if (inputQuantity > 0) {
+                input.dataset.deletionConfirmed = 'false';
+            }
+        }
+
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            // Store the initial value on page load
+            input.dataset.initialValue = input.value;
+            // Initialize the deletionConfirmed flag
+            input.dataset.deletionConfirmed = 'false';
+            input.addEventListener('change', function () {
+                quantityChanged(this);
+            });
+        });
+    </script>
+}

@@ -19,6 +19,10 @@ public class EcoPlanetContext : IdentityDbContext<EcoPlanetUser>
 
     public DbSet<Products> ProductsTable { get; set; }
 
+    public DbSet<Cart> CartTable { get; set; }
+
+    public DbSet<CartItem> CartItemTable { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
