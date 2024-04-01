@@ -55,7 +55,7 @@
 		}
 
 
-	button.btn-info {
+	button.btn-add {
 		width: 100%;
 		background-color: #4A90E2;
 		color: white;
@@ -66,7 +66,7 @@
 		cursor: pointer;
 	}
 
-		button.btn-info:hover {
+		button.btn-add:hover {
 			background-color: #357ABD;
 		}
 
@@ -142,12 +142,11 @@
 				<td><input type="file" name="productsImage" accept="image/*" multiple /></td>
 			</tr>
 			<tr>
-				<td> <input type="hidden" asp-for="adminId" value="@currentUserId" /></td>
-				<td><span asp-validation-for="adminId"></span></td>
+				<input type="hidden" asp-for="adminId" value="@currentUserId" />
 			</tr>
 			<tr>
 				<td colspan="2" style="text-align:center">
-					<button type="submit" class="btn-info">Update</button>
+					<button type="submit" class="btn-add">Create</button>
 				</td>
 			</tr>
 		</table>

@@ -41,6 +41,7 @@
             color: #555;
             font-size: 18px;
             text-align: left;
+            font-weight: 700;
         }
 
         input, textarea {
@@ -77,15 +78,15 @@
 </head>
 <body>
     <div>
-        <h1>Send Broadcast Message:</h1>
+        <h1>Send Broadcast Message</h1>
         <hr>
     </div>
     <div class="wrap">
         <form method="post" asp-action="broadcast" asp-controller="SNS">
-            <label for="title">Subject Title of the Email:</label>
+            <label for="title">Subject Title</label>
             <input type="text" id="title" name="title" placeholder="e.g. Today closed shop!" required>
 
-            <label for="msgbody">Message Body:</label>
+            <label for="msgbody">Message Body</label>
             <textarea id="msgbody" name="msgbody" rows="10" placeholder="Today...." required></textarea>
 
             <button type="submit" class="btn-primary">Broadcast Message to Customers!</button>
