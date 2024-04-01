@@ -29,11 +29,11 @@
             </tr>
             <tr>
                 <th><label asp-for="Images"></label></th>
-                <td><input type="file" name="Images" accept="image/" multiple /></td>
+				<td><input type="file" name="Images" accept="image/*"  multiple /></td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align:center">
-					<button type="submit" class="btn-info">Update</button>
+					<button type="submit" class="btn-update">Update</button>
                 </td>
             </tr>
         </table>
@@ -72,7 +72,7 @@
 		box-sizing: border-box;
 	}
 
-	button.btn-info {
+	button.btn-update {
 		width: 100%;
 		background-color: #4A90E2;
 		color: white;
@@ -83,7 +83,7 @@
 		cursor: pointer;
 	}
 
-		button.btn-info:hover {
+		button.btn-update:hover {
 			background-color: #357ABD;
 		}
 

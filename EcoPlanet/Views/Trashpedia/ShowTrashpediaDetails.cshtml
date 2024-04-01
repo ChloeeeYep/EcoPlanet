@@ -1,0 +1,91 @@
+﻿@model EcoPlanet.Models.Trashpedia
+
+<div class="details-container">
+    <div class="image-section">
+        @if (!string.IsNullOrEmpty(Model.Images))
+        {
+            <img src="@Model.Images" class="trashpedia-image" alt="Image for @Model.Name" />
+        }
+    </div>
+    <div class="info-section">
+        <br><h1><center>@Model.Name </center></h1></br>
+        <p>Materials: <br>  @Model.Materials</p>
+        <p>Actions: <br> @Model.Actions</p>
+        <p>Alternatives: <br>  @Model.Alternatives</p>
+        <br><br>
+        <a asp-action="ShowTrashpedia" asp-controller="Trashpedia" class="btnL">Back</a>
+    </div>
+</div>
+
+<style>
+    .details-container {
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        margin: 7rem auto; /* Centering in the page */
+        background: #fff;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        width: 100%; /* Adjust width as needed */
+    }
+
+    /* Adjustments to .image-section for proper scaling */
+    .image-section {
+        width: 50%; /* Maintain the width of the image section */
+        padding-bottom: 1rem; /* Add space below the image */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-section img {
+        width: 80%; /* Increase the image width */
+        max-height: auto; /* Allow the height to adjust according to the width */
+        display: block;
+        object-fit: contain; /* Ensure full image is shown */
+        margin-top: 1rem; /* Push the image down a bit */
+    }
+
+    /* Adjustments to .info-section for layout and spacing */
+    .info-section {
+        width: 60%; /* Adjust text section width */
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around; /* Distribute space evenly */
+    }
+
+    .info-section h1 {
+        font-size: 2rem;
+        color: #312f3a;
+        margin-bottom: 1rem;
+    }
+
+    .info-section p {
+        font-size: 1.2rem;
+        color: #45424b;
+        margin-bottom: 1.5rem; /* Increased space between paragraphs */
+    }
+
+    /* Button styling */
+    .btnL {
+        padding: 20px 20px;
+        background-color: #7391C9;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btnL:hover {
+        background-color: #3F66AF;
+        color: white; /* Keep the text color white on hover */
+    }
+</style>
