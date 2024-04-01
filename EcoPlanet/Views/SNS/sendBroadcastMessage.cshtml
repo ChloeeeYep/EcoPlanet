@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Broadcast Message</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            position: relative; /* Add relative positioning to the body */
+        }
+
+        .wrap {
+            position: absolute;
+            top: 59%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 37px;
+            margin-bottom: 1em;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 1em;
+            color: #555;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 0.5em;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height:60px;
+            max-height: 149px;
+        }
+
+        button.btn-primary {
+            margin-top: 1em;
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+
+        button.btn-primary:hover {
+            background-color: #003d82;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Send Broadcast Message:</h1>
+        <hr>
+    </div>
+    <div class="wrap">
+        <form method="post" asp-action="broadcast" asp-controller="SNS">
+            <label for="title">Subject Title of the Email:</label>
+            <input type="text" id="title" name="title" placeholder="e.g. Today closed shop!" required>
+
+            <label for="msgbody">Message Body:</label>
+            <textarea id="msgbody" name="msgbody" rows="10" placeholder="Today...." required></textarea>
+
+            <button type="submit" class="btn-primary">Broadcast Message to Customers!</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<style>
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+body{
+        background: #f4f4f4;
+    }
+
+.show-btn, .wrapper{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 10px 15px rgba(0,0,0,0.1);
+}
+.show-btn{
+  color: rgb(142,197,252);
+  padding: 13px 18px;
+  font-size: 20px;
+  font-weight: 500;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.wrapper{
+  z-index: 5;
+  background: #fff;
+  padding: 30px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  top: 50%;
+  opacity: 1;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+.wrapper .icon{
+  height: 110px;
+  width: 110px;
+  background: linear-gradient(136deg, rgba(0, 0, 0, .2) 0%, rgb(60 150 239 / 86%) 100%);
+  line-height: 110px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 55px;
+}
+.wrapper .content{
+  margin: 20px 0;
+}
+.content header{
+  font-size: 30px;
+  font-weight: 600;
+}
+.content p{
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  margin-left: -3px;
+}
+form{
+  width: 98%;
+}
+form .field{
+  height: 45px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+form .field input{
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 0 15px;
+  outline: none;
+  font-size: 17px;
+  transition: all 0.3s ease;
+}
+form .field input:focus{
+  border-color: rgb(142,197,252);
+}
+form .btn{
+  height: 47px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+form .btn:hover .layer {
+    background: linear-gradient(154deg, #031e45b5 0%, #0a58ca 100%);
+}
+form .btn .layer{
+  height: 100%;
+  width: 300%;
+  position: absolute;
+  left: -100%;
+  background: linear-gradient(136deg, #0a58cab5 0%, #0a58ca 100%);
+  transition: all 0.4s ease;
+}
+
+form .btn button{
+  z-index: 1;
+  position: relative;
+  background: none;
+  padding: 0px!important;
+  color: #fff;
+  border: 0px;
+  outline: none;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+}
+.wrapper .text{
+  margin-top: 5px;
+}
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Form | CodingNepal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+<body>
+    <div class="wrapper">
+        <div class="icon"><i class="far fa-envelope"></i></div>
+        <div class="content">
+            <header>Become a Subscriber</header>
+            <p>Subscribe to our blog and get the latest updates straight to your inbox.</p>
+        </div>
+        <form method="post" asp-action="subscribeNewsletter" asp-controller="SNS">
+            <div class="field">
+                <input type="email" class="email" name="email" placeholder="Email Address" required>
+            </div>
+            <div class="field btn">
+                <div class="layer"></div>
+                <button type="submit" name="subscribe">Subscribe</button>
+            </div>
+        </form>
+        <div class="text">We do not share your information.</div>
+    </div>
+</body>
+</html>

@@ -3,53 +3,90 @@
 
 @inject SignInManager<EcoPlanetUser> SignInManager
 @inject UserManager<EcoPlanetUser> UserManager
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
 
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    // Get the user asynchronously
-    var user = await UserManager.GetUserAsync(User);
-    // Check the user type and render different items
-    @if (user.UserType == 'A')
+    @if (SignInManager.IsSignedIn(User))
     {
+        // Get the user asynchronously
+        var user = await UserManager.GetUserAsync(User);
+        // Check the user type and render different items
+        @if (user.UserType == 'A')
+        {
             <li class="nav-item">
                 <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia"> Manage Trashpedia </a>
             </li>
             <li class="nav-item">
                 <a id="addproducts" class="nav-link text-dark" asp-action="Index" asp-controller="Products"> Manage Products </a>
             </li>
+            <li class="nav-item">
+                <a id="SNS" class="nav-link text-dark" asp-action="sendBroadcastMessage" asp-controller="SNS">Broadcast Message</a>
+            </li>
 
+        }
+        else if (user.UserType == 'U')
+        {
+            <li class="nav-item">
+                <a id="viewtrashpedia" class="nav-link text-dark" asp-action="ShowTrashpedia" asp-controller="Trashpedia">Trashpedia</a>
+            </li>
+        }
+        else if (user.UserType == 'S')
+        {
+            <li class="nav-item">
+                <a id="addgoods" class="nav-link text-dark" asp-action="Index" asp-controller="Goods">Manage Goods</a>
+            </li>
+        }
+
+        //Common Items
+        <li class="nav-item">
+            <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                <i class="fas fa-user-circle icon-large" style="font-size:30px;"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">
+                    <i class="fa fa-sign-out" style="font-size:30px;"></i>
+                </button>
+            </form>
+        </li>
     }
-    else if (user.UserType == 'U')
+    else
     {
         <li class="nav-item">
             <a id="viewtrashpedia" class="nav-link text-dark" asp-action="ShowTrashpedia" asp-controller="Trashpedia">Trashpedia</a>
         </li>
-    }
-    else if (user.UserType == 'S')
-    {
         <li class="nav-item">
-            <a id="addgoods" class="nav-link text-dark" asp-action="Index" asp-controller="Goods">Manage Goods</a>
+            <a class="styled-link" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="styled-link" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
         </li>
     }
-
-    //Common Items
-    <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-    </li>
-    <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
 </ul>
+<style>
+    .styled-link {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #0d9979;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        margin-left: 5px; /* Space between buttons */
+        text-decoration: none; /* Remove underline */
+    }
+
+    .styled-link:hover, .styled-link:focus {
+        background-color: #095745;
+        color: #ffffff;
+        text-decoration: none; /* Remove underline on hover/focus */
+    }
+
+    .navbar-nav .nav-item .styled-link:not(:last-child) {
+        margin-right: 10px; /* Space between register and login */
+    }
+
+</style>

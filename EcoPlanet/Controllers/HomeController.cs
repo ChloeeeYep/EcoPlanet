@@ -1,21 +1,58 @@
 ﻿using EcoPlanet.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using EcoPlanet.Areas.Identity.Data;
 
 namespace EcoPlanet.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<EcoPlanetUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(UserManager<EcoPlanetUser> userManager, ILogger<HomeController> logger)
         {
+            _userManager = userManager;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                // Retrieve the current logged-in user
+                var user = await _userManager.GetUserAsync(User);
+
+                // Get user type from claims
+                char userType = user.UserType; // Assuming UserType is a claim stored during user authentication
+
+                // Redirect based on user type
+                switch (userType)
+                {
+                    case 'A':
+                        return RedirectToAction("AdminIndex");
+                    case 'S':
+                        return RedirectToAction("SellerIndex");
+                    default:
+                        return View();
+                }
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        public IActionResult AdminIndex()
+        {
+            return View("AdminIndex");
+        }
+
+        public IActionResult SellerIndex()
+        {
+            return View("SellerIndex");
         }
 
         public IActionResult Privacy()

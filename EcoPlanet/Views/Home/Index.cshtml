@@ -1,8 +1,219 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <section class="home" id="home">
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+        <div class="content">
+
+            <h1>save earth save life</h1>
+            <p>Preserving our planet is crucial for sustaining life. Every action counts towards protecting our environment and ensuring a healthy future for all.</p>
+            <a href="#"><button class="btnexplore">EXPLORE</button></a>
+
+        </div>
+
+    </section>
+    <style>
+    :root{
+    --green:#0d9979;
+    }
+
+    *{
+    font-family: 'Open Sans', sans-serif;
+    margin:0; padding:0;
+    box-sizing: border-box;
+    text-transform: capitalize;
+    text-decoration: none;
+    transition: all .5s cubic-bezier(.37,1.14,.26,1.24);
+    }
+
+    *::selection{
+    background:var(--green);
+    color:#fff;
+    }
+
+    .btnexplore {
+    height:3.5rem;
+    width:15rem;
+    background:none;
+    outline:none;
+    border:.2rem solid var(--green);
+    color:var(--green);
+    font-size: 2rem;
+    margin:1rem 0;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 0;
+    }
+
+
+    .btnexplore:hover {
+    background-color: #0d9979;
+    color: white;
+    }
+
+    .heading{
+    text-align: center;
+    font-size: 4rem;
+    color:#555;
+    padding:1rem;
+    padding-top: 7rem;
+    }
+
+    .heading i{
+    color:var(--green);
+    font-size: 2rem;
+    }
+
+
+    header{
+    position: fixed;
+    width: 100%;
+    }
+
+    .home{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url('../images/3915228.jpg') no-repeat;
+    background-size: cover;
+    }
+
+    .home .content{
+    text-align: center;
+    padding:1rem;
+    }
+
+    .home .content h1{
+    font-size: 7rem;
+    color:var(--green);
+    }
+
+    .home .content p{
+    font-size: 1.9rem;
+    color:#333;
+    padding:1rem 0;
+    width: 70rem;
+    }
+
+    .about .row{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    }
+
+    .about .row .image{
+    flex:1 1 40rem;
+    padding:2rem;
+    }
+
+    .about .row .image img{
+    width: 100%;
+    height: 420px;
+    }
+
+    .about .row .content{
+    flex:1 1 40rem;
+    padding:2rem;
+    }
+
+    .about .row .content h3{
+    font-size: 3rem;
+    color:var(--green);
+    }
+
+    .about .row .content p{
+    font-size:20px;
+    color:#666;
+    padding:1rem 0;
+    }
+
+    .about .box-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    }
+
+    .about .box-container .box{
+    padding:2rem 1rem;
+    text-align: center;
+    border:.2rem solid var(--green);
+    flex:1 1 20rem;
+    margin:2rem;
+    }
+
+    .about .box-container .box i{
+    color:var(--green);
+    font-size: 4rem;
+    }
+
+    .about .box-container .box h3{
+    color:#333;
+    font-size: 2.5rem;
+    padding:1rem 0;
+    }
+
+    .about .box-container .box p{
+    color:#666;
+    font-size: 1.7rem;
+    }
+</style>
+</head>
+<body>
+
+    <section class="about" id="about">
+
+        <h1 class="heading"> <i class="fas fa-quote-left"></i> about us <i class="fas fa-quote-right"></i> </h1>
+
+        <div class="row">
+
+            <div class="image">
+                <img src="@Url.Content("~/images/1.jpg")">
+            </div>
+
+            <div class="content">
+                <h3>together we can save the planet</h3>
+                <p>At Save Earth Initiative, we believe in the power of collective action to preserve our planet for future generations</p>
+                <p>Our dedicated team strives to raise awareness about the importance of sustainable living and empower individuals to make eco-friendly choices in their daily lives. Together, we can make a difference and ensure a greener, healthier Earth for all.</p>
+            </div>
+
+        </div>
+
+        <div class="box-container">
+
+            <div class="box">
+                <i class="fas fa-users"></i>
+                <h3>1000+</h3>
+                <p>users</p>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-tree"></i>
+                <h3>1300+</h3>
+                <p>trees planted</p>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-paw"></i>
+                <h3>450+</h3>
+                <p>animals saved</p>
+            </div>
+
+            <div class="box">
+                <i class="fas fa-donate"></i>
+                <h3>RM 850,000+</h3>
+                <p>donation</p>
+            </div>
+
+        </div>
+
+    </section>
+</body>
+</html>
