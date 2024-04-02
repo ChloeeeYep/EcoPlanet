@@ -1,15 +1,16 @@
-﻿@model EcoPlanet.ViewModels.CartViewModel
+﻿@model EcoPlanet.ViewModels.ProductsCartViewModel;
 @using Microsoft.AspNetCore.Identity
 @using EcoPlanet.Areas.Identity.Data
 
 @inject SignInManager<EcoPlanetUser> SignInManager
 @inject UserManager<EcoPlanetUser> UserManager
 
+
 @{
-    ViewData["Title"] = "Shopping Cart";
+    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
     int counter = 1; // Start the counter at 1
-    var total = Model.Cart.Items.Sum(i => i.goodsPrice * i.goodsQuantity);
+    var total = Model.ProductsCart.Items.Sum(i => i.productsPrice * i.productsQuantity);
     var shipping = 10;
     var totalAmount = total + shipping;
     var user = await UserManager.GetUserAsync(User);
@@ -18,13 +19,12 @@
     string address = user.Address;
 }
 
-
 <div class="container mt-5">
     <div class="row">
         <!-- Checkout form and Shipping Information -->
         <div class="col-md-7">
             <h2>Checkout</h2>
-            <form asp-controller="Cart" asp-action="ProcessCheckout" method="post">
+            <form asp-controller="ProductsCart" asp-action="ProcessCheckout" method="post">
                 <h4>Contact Information</h4>
                 <div class="form-group">
                     <label for="email">Email *</label>
@@ -91,22 +91,22 @@
                 </table>
 
                 <div class="bag-summary-actions">
-                    <h4>Bag Summary <span class="badge">@Model.Cart.Items.Count</span></h4>
-                    <a href="@Url.Action("BrowseGoods", "Goods")" class="btn btn-info">Continue Shopping</a>
+                    <h4>Bag Summary <span class="badge">@Model.ProductsCart.Items.Count</span></h4>
+                    <a href="@Url.Action("BrowseProducts", "Products")" class="btn btn-info">Continue Shopping</a>
                 </div>
 
                 <!-- Bag items listing -->
                 <div class="bag-summary">
-                    @foreach (var item in Model.Cart.Items)
+                    @foreach (var item in Model.ProductsCart.Items)
                     {
                         <div class="bag-item d-flex justify-content-start align-items-center mb-3">
-                            <img src="@Model.ImageUrls[item.goodsImage.Trim()]" class="img-fluid bag-item-image mr-2" alt="@item.goodsName">
+                            <img src="@Model.ImageUrls[item.productsImage.Trim()]" class="img-fluid bag-item-image mr-2" alt="@item.productsName">
                             <div class="bag-item-detail">
-                                <div class="bag-item-name">@item.goodsName</div>
+                                <div class="bag-item-name">@item.productsName</div>
                                 <div class="bag-item-price">
-                                    <span class="goodsPrice">RM @item.goodsPrice</span>
+                                    <span class="productsPrice">RM @item.productsPrice</span>
                                 </div>
-                                <div class="bag-item-quantity">Qty: @item.goodsQuantity</div>
+                                <div class="bag-item-quantity">Qty: @item.productsQuantity</div>
                                 <div class="bag-item-quantity">Total: RM @item.totalPrice</div>
                             </div>
                         </div>
@@ -173,13 +173,13 @@
         width: 600px;
     }
 
-    .order-summary h3 {
-        margin-bottom: 15px;
-    }
+        .order-summary h3 {
+            margin-bottom: 15px;
+        }
 
-    .order-summary table {
-        margin-bottom: 20px;
-    }
+        .order-summary table {
+            margin-bottom: 20px;
+        }
 
     .btn-block {
         margin-top: 10px;
@@ -229,7 +229,7 @@
         color: #555;
     }
 
-     .form-group {
+    .form-group {
         margin-bottom: 1rem;
     }
 
@@ -267,16 +267,16 @@
         transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
 
-    .btn-primary:hover {
-        color: #fff;
-        background-color: #0069d9;
-        border-color: #0062cc;
-    }
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
 
-    .btn-primary:focus,
-    .btn-primary.focus {
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
+        .btn-primary:focus,
+        .btn-primary.focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
 
     .btn-block {
         display: block;
@@ -296,12 +296,11 @@
         border-color: #6c757d;
     }
 
-    .btn-secondary:hover {
-        color: #fff;
-        background-color: #5a6268;
-        border-color: #545b62;
-    }
+        .btn-secondary:hover {
+            color: #fff;
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
 
 </style>
 
-            

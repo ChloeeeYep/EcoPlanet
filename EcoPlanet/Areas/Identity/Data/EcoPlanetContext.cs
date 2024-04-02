@@ -29,6 +29,13 @@ public class EcoPlanetContext : IdentityDbContext<EcoPlanetUser>
 
     public DbSet<Quiz> QuizTable { get; set; }
 
+    public DbSet<ProductsCart> ProductsCartTable { get; set; }
+
+    public DbSet<ProductsCartItem> ProductsCartItemTable { get; set; }
+
+    public DbSet<ProductsOrder> ProductsOrderTable { get; set; }
+
+    public DbSet<ProductsOrderItem> ProductsOrderItemTable { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -5,7 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Products </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title> Reusable Products </title>
 </head>
 <body>
 
@@ -46,17 +48,36 @@
                         <div class="products-details">
                             <span class="item-name">@item.productsName</span>
                             <span class="item-price">RM @item.productsPrice</span>
-                            <div class="quantity-selector">
-                                <input type="number" class="quantity-input" value="1" min="1" max="@item.productsQuantity">
-                            </div>
-                            <button class="btn view">View</button>
-                            <button class="btn add-to-cart">Add to cart</button>
+                            <form asp-controller="ProductsCart" asp-action="AddToProductsCart" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="productsId" value="@item.productsId" />
+                                <input type="number" name="quantity" value="1" min="1" max="@item.productsQuantity" class="form-control" />
+                                <button type="submit" class="btn add-to-cart">Add to cart</button>
+                            </form>
+                            <button class="btn view" onclick="location.href='@Url.Action("ProductsDetails", "Products", new { productsId = item.productsId })'">View</button>
                         </div>
                     </div>
                 }
             </div>
         }
     </div>
+    @if (TempData["ItemAdded"] != null && (bool)TempData["ItemAdded"])
+    {
+        <div id="notification" class="notification-message">Item added to cart successfully!</div>
+        <script>
+            // Show the success message
+            document.getElementById('notification').style.display = 'block';
+
+            // Hide the success message after 5 seconds
+            setTimeout(function () {
+                document.getElementById('notification').style.display = 'none';
+            }, 2000);
+        </script>
+    }
+
+    <!-- Cart Icon Button -->
+    <a href="@Url.Action("Index", "ProductsCart")" class="cart-icon-button">
+        <i class="fas fa-shopping-cart"></i>
+    </a>
 </body>
 </html>
 
@@ -192,6 +213,47 @@
         .search-button:hover {
             background-color: #0c47a1;
         }
+
+
+    .cart-icon-button {
+        position: fixed; /* Fixed position */
+        bottom: 30px; /* 30px from the bottom */
+        right: 30px; /* 30px from the right */
+        background-color: cornflowerblue; /* Blue background */
+        color: white; /* White icon */
+        padding: 15px; /* Padding around the icon */
+        border-radius: 50%; /* Circular button */
+        text-align: center; /* Center the icon */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+        z-index: 1000; /* Ensure it's above other elements */
+        text-decoration: none; /* No underline on the icon */
+    }
+
+    .cart-icon-button:hover {
+        background-color: #0c47a1; /* Darker blue on hover */
+        color: white; /* Keep the icon white on hover */
+    }
+
+    .cart-icon-button i {
+        font-size: 24px; /* Size of the cart icon */
+    }
+
+    .notification-message {
+        position: fixed; /* Fixed position */
+        bottom: 100px; /* Position it above the cart icon */
+        right: 30px; /* Align with the cart icon */
+        background-color: #f8f9fa; /* Light background color for visibility */
+        color: darkolivegreen; /* Text color as per your success message */
+        padding: 10px; /* Padding around the text */
+        border-radius: 4px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for depth */
+        z-index: 999; /* Below the cart icon layer */
+        text-align: center; /* Center the text */
+    }
+
+    .cart-icon-button {
+        z-index: 1000; /* Ensure the cart icon is above the message */
+    }
 
 
 </style>

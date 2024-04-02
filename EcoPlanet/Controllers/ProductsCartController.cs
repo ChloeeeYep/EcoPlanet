@@ -16,7 +16,7 @@ using EcoPlanet.ViewModels; //for object data transmissions in network
 
 namespace EcoPlanet.Controllers
 {
-    public class CartController : Controller
+    public class ProductsCartController : Controller
     {
         private const string bucketname = "ecoplanet";
 
@@ -43,14 +43,13 @@ namespace EcoPlanet.Controllers
             return keylist;
         }
 
-        public CartController(EcoPlanetContext context, UserManager<EcoPlanetUser> userManager)
+        public ProductsCartController(EcoPlanetContext context, UserManager<EcoPlanetUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
 
-        // GET: Cart
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -62,29 +61,29 @@ namespace EcoPlanet.Controllers
             }
 
             // Retrieve the cart items for the user
-            var cartItems = await _context.CartItemTable
-                                          .Where(c => c.Cart.userId == user.Id)
+            var productsCartItem = await _context.ProductsCartItemTable
+                                          .Where(c => c.ProductsCart.userId == user.Id)
                                           .ToListAsync();
 
             // Generate the image URLs for each cart item
-            var imageUrls = await GetImageUrlsForCartItems(cartItems);
+            var imageUrls = await GetImageUrlsForCartItems(productsCartItem);
 
-            foreach (var cartItem in cartItems)
+            foreach (var productsCartItems in productsCartItem)
             {
                 // Assuming cartItem has a property goodsId that corresponds to goodsId in GoodsTable
-                var goods = await _context.GoodsTable
+                var products = await _context.ProductsTable
                                           .AsNoTracking()
-                                          .FirstOrDefaultAsync(g => g.goodsId == cartItem.goodsId);
-                if (goods != null)
+                                          .FirstOrDefaultAsync(p => p.productsId == productsCartItems.productsId);
+                if (products != null)
                 {
-                    maxQuantities[cartItem.goodsId] = goods.goodsQuantity;
+                    maxQuantities[productsCartItems.productsId] = products.productsQuantity;
                 }
             }
 
             // Prepare the view model
-            var viewModel = new CartViewModel
+            var viewModel = new ProductsCartViewModel
             {
-                Cart = new Cart { Items = cartItems }, // Use the cartItems variable here directly
+                ProductsCart = new ProductsCart { Items = productsCartItem }, // Use the cartItems variable here directly
                 ImageUrls = imageUrls,
                 MaxQuantities = maxQuantities
             };
@@ -92,8 +91,7 @@ namespace EcoPlanet.Controllers
             return View(viewModel);
         }
 
-
-        private async Task<Dictionary<string, string>> GetImageUrlsForCartItems(IEnumerable<CartItem> items)
+        private async Task<Dictionary<string, string>> GetImageUrlsForCartItems(IEnumerable<ProductsCartItem> items)
         {
             // Connect to the AWS account
             List<string> keys = getKeys();
@@ -102,7 +100,7 @@ namespace EcoPlanet.Controllers
 
             foreach (var item in items)
             {
-                string key = item.goodsImage?.Trim();
+                string key = item.productsImage?.Trim();
                 if (!string.IsNullOrEmpty(key))
                 {
                     // Construct the image URL
@@ -114,9 +112,7 @@ namespace EcoPlanet.Controllers
             return imageUrls;
         }
 
-
-
-        private async Task<Cart> GetOrCreateCartForUser()
+        private async Task<ProductsCart> GetOrCreateProductsCartForUser()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -124,30 +120,29 @@ namespace EcoPlanet.Controllers
                 throw new Exception("User not found.");
             }
 
-            var userId = user.Id;
+            string userId = user.Id; // Keep it as string if your IDs are strings
 
-            var cart = await _context.CartTable
+            var productsCart = await _context.ProductsCartTable
                                      .Include(c => c.Items)
                                      .FirstOrDefaultAsync(c => c.userId == userId);
 
-            if (cart == null)
+            if (productsCart == null)
             {
-                cart = new Cart { userId = userId };
-                _context.CartTable.Add(cart);
+                productsCart = new ProductsCart { userId = userId };
+                _context.ProductsCartTable.Add(productsCart);
                 await _context.SaveChangesAsync();
             }
 
-            return cart;
+            return productsCart;
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddToCart(int goodsId, int quantity)
+        public async Task<IActionResult> AddToProductsCart(int productsId, int quantity)
         {
-            var goods = await _context.GoodsTable.FirstOrDefaultAsync(g => g.goodsId == goodsId);
+            var products = await _context.ProductsTable.FirstOrDefaultAsync(p => p.productsId == productsId);
 
-            if (goods == null)
+            if (products == null)
             {
                 return NotFound();
             }
@@ -181,45 +176,45 @@ namespace EcoPlanet.Controllers
             }
             while (nextToken != null);
 
-            var cart = await GetOrCreateCartForUser();
-            var cartItem = cart.Items.FirstOrDefault(ci => ci.goodsId == goodsId);
+            var productsCart = await GetOrCreateProductsCartForUser();
+            var productsCartItem = productsCart.Items.FirstOrDefault(ci => ci.productsId == productsId);
 
-            if (cartItem != null)
+            if (productsCartItem != null)
             {
                 // If the item already exists in the cart, just update the quantity
-                cartItem.goodsQuantity += quantity;
+                productsCartItem.productsQuantity += quantity;
             }
             else
             {
                 // Otherwise, create a new CartItem and add it to the Cart
-                cartItem = new CartItem
+                productsCartItem = new ProductsCartItem
                 {
-                    goodsId = goods.goodsId,
-                    goodsName = goods.goodsName,
-                    goodsQuantity = quantity,
-                    goodsPrice = goods.goodsPrice,
-                    goodsImage = goods.goodsImage, // Adjust the default image path as necessary
-                    Cart = cart
+                    productsId = products.productsId,
+                    productsName = products.productsName,
+                    productsQuantity = quantity,
+                    productsPrice = products.productsPrice,
+                    productsImage = products.productsImage, // Adjust the default image path as necessary
+                    ProductsCart = productsCart
                 };
 
-                cart.Items.Add(cartItem);
+                productsCart.Items.Add(productsCartItem);
             }
 
             await _context.SaveChangesAsync();
 
             TempData["ItemAdded"] = true;
 
-            return RedirectToAction("BrowseGoods", "Goods"); // Redirect to the Goods index view
+            return RedirectToAction("BrowseProducts", "Products"); // Redirect to the cart index view
         }
 
-        // POST: Cart/UpdateQuantity/5
+        // POST: ProductsCart/UpdateQuantity/5
         [HttpPost]
-        public IActionResult UpdateQuantity(int cartItemId, int quantity)
+        public IActionResult UpdateQuantity(int productsCartItemId, int quantity)
         {
-            var cartItem = _context.CartItemTable.Find(cartItemId);
-            if (cartItem != null)
+            var productsCartItem = _context.ProductsCartItemTable.Find(productsCartItemId);
+            if (productsCartItem != null)
             {
-                cartItem.goodsQuantity = quantity;
+                productsCartItem.productsQuantity = quantity;
                 _context.SaveChanges();
             }
 
@@ -228,12 +223,12 @@ namespace EcoPlanet.Controllers
 
         // POST: Cart/RemoveFromCart/5
         [HttpPost]
-        public IActionResult RemoveFromCart(int cartItemId)
+        public IActionResult RemoveFromCart(int productsCartItemId)
         {
-            var cartItem = _context.CartItemTable.Find(cartItemId);
-            if (cartItem != null)
+            var productsCartItem = _context.CartItemTable.Find(productsCartItemId);
+            if (productsCartItem != null)
             {
-                _context.CartItemTable.Remove(cartItem);
+                _context.CartItemTable.Remove(productsCartItem);
                 _context.SaveChanges();
             }
 
@@ -242,7 +237,7 @@ namespace EcoPlanet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessCheckout(CheckoutViewModel model)
+        public async Task<IActionResult> ProcessCheckout(ProductsCheckoutViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -252,10 +247,10 @@ namespace EcoPlanet.Controllers
                 try
                 {
                     // Create and populate the order from the model
-                    var order = new Order
+                    var productsOrder = new ProductsOrder
                     {
                         Email = user.Email,
-                        OrderDate = DateTime.UtcNow,
+                        ProductsOrderDate = DateTime.UtcNow,
                         Contact = model.PhoneNumber,
                         Address = model.Address,
                         PaymentMethod = "Credit Card/Debit Card",
@@ -264,38 +259,37 @@ namespace EcoPlanet.Controllers
                     };
 
                     // Get the cart items
-                    var cartItems = await _context.CartItemTable
-                                                  .Where(c => c.Cart.userId == user.Id)
+                    var productsCartItems = await _context.ProductsCartItemTable
+                                                  .Where(c => c.ProductsCart.userId == user.Id)
                                                   .ToListAsync();
 
                     // Convert cart items to order items
-                    foreach (var cartItem in cartItems)
+                    foreach (var cartItem in productsCartItems)
                     {
-                        var orderItem = new OrderItem
+                        var productsOrderItem = new ProductsOrderItem
                         {
-                            goodsId = cartItem.goodsId,
-                            goodsName = cartItem.goodsName,
-                            goodsQuantity = cartItem.goodsQuantity,
-                            goodsPrice = cartItem.goodsPrice,
-                            SellerId = user.Id
+                            productsId = cartItem.productsId,
+                            productsName = cartItem.productsName,
+                            productsQuantity = cartItem.productsQuantity,
+                            productsPrice = cartItem.productsPrice
                         };
 
-                        order.OrderItems.Add(orderItem);
+                        productsOrder.ProductsOrderItems.Add(productsOrderItem);
                     }
 
                     // Save the order to the database
-                    _context.OrderTable.Add(order);
+                    _context.ProductsOrderTable.Add(productsOrder);
                     await _context.SaveChangesAsync();
 
                     // Clear the cart after order placement
-                    _context.CartItemTable.RemoveRange(cartItems);
+                    _context.ProductsCartItemTable.RemoveRange(productsCartItems);
                     await _context.SaveChangesAsync();
 
                     // Commit the transaction
                     transaction.Commit();
 
                     // Redirect to a confirmation page or similar
-                    return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
+                    return RedirectToAction("ProductsOrderConfirmation", new { productsOrderId = productsOrder.ProductsOrderId });
                 }
                 catch (Exception ex)
                 {
@@ -307,23 +301,25 @@ namespace EcoPlanet.Controllers
             }
         }
 
-        public async Task<IActionResult> OrderConfirmation(int? orderId)
+
+        public async Task<IActionResult> ProductsOrderConfirmation(int ? productsOrderId)
         {
-            if (orderId == null)
+            if (productsOrderId == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.OrderTable
-                                      .Include(o => o.OrderItems)
-                                      .FirstOrDefaultAsync(m => m.OrderId == orderId);
+            var productsOrder = await _context.ProductsOrderTable
+                                      .Include(o => o.ProductsOrderItems)
+                                      .FirstOrDefaultAsync(m => m.ProductsOrderId == productsOrderId);
 
-            if (order == null)
+            if (productsOrder == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(productsOrder);
         }
-    }
+
+}
 }

@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "IntroPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intro Page</title>
+    <style>
+        /* CSS for the heading */
+        .heading {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 36px;
+            font-family: Arial, sans-serif;
+            color: #1b8521;
+            font-weight: bold;
+            text-shadow: 2px 2px 2px rgba(0,0,0,0.1);
+        }
+
+        /* CSS for the button */
+        .startbtn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff; /* You can change this color */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .startbtn:hover {
+                background-color: #0056b3; /* You can change this color */
+            }
+
+        /* CSS for the paragraph */
+        .description {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #044a08;
+            line-height: 1.6; 
+        }
+    </style>
+</head>
+<body>
+    <!-- Heading -->
+    <h1 class="heading">Save Our Earth By Purchasing Reusable Goods From EcoPlanet</h1>
+
+    <!-- Video -->
+    <video width="100%" height="auto" controls autoplay>
+        <source src="@ViewBag.VideoUrl" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Description -->
+    <p class="description">By choosing EcoPlanet's reusable products, you're not just making a purchase; you're making a commitment to our planet's future. 
+        Each reusable item you buy helps reduce plastic waste and minimizes your carbon footprint. 
+        Moreover, EcoPlanet is dedicated to sustainability beyond its products. 
+        30% of the revenues are invested in impactful environmental initiatives, including beach cleanups, tree planting drives, and educational programs on eco-conscious living. </p>
+
+    <!-- Form with button -->
+    <form method="get" action="@Url.Action("BrowseProducts", "Products")">
+        <button type="submit" class="startbtn">Start Browsing!</button>
+    </form>
+</body>
+</html>

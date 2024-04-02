@@ -185,31 +185,44 @@ namespace EcoPlanet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateGoods(Goods goods, List<IFormFile> goodsImage)
         {
-            foreach (var image in goodsImage)
+            // Only update the image if a new image is uploaded.
+            if (goodsImage != null && goodsImage.Count > 0)
             {
-                try
+                foreach (var image in goodsImage)
                 {
-                    List<string> keys = getKeys();
-                    AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
-
-                    //upload to S3
-                    PutObjectRequest request = new PutObjectRequest
+                    try
                     {
-                        InputStream = image.OpenReadStream(),
-                        BucketName = bucketname,
-                        Key = "GoodsImages/" + image.FileName, // Specify the S3 key where the image will be stored
-                        CannedACL = S3CannedACL.PublicRead // Set the ACL to allow public read access
-                    };
+                        List<string> keys = getKeys();
+                        AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
 
-                    await agent.PutObjectAsync(request);
+                        //upload to S3
+                        PutObjectRequest request = new PutObjectRequest
+                        {
+                            InputStream = image.OpenReadStream(),
+                            BucketName = bucketname,
+                            Key = "GoodsImages/" + image.FileName, // Specify the S3 key where the image will be stored
+                            CannedACL = S3CannedACL.PublicRead // Set the ACL to allow public read access
+                        };
+
+                        await agent.PutObjectAsync(request);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest("Error: " + ex.Message);
+                    }
+
+                    // Assign the filename (key) to the goodsImage property
+                    goods.goodsImage = "GoodsImages/" + image.FileName;
                 }
-                catch (Exception ex)
+            }
+            // If no new image is provided, keep the old image path.
+            else
+            {
+                var existingProducts = await _context.GoodsTable.AsNoTracking().FirstOrDefaultAsync(p => p.goodsId == goods.goodsId);
+                if (existingProducts != null)
                 {
-                    return BadRequest("Error: " + ex.Message);
+                    goods.goodsImage = existingProducts.goodsImage;
                 }
-
-                // Assign the filename (key) to the goodsImage property
-                goods.goodsImage = "GoodsImages/" + image.FileName;
             }
 
             if (ModelState.IsValid)

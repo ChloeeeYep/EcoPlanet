@@ -7,7 +7,7 @@ namespace EcoPlanet.Models
     {
         [Key]
         public int cartId { get; set; }
-        public string userId { get; set; } // Assuming there's a User class that this relates to.
+        public string userId { get; set; }
         public virtual List<CartItem> Items { get; set; } = new List<CartItem>();
         public decimal totalPrice => Items.Sum(item => item.totalPrice);
     }
