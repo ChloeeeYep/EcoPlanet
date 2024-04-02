@@ -23,9 +23,11 @@
                 <a id="addproducts" class="nav-link text-dark" asp-action="Index" asp-controller="Products"> Manage Products </a>
             </li>
             <li class="nav-item">
+                <a id="addquiz" class="nav-link text-dark" asp-action="Index" asp-controller="Quiz">Manage Quiz</a>
+            </li>
+            <li class="nav-item">
                 <a id="SNS" class="nav-link text-dark" asp-action="sendBroadcastMessage" asp-controller="SNS">Broadcast Message</a>
             </li>
-
         }
         else if (user.UserType == 'U')
         {

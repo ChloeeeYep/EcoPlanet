@@ -23,6 +23,8 @@ public class EcoPlanetContext : IdentityDbContext<EcoPlanetUser>
 
     public DbSet<CartItem> CartItemTable { get; set; }
 
+    public DbSet<Quiz> QuizTable { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -1,0 +1,146 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    int counter = 1; // Start the counter at 1
+}
+@model List<Quiz>
+
+<div class="header-container">
+    <h1>Quiz</h1>
+    <a href="@Url.Action("AddData", "Quiz")" class="action-button add">Add New Quiz</a>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Title</th>
+                <th>Correct</th>
+                <th>Wrong1</th>
+                <th>Wrong2</th>
+                <th>Wrong3</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@counter</td>
+                    <td>@item.Title</td>
+                    <td>@item.Correct</td>
+                    <td>@item.Wrong1</td>
+                    <td>@item.Wrong2</td>
+                    <td>@item.Wrong3</td>
+                    <td>
+                        <a href="@Url.Action("EditData", "Quiz", new { Id = item.Id })" class="action-button edit">Edit</a>
+                        <a href="@Url.Action("DeleteData", "Quiz", new { Id = item.Id })" class="action-button delete">Delete</a>
+                    </td>
+                </tr>
+                counter++;
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .header-container {
+        display: flex;
+        justify-content: space-between; /* Aligns children to opposite ends */
+        align-items: center; /* Centers children vertically */
+        margin-bottom: 20px; /* Adds some space below the header */
+    }
+
+    h1 {
+        margin: 0; /* Removes default margin to align properly with the button */
+        flex-grow: 1; /* Allows the title to grow and push the button to the right */
+    }
+
+    .table-container {
+        margin: 0 auto;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #dee2e6;
+        vertical-align: middle; /* Add this line to vertically center the content */
+    }
+
+    td {
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #dee2e6;
+        vertical-align: middle; /* Add this line to vertically center the content */
+    }
+
+
+    .td img {
+        display: block; /* Make sure the image is block level to respect max-width/height */
+        margin: 0 auto; /* Center the image in the cell */
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center; /* Center the buttons horizontally */
+        align-items: center;
+        gap: 10px; /* Adjust the space between buttons */
+        margin: 0;
+    }
+
+    .action-button {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 8px 16px; /* Providing a bit more horizontal padding for aesthetics */
+        border-radius: 4px;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        flex: 0 0 auto; /* Do not allow the buttons to grow or shrink */
+    }
+
+        .action-button:hover {
+            color: white; /* Text color changes to white on hover */
+        }
+
+    /* Styling for Add button */
+    .add {
+        background-color: #17a2b8;
+    }
+
+        .add:hover, .add:focus {
+            background-color: #138496;
+        }
+
+    /* Styling for Edit button */
+    .edit {
+        background-color: #ffc107;
+    }
+
+        .edit:hover, .edit:focus {
+            background-color: #e0a800;
+        }
+
+    /* Styling for Delete button */
+    .delete {
+        background-color: #dc3545;
+    }
+
+        .delete:hover, .delete:focus {
+            background-color: #c82333;
+        }
+</style>
+
