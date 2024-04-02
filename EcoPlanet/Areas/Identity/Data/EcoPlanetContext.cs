@@ -27,6 +27,8 @@ public class EcoPlanetContext : IdentityDbContext<EcoPlanetUser>
 
     public DbSet<OrderItem> OrderItemTable { get; set; }
 
+    public DbSet<Quiz> QuizTable { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

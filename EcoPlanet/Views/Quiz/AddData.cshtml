@@ -1,0 +1,113 @@
+﻿@model EcoPlanet.Models.Quiz
+<center>
+	<h1>Add Quiz</h1>
+	<br /><hr />
+	<form asp-action="AddData" method="post" asp-controller="Quiz">
+		<table border="1">
+			<tr>
+				<th><label asp-for="Title"></label></th>
+				<td><input asp-for="Title" required /></td>
+				<td><span asp-validation-for="Title"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="Correct"></label></th>
+				<td><textarea asp-for="Correct" required></textarea></td>
+				<td><span asp-validation-for="Correct"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="Wrong1"></label></th>
+				<td><textarea asp-for="Wrong1" required></textarea></td>
+				<td><span asp-validation-for="Wrong1"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="Wrong2"></label></th>
+				<td><textarea asp-for="Wrong2" required></textarea></td>
+				<td><span asp-validation-for="Wrong2"></span></td>
+			</tr>
+			<tr>
+				<th><label asp-for="Wrong3"></label></th>
+				<td><textarea asp-for="Wrong3" required></textarea></td>
+				<td><span asp-validation-for="Wrong3"></span></td>
+			</tr>
+			<tr>
+				<td colspan="2" style="text-align:center">
+					<button type="submit" class="btn-create">Create</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+</center>
+
+<style>
+	form {
+		max-width: 600px;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 20px 0;
+	}
+
+	th, td {
+		padding: 10px;
+		border: 1px solid #ddd;
+		text-align: left;
+	}
+
+	th {
+		background-color: #f4f4f4;
+	}
+
+	input[type="text"],
+	select {
+		width: 100%;
+		padding: 8px;
+		margin: 5px 0;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+	}
+
+	button.btn-create {
+		width: 100%;
+		background-color: #4A90E2;
+		color: white;
+		padding: 14px 20px;
+		margin: 8px 0;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+		button.btn-create:hover {
+			background-color: #357ABD;
+		}
+
+	/* This targets the td elements that contain the span for validation message */
+	td:has(> span[data-valmsg-for]:empty) {
+		display: none;
+	}
+
+	/* This targets the td elements that contain the span for validation message with content */
+	td:has(> span[data-valmsg-for]:not(:empty)) {
+		display: table-cell; /* This ensures the cell is displayed when there's a validation message */
+	}
+
+	/* This targets empty validation message spans */
+	span[data-valmsg-for]:empty {
+		display: none;
+	}
+
+	textarea {
+		min-height: 100px; /* Initial height of the textarea */
+		width: 100%;
+		padding: 8px;
+		margin: 5px 0;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+	}
+</style>
