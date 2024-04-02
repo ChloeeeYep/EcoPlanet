@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EcoPlanet.Models
 {
-    public class TrashpediaView
+    public class TrashpediaViewModel
     {
         public List<Trashpedia> TrashpediaList { get; set; }
 
