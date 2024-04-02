@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Quiz Results";
+    var totalQuestions = ViewBag.TotalQuestions;
+}
+
+<div class="notification" id="final-notification">
+    <i class="fas fa-trophy quiz-icon"></i>
+    <h3>Quiz Complete!</h3>
+    <p>Your Score: <span>@ViewBag.Score</span> / @totalQuestions</p>
+    <button id="retry-button" onclick="location.href='@Url.Action("ShowQuiz", "Quiz")'">Retry Quiz</button>
+</div>
+
+
+
+<style>
+    #final-notification {
+        text-align: center;
+        padding: 98px;
+        margin-top: 59px;
+        background-color: #f8f9fa; /* Light gray background */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-family: var(--ff-poppins);
+    }
+
+    #final-notification h3 {
+        font-size: 2.5rem; /* Larger font size for the title */
+        color: #0056d2; /* A nice green for success */
+        margin-bottom: 10px;
+    }
+
+    #final-notification p {
+        margin: 5px 0; /* Spacing between paragraphs */
+        font-size: 17px;
+    }
+
+    .quiz-icon {
+        font-size: 4rem; /* Large size for the icon */
+        color: #0056d2; /* Same green as the title */
+        margin-bottom: 10px;
+    }
+
+    #retry-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff; /* A nice blue for the retry button */
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 20px; /* Spacing from the score and time */
+    }
+
+    #retry-button:hover {
+        background-color: #0056b3; /* Darken the button color on hover for feedback */
+    }
+
+</style>

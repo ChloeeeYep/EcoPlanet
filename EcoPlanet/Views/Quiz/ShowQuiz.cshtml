@@ -1,0 +1,225 @@
+﻿@model EcoPlanet.Models.QuizViewModel
+
+@{
+    ViewData["Title"] = "Quiz";
+}
+
+<div class="quiz-wrap">
+    <div class="quiz-header">
+        <h1 style="text-align:left">Quiz</h1>
+        <div class="progress-bar"></div>
+    </div>
+
+    <div id="quiz-container">
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+            <div class="question" data-index="@i">
+                <b><legend>Question @(i + 1): @Html.DisplayFor(m => m.Questions[i].Title)</legend></b>
+                <button type="button" class="answer-btn" data-answer="@Model.Questions[i].Correct">@Model.Questions[i].Correct</button>
+                <button type="button" class="answer-btn" data-answer="@Model.Questions[i].Wrong1">@Model.Questions[i].Wrong1</button>
+                <button type="button" class="answer-btn" data-answer="@Model.Questions[i].Wrong2">@Model.Questions[i].Wrong2</button>
+                <button type="button" class="answer-btn" data-answer="@Model.Questions[i].Wrong3">@Model.Questions[i].Wrong3</button>
+            </div>
+        }
+    </div>
+    <div class="bottom-bar">
+        <div class="question-counter"></div>
+        <button id="submit-quiz" type="button">Submit Quiz</button>
+    </div>
+</div>
+
+<style>
+    .quiz-header {
+        text-align: center;
+    }
+
+    .quiz-wrap {
+        width: 80%;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        margin-top:54px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-wrap {
+        border-bottom: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .question-counter {
+        text-align: center;
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #808080;
+    }
+
+    .progress-bar {
+        width: 0%;
+        max-width: 100%;
+        height: 5px;
+        background-color: #4CAF50;
+        margin: 10px 0;
+        transition: width 0.5s; /* This will animate the width change */
+        margin-top: 21px;
+    }
+
+    #quiz-container .question {
+        display: none; /* Hide all questions initially */
+        margin-bottom: 20px;
+    }
+
+    #quiz-container .question h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    #quiz-container .answer-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background: aliceblue;
+        border: 1px solid #84c5fe;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: left;
+        color: black;
+    }
+
+    #quiz-container .answer-btn:hover {
+        color: #004085;
+        background: #cce5ff;
+        border: 1px solid #b8daff;
+    }
+
+    .bottom-bar {
+        display: flex;
+        justify-content: space-between; /* This will push the child elements to opposite ends */
+        align-items: center; /* This will vertically center the child elements */
+        padding: 10px 0; /* Add some padding at the top and bottom for spacing */
+    }
+
+    #submit-quiz {
+        display: none; /* Hide initially */
+        background-color: #007bff; /* A nice blue for the retry button */
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #submit-quiz:hover {
+        background-color: #0056b3; /* Darken the button color on hover for feedback */
+    }
+
+</style>
+
+@section Scripts {
+    <script>
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        const questions = document.querySelectorAll('.question');
+        const submitButton = document.getElementById('submit-quiz');
+        const progressBar = document.querySelector('.progress-bar'); // Get the progress bar element once
+
+        function updateQuestionCounter() {
+            const questionCounter = document.querySelector('.question-counter');
+            questionCounter.textContent = `${currentQuestionIndex + 1} of ${questions.length} Questions`;
+        }
+
+        // The Fisher-Yates (aka Knuth) shuffle algorithm.
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            // While there remain elements to shuffle...
+            while (currentIndex !== 0) {
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                // And swap it with the current element.
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function showQuestion(index) {
+            const question = questions[index];
+            const answerButtons = question.querySelectorAll('.answer-btn');
+            let answers = [];
+            answerButtons.forEach(btn => {
+                answers.push(btn.textContent);
+            });
+
+            // Now shuffle the answers
+            answers = shuffle(answers);
+
+            // Remove the old buttons
+            answerButtons.forEach(btn => {
+                btn.remove();
+            });
+
+            // Add new buttons with shuffled answers
+            answers.forEach(answer => {
+                let button = document.createElement('button');
+                button.type = 'button';
+                button.classList.add('answer-btn');
+                button.setAttribute('data-answer', answer);
+                button.textContent = answer;
+                question.appendChild(button);
+            });
+
+            questions.forEach(q => q.style.display = 'none');
+            question.style.display = 'block';
+            updateQuestionCounter(); // Call this function whenever a new question is shown
+        }
+
+
+        function updateProgressBar() {
+            const totalQuestions = questions.length;
+            const progressPercentage = ((currentQuestionIndex / totalQuestions) * 100).toFixed(0);
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function handleAnswerClick(e) {
+            if (e.target.classList.contains('answer-btn')) {
+                userAnswers[currentQuestionIndex] = e.target.getAttribute('data-answer');
+                currentQuestionIndex++;
+                if (currentQuestionIndex >= questions.length) {
+                    submitButton.style.display = 'block';
+                } else {
+                    showQuestion(currentQuestionIndex);
+                }
+                updateProgressBar(); // Update progress bar after showing the question
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showQuestion(currentQuestionIndex); // Display the first question
+            updateProgressBar(); // Show progress for the first question
+            updateQuestionCounter(); // Display "1 of X Questions"
+        });
+
+        document.getElementById('quiz-container').addEventListener('click', handleAnswerClick);
+        submitButton.addEventListener('click', function () {
+            fetch('@Url.Action("SubmitQuiz", "Quiz")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userAnswers)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.score !== undefined) {
+                        window.location.href = '@Url.Action("QuizResults", "Quiz")?score=' + data.score;
+                    }
+                });
+        });
+    </script>
+}
+

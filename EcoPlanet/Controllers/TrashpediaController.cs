@@ -78,7 +78,7 @@ namespace EcoPlanet.Controllers
             while (nextToken != null);
 
             // Create the ViewModel and populate it with tarshpedia and image data
-            var viewModel = new TrashpediaView
+            var viewModel = new TrashpediaViewModel
             {
                 TrashpediaList = trashpedia,
                 ImageList = imagelist
@@ -304,7 +304,7 @@ namespace EcoPlanet.Controllers
             while (nextToken != null);
 
             // Create the ViewModel and populate it with tarshpedia and image data
-            var viewModel = new TrashpediaView
+            var viewModel = new TrashpediaViewModel
             {
                 TrashpediaList = trashpedia,
                 ImageList = imagelist
