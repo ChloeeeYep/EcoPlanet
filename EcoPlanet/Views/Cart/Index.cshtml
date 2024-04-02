@@ -1,71 +1,119 @@
 ﻿@model EcoPlanet.ViewModels.CartViewModel
+@using Microsoft.AspNetCore.Identity
+@using EcoPlanet.Areas.Identity.Data
+
+@inject SignInManager<EcoPlanetUser> SignInManager
+@inject UserManager<EcoPlanetUser> UserManager
 
 @{
     ViewData["Title"] = "Shopping Cart";
     Layout = "~/Views/Shared/_Layout.cshtml";
     int counter = 1; // Start the counter at 1
+    var total = Model.Cart.Items.Sum(i => i.goodsPrice * i.goodsQuantity);
+    var shipping = 10;
+    var totalAmount = total + shipping;
+    var user = await UserManager.GetUserAsync(User);
+    string currentUserId = user.Email;
+    string phone = user.PhoneNumber;
+    string address = user.Address;
 }
 
+
 <div class="container mt-5">
-    <h2>Shopping Cart</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">No.</th>
-                <th scope="col">Image</th>
-                <th scope="col">Product</th>
-                <th scope="col">Price</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Total</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Cart.Items)
-            {
-                <tr>
-                    <td>@counter</td>
-                    <td>
-                        @if (Model.ImageUrls.TryGetValue(item.goodsImage.Trim(), out var imageUrl) && !string.IsNullOrEmpty(imageUrl))
-                        {
-                            <img src="@imageUrl" alt="@item.goodsName" style="width:100px;height:100px;" />
-                        }
-                        else
-                        {
-                            <span>No image available</span>
-                        }
-                    </td>
-                    <td>@item.goodsName</td>
-                    <td>@item.goodsPrice</td>
-                    <td>
-                        @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post, new { @class = "quantity-form" }))
-                        {
-                            <input type="hidden" name="cartItemId" value="@item.cartItemId" />
-                            int maxQuantityForItem = Model.MaxQuantities.ContainsKey(item.goodsId) ? Model.MaxQuantities[item.goodsId] : int.MaxValue;
-                            <input type="number" name="quantity" value="@item.goodsQuantity"
-                                   min="1"
-                                   max="@maxQuantityForItem"
-                                   class="form-control quantity-input"
-                                   data-max-quantity="@maxQuantityForItem"
-                                   onchange="quantityChanged(this);" />
-                        }
-                    </td>
-                    <td>@(item.goodsPrice * item.goodsQuantity)</td>
-                    <td>
-                        @using (Html.BeginForm("RemoveFromCart", "Cart", FormMethod.Post))
-                        {
-                            <input type="hidden" name="cartItemId" value="@item.cartItemId" />
-                            <input type="submit" value="Remove" class="btn btn-danger" />
-                        }
-                    </td>
-                </tr>
-                counter++;
-            }
-        </tbody>
-    </table>
-    <div class="text-right float-right">
-        <h3 class="float-right">Total: @Model.Cart.Items.Sum(i => i.goodsPrice * i.goodsQuantity).ToString("C")</h3>
-        <button class="btn btn-success float-right" onclick="location.href='@Url.Action("Checkout", "Order")'">Proceed to Checkout</button>
+    <div class="row">
+        <!-- Checkout form and Shipping Information -->
+        <div class="col-md-7">
+            <h2>Checkout</h2>
+            <form asp-controller="Cart" asp-action="ProcessCheckout" method="post">
+                <h4>Contact Information</h4>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="Email" name="Email" class="form-control" value="@currentUserId" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="PhoneNumber" class="form-control" value="@phone" required>
+                </div>
+                <br />
+                <h4>Shipping Address</h4>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <textarea name="Address" required>@address</textarea>
+                    </div>
+                </div>
+                <br />
+
+                <h4>Payment</h4>
+                <div class="payment-info">
+                    <div class="form-group">
+                        <label for="cardHolderName">Card Holder Name *</label>
+                        <input type="text" id="CardHolderName" name="CardHolderName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number *</label>
+                        <input type="text" id="CardNumber" name="CardNumber" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="expiryDate">Expiry Date *</label>
+                            <input type="text" id="ExpiryDate" name="ExpiryDate" class="form-control" placeholder="MM/YY" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="cvv">CVV *</label>
+                            <input type="text" id="CVV" name="CVV" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Confirm Checkout</button>
+            </form>
+        </div>
+
+        <!-- Order Summary and Cart Items -->
+        <div class="col-md-5">
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>Subtotal</td>
+                            <td>@total.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <td>Shipping</td>
+                            <td>@shipping.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong>@totalAmount.ToString("C")</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="bag-summary-actions">
+                    <h4>Bag Summary <span class="badge">@Model.Cart.Items.Count</span></h4>
+                    <a href="@Url.Action("BrowseGoods", "Goods")" class="btn btn-info">Continue Shopping</a>
+                </div>
+
+                <!-- Bag items listing -->
+                <div class="bag-summary">
+                    @foreach (var item in Model.Cart.Items)
+                    {
+                        <div class="bag-item d-flex justify-content-start align-items-center mb-3">
+                            <img src="@Model.ImageUrls[item.goodsImage.Trim()]" class="img-fluid bag-item-image mr-2" alt="@item.goodsName">
+                            <div class="bag-item-detail">
+                                <div class="bag-item-name">@item.goodsName</div>
+                                <div class="bag-item-price">
+                                    <span class="goodsPrice">@item.goodsPrice.ToString("C")</span>
+                                </div>
+                                <div class="bag-item-quantity">Qty: @item.goodsQuantity</div>
+                                <div class="bag-item-quantity">Total: @item.totalPrice.ToString("C")</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -113,3 +161,147 @@
         });
     </script>
 }
+
+
+<style>
+    .order-summary {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        width: 600px;
+    }
+
+    .order-summary h3 {
+        margin-bottom: 15px;
+    }
+
+    .order-summary table {
+        margin-bottom: 20px;
+    }
+
+    .btn-block {
+        margin-top: 10px;
+    }
+
+    .bag-summary {
+        border-top: 1px solid #dee2e6;
+        padding-top: 15px;
+    }
+
+    .badge {
+        background-color: #777;
+        color: white;
+        padding: 0.5em 0.75em;
+    }
+
+    .bag-item {
+        display: flex;
+        margin-bottom: 10px;
+        align-items: center;
+    }
+
+    .bag-item-image {
+        flex-shrink: 0;
+        margin-right: 15px; /* This creates the gap between the image and the details */
+        width: 100px; /* Adjust as necessary */
+        height: 100px; /* Adjust as necessary */
+    }
+
+    .bag-item-detail {
+        flex-grow: 1;
+    }
+
+    .bag-item-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .bag-item-price .original-price {
+        text-decoration: line-through;
+        margin-right: 10px;
+    }
+
+
+    .bag-item-quantity {
+        font-size: 0.875em;
+        color: #555;
+    }
+
+     .form-group {
+        margin-bottom: 1rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    textarea {
+        width: 680px;
+        padding: 0.375rem 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+
+    textarea {
+        resize: vertical;
+        height: 100px;
+        width: 680px;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #0069d9;
+        border-color: #0062cc;
+    }
+
+    .btn-primary:focus,
+    .btn-primary.focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .btn-block {
+        display: block;
+        width: 100%;
+    }
+
+    .bag-summary-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .btn-secondary {
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        color: #fff;
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+
+</style>
+
+            

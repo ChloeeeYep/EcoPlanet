@@ -237,5 +237,92 @@ namespace EcoPlanet.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProcessCheckout(CheckoutViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            // Start a transaction in case anything goes wrong you can rollback
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Create and populate the order from the model
+                    var order = new Order
+                    {
+                        Email = user.Email,
+                        OrderDate = DateTime.UtcNow,
+                        Contact = model.PhoneNumber,
+                        Address = model.Address,
+                        PaymentMethod = "Credit Card/Debit Card",
+                        PaymentStatus = "Pending",
+                        OrderStatus = "In Progress"
+                    };
+
+                    // Get the cart items
+                    var cartItems = await _context.CartItemTable
+                                                  .Where(c => c.Cart.userId == user.Id)
+                                                  .ToListAsync();
+
+                    // Convert cart items to order items
+                    foreach (var cartItem in cartItems)
+                    {
+                        var orderItem = new OrderItem
+                        {
+                            goodsId = cartItem.goodsId,
+                            goodsName = cartItem.goodsName,
+                            goodsQuantity = cartItem.goodsQuantity,
+                            goodsPrice = cartItem.goodsPrice,
+                            SellerId = user.Id
+                        };
+
+                        order.OrderItems.Add(orderItem);
+                    }
+
+                    // Save the order to the database
+                    _context.OrderTable.Add(order);
+                    await _context.SaveChangesAsync();
+
+                    // Clear the cart after order placement
+                    _context.CartItemTable.RemoveRange(cartItems);
+                    await _context.SaveChangesAsync();
+
+                    // Commit the transaction
+                    transaction.Commit();
+
+                    // Redirect to a confirmation page or similar
+                    return RedirectToAction("OrderConfirmation", new { orderId = order.OrderId });
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception
+                    transaction.Rollback();
+                    // Handle the error, maybe return a view with an error message
+                    return View("Error");
+                }
+            }
+        }
+
+
+        public async Task<IActionResult> OrderConfirmation(int? orderId)
+        {
+            if (orderId == null)
+            {
+                return NotFound();
+            }
+
+            var order = await _context.OrderTable
+                                      .Include(o => o.OrderItems)
+                                      .FirstOrDefaultAsync(m => m.OrderId == orderId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order);
+        }
     }
 }

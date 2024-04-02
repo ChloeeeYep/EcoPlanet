@@ -1,0 +1,56 @@
+﻿@model EcoPlanet.Models.Order
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div style="font-family: 'Arial', sans-serif; color: #333;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: #5cb85c; margin-bottom: 0;">EcoPlanet</h1>
+        <p>Thank you for shopping with us!</p>
+    </div>
+
+    <div style="background-color: #F7F7F7; padding: 2rem; text-align: center; margin-bottom: 2rem;">
+        <h2>Hey @Model.Email,</h2>
+        <p>Your order is confirmed and will be on its way soon.</p>
+        <h3 style="background-color: #FFE033; color: #333; display: inline-block; padding: 0.5rem 1rem; border-radius: 5px; font-weight: bold;">
+            ORDER # @Model.OrderId
+        </h3>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+        <h3>Shipping Address</h3>
+        <p>@Model.Address</p>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+        <h3>Items</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: steelblue ; color: white;">
+                    <th style="padding: 0.5rem; text-align: left;">Item</th>
+                    <th style="padding: 0.5rem; text-align: right;">Price</th>
+                    <th style="padding: 0.5rem; text-align: right;">Qty</th>
+                    <th style="padding: 0.5rem; text-align: right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr style="border-bottom: 1px solid #ccc;">
+                        <td style="padding: 0.5rem;">@item.goodsName</td>
+                        <td style="padding: 0.5rem; text-align: right;">RM @item.goodsPrice.ToString("N2")</td>
+                        <td style="padding: 0.5rem; text-align: right;">@item.goodsQuantity</td>
+                        <td style="padding: 0.5rem; text-align: right;">RM @item.TotalPrice.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 4rem;">
+        <a href="@Url.Action("Index", "Home")" style="background-color:steelblue ; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px;">Back to Home</a>
+        <br /><br />
+        <p style="margin-bottom: 0.5rem;">If you have any questions, contact us at support@ecoplanet.com.</p>
+    </div>
+</div>
