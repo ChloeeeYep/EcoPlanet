@@ -17,5 +17,6 @@ namespace EcoPlanet.ViewModels
             ImageUrls = new Dictionary<string, string>(); // Initializes the ImageUrls property
             MaxQuantities = new Dictionary<int, int>();
         }
+
     }
 }

@@ -23,6 +23,8 @@ namespace EcoPlanet.Models
         public decimal goodsPrice { get; set; }
         public string goodsImage { get; set; }
         public decimal totalPrice => goodsQuantity * goodsPrice;
+
+        public virtual Goods Goods { get; set; }
         public virtual Cart Cart { get; set; }
     }
 

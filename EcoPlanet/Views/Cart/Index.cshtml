@@ -21,17 +21,31 @@
 
 <div class="container mt-5">
     <div class="row">
+        <!-- Notification Area -->
+        @if (TempData["RemovedItems"] != null)
+        {
+            <div class="alert alert-warning" role="alert">
+                @Html.Raw(TempData["RemovedItems"].ToString())
+            </div>
+        }
+        @if (TempData["QuantityAdjusted"] != null)
+        {
+            <div class="alert alert-warning" role="alert">
+                @Html.Raw(TempData["QuantityAdjusted"].ToString())
+            </div>
+        }
+
         <!-- Checkout form and Shipping Information -->
         <div class="col-md-7">
             <h2>Checkout</h2>
             <form asp-controller="Cart" asp-action="ProcessCheckout" method="post">
                 <h4>Contact Information</h4>
                 <div class="form-group">
-                    <label for="email">Email *</label>
+					<label for="email">Email <span style="color:red">*</span></label>
                     <input type="email" id="Email" name="Email" class="form-control" value="@currentUserId" required>
                 </div>
                 <div class="form-group">
-                    <label for="phone">Phone Number *</label>
+                    <label for="phone">Phone Number <span style="color:red">*</span></label>
                     <input type="tel" id="phone" name="PhoneNumber" class="form-control" value="@phone" required>
                 </div>
                 <br />
@@ -46,26 +60,29 @@
                 <h4>Payment</h4>
                 <div class="payment-info">
                     <div class="form-group">
-                        <label for="cardHolderName">Card Holder Name *</label>
-                        <input type="text" id="CardHolderName" name="CardHolderName" class="form-control" required>
+                        <label for="cardHolderName">Card Holder Name <span style="color:red">*</span></label>
+                        <input type="text" id="CardHolderName" name="CardHolderName" class="form-control"
+                               pattern="[A-Za-z\s]{5,}" title="Card holder name must contain more than 5 alphabetic characters and spaces only." required>
                     </div>
                     <div class="form-group">
-                        <label for="cardNumber">Card Number *</label>
-                        <input type="text" id="CardNumber" name="CardNumber" class="form-control" required>
+                        <label for="cardNumber">Card Number <span style="color:red">*</span></label>
+                        <input type="text" id="CardNumber" name="CardNumber" class="form-control"
+                               pattern="\d{16}" title="Card number must be a 16-digit number." required>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="expiryDate">Expiry Date *</label>
+                            <label for="expiryDate">Expiry Date <span style="color:red">*</span></label>
                             <input type="text" id="ExpiryDate" name="ExpiryDate" class="form-control" placeholder="MM/YY" required>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="cvv">CVV *</label>
-                            <input type="text" id="CVV" name="CVV" class="form-control" required>
+                            <label for="cvv">CVV <span style="color:red">*</span></label>
+                            <input type="text" id="CVV" name="CVV" class="form-control"
+                                   pattern="\d{3}" title="CVV must be a 3-digit number." required>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Confirm Checkout</button>
+                <button type="submit" class="btn btn-primary" @(Model.Cart.Items.Count == 0 ? "disabled" : "")>Confirm Checkout</button>
             </form>
         </div>
 
@@ -77,15 +94,15 @@
                     <tbody>
                         <tr>
                             <td>Subtotal</td>
-                            <td>RM @total</td>
+                            <td><span class="subtotal-amount">RM @total</span></td>
                         </tr>
                         <tr>
                             <td>Shipping</td>
-                            <td>RM @shipping</td>
+                            <td><span class="shipping-amount">RM @shipping</span></td>
                         </tr>
                         <tr>
                             <td><strong>Total</strong></td>
-                            <td><strong>RM @totalAmount</strong></td>
+                            <td><strong><span class="grand-total-amount"><strong>RM @totalAmount</span></strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -99,15 +116,29 @@
                 <div class="bag-summary">
                     @foreach (var item in Model.Cart.Items)
                     {
-                        <div class="bag-item d-flex justify-content-start align-items-center mb-3">
-                            <img src="@Model.ImageUrls[item.goodsImage.Trim()]" class="img-fluid bag-item-image mr-2" alt="@item.goodsName">
-                            <div class="bag-item-detail">
+                        <div class="bag-item" data-item-id="@item.goodsId">
+                            <img src="@Model.ImageUrls[item.goodsImage.Trim()]" class="bag-item-image" alt="@item.goodsName">
+                            <div class="bag-item-details">
                                 <div class="bag-item-name">@item.goodsName</div>
-                                <div class="bag-item-price">
-                                    <span class="goodsPrice">RM @item.goodsPrice</span>
-                                </div>
-                                <div class="bag-item-quantity">Qty: @item.goodsQuantity</div>
-                                <div class="bag-item-quantity">Total: RM @item.totalPrice</div>
+                                <div class="bag-item-price">RM <span class="goodsPrice">@item.goodsPrice</span></div>
+                                <!-- Quantity form for each item -->
+                                <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" onchange="this.submit();">
+                                    <input type="hidden" name="cartItemId" value="@item.cartItemId" />
+                                    <input type="number" name="quantity" class="quantity-input"
+                                           value="@item.goodsQuantity"
+                                           data-max-quantity="@Model.MaxQuantities[item.goodsId]"
+                                           data-item-id="@item.goodsId" />
+                                    <input type="submit" value="Update" style="display: none;" />
+                                    @Html.AntiForgeryToken()
+                                </form>
+                                <div>Total: RM <span class="item-total">@item.goodsPrice * @item.goodsQuantity</span></div>
+                                <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
+                                    <input type="hidden" name="cartItemId" value="@item.cartItemId" />
+                                    <button type="submit" class="btn-remove-item icon-button" title="Remove item">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    @Html.AntiForgeryToken()
+                                </form>
                             </div>
                         </div>
                     }
@@ -119,46 +150,40 @@
 
 @section Scripts {
     <script>
-        function quantityChanged(input) {
-            var maxQuantity = parseInt(input.getAttribute('data-max-quantity'), 10);
-            var inputQuantity = parseInt(input.value, 10);
+        document.addEventListener('DOMContentLoaded', function () {
+            function updateTotals() {
+                let subtotal = 0;
 
-            // Check if the deletion has already been confirmed
-            if (!input.dataset.deletionConfirmed && inputQuantity === 0) {
-                // Confirm deletion logic
-                var confirmDeletion = confirm('Are you sure you want to remove this item from your cart?');
-                if (confirmDeletion) {
-                    // Mark the deletion as confirmed
-                    input.dataset.deletionConfirmed = 'true';
-                    // Find and click the associated 'Remove' button
-                    var removeButton = input.closest('tr').querySelector('.btn-danger');
-                    removeButton.click();
-                } else {
-                    // Revert to the initial value if deletion is not confirmed
-                    input.value = input.dataset.initialValue;
-                }
-            } else if (inputQuantity > maxQuantity) {
-                alert('The quantity entered exceeds the available stock. The available quantity for this item is only ' + maxQuantity);
-                input.value = input.dataset.initialValue;
-            } else if (inputQuantity > 0) {
-                // If the quantity is within the valid range, submit the form to update the cart
-                input.form.submit();
-            }
-            // Reset the deletionConfirmed flag if the value is not zero
-            if (inputQuantity > 0) {
-                input.dataset.deletionConfirmed = 'false';
-            }
-        }
+                document.querySelectorAll('.bag-item').forEach(function (item) {
+                    const input = item.querySelector('.quantity-input');
+                    const maxQuantity = parseInt(input.getAttribute('data-max-quantity'), 10);
+                    let quantity = parseInt(input.value, 10);
 
-        document.querySelectorAll('.quantity-input').forEach(input => {
-            // Store the initial value on page load
-            input.dataset.initialValue = input.value;
-            // Initialize the deletionConfirmed flag
-            input.dataset.deletionConfirmed = 'false';
-            input.addEventListener('change', function () {
-                quantityChanged(this);
-            });
+                    // Ensure the quantity does not exceed the maximum
+                    if (quantity > maxQuantity) {
+                        quantity = maxQuantity;
+                        input.value = maxQuantity; // Reset the value in the input box
+                    }
+
+                    const price = parseFloat(item.querySelector('.goodsPrice').textContent.replace('RM ', ''));
+                    const total = quantity * price;
+                    item.querySelector('.item-total').textContent = 'RM ' + total.toFixed(2);
+                    subtotal += total;
+                });
+
+                // Update the subtotal in the summary
+                document.querySelector('.subtotal-amount').textContent = 'RM ' + subtotal.toFixed(2);
+
+                // Update the grand total in the summary
+                const shippingCost = parseFloat(document.querySelector('.shipping-amount').textContent.replace('RM ', ''));
+                const grandTotal = subtotal + shippingCost;
+                document.querySelector('.grand-total-amount').textContent = 'RM ' + grandTotal.toFixed(2);
+            }
+
+            // Call updateTotals to set the correct totals when the page loads
+            updateTotals();
         });
+
     </script>
 }
 
@@ -200,6 +225,8 @@
         display: flex;
         margin-bottom: 10px;
         align-items: center;
+        position: relative;
+        column-gap: 10px;
     }
 
     .bag-item-image {
@@ -269,9 +296,22 @@
 
     .btn-primary:hover {
         color: #fff;
-        background-color: #0069d9;
+            background-color: #62af7a;
         border-color: #0062cc;
     }
+
+    .btn-info{
+        color: #fff;
+        background-color: #62af7a;
+        border-radius:10px;
+    }
+
+    .btn-info:hover {
+        color: #fff;
+        background-color: darkolivegreen;
+            border-radius: 10px;
+    }
+
 
     .btn-primary:focus,
     .btn-primary.focus {
@@ -302,6 +342,73 @@
         border-color: #545b62;
     }
 
+    .icon-button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+        margin: 0 5px;
+        position: absolute;
+        top: 50%; /* Center vertically relative to the parent bag-item */
+        right: 0; /* Align to the right side of the bag-item */
+        transform: translateY(-50%); /* This will ensure it's centered vertically */
+    }
+
+    .icon-button i {
+            color: slategrey;
+        font-size: 1.2rem;
+    }
+
+    .icon-button:hover i {
+            color: darkslategrey;
+    }
+
 </style>
+
+<script>
+    document.getElementById('ExpiryDate').addEventListener('input', function (e) {
+        var input = e.target;
+        var inputValue = input.value;
+
+        // Remove any non-digit characters
+        var numericValue = inputValue.replace(/\D/g, '');
+
+        // Slice and add slash after 2 digits
+        if (numericValue.length > 2) {
+            input.value = numericValue.slice(0, 2) + '/' + numericValue.slice(2, 4);
+        } else {
+            input.value = numericValue;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var cardHolderInput = document.getElementById('CardHolderName');
+        var cardNumberInput = document.getElementById('CardNumber');
+        var cvvInput = document.getElementById('CVV');
+
+        // Pattern validation messages
+        cardHolderInput.oninvalid = function (event) {
+            event.target.setCustomValidity('Card holder name must contain more than 5 alphabetic characters and spaces only.');
+        };
+        cardNumberInput.oninvalid = function (event) {
+            event.target.setCustomValidity('Card number must be a 16-digit number.');
+        };
+        cvvInput.oninvalid = function (event) {
+            event.target.setCustomValidity('CVV must be a 3-digit number.');
+        };
+
+        // Reset the custom validation message on input
+        cardHolderInput.oninput = function (event) {
+            event.target.setCustomValidity('');
+        };
+        cardNumberInput.oninput = function (event) {
+            event.target.setCustomValidity('');
+        };
+        cvvInput.oninput = function (event) {
+            event.target.setCustomValidity('');
+        };
+    });
+
+</script>
 
             
