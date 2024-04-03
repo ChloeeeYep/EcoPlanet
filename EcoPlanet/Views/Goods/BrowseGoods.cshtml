@@ -11,74 +11,185 @@
 </head>
 <body>
 
-    <div class="container">
-        <div class="search-container">
-            <form asp-action="Search" asp-controller="Goods" method="get">
-                <input type="text" name="searchTerm" placeholder="Search products..." class="search-input" />
-                <button type="submit" class="search-button">Search</button>
-            </form>
+    <div class="wrapper">
+        <!-- Sidebar navigation -->
+        <div class="sidebar">
+            <a href="javascript:void(0);" onclick="filterGoods('All')">All</a>
+            @foreach (var group in Model.GoodsList.GroupBy(g => g.goodsType).OrderBy(g => g.Key))
+            {
+                <a href="javascript:void(0);" onclick="filterGoods('@group.Key')">@group.Key</a>
+            }
         </div>
 
-        @foreach (var category in Model.GoodsList.GroupBy(g => g.goodsType))
-        {
-            <h3>@category.Key</h3>
-            <div class="goods-container">
-                @foreach (var item in category)
-                {
-                    <div class="goods-item">
-                        @if (!string.IsNullOrEmpty(item.goodsImage))
-                        {
-                            var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.goodsImage.Trim());
+        <div class="content">
+                <div class="search-container">
+                    <form asp-action="Search" asp-controller="Goods" method="get">
+                        <input type="text" name="searchTerm" placeholder="Search products..." class="search-input" />
+                        <button type="submit" class="search-button">Search</button>
+                        <button type="button" class="clear-button">Clear</button>
+                    </form>
+                </div>
 
-                            if (image != null)
-                            {
-                                string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
-                                <img src="@imageURL" width="100" height="100" />
-                            }
-                            else
-                            {
-                                <span>No Image Found for Key: @item.goodsImage</span>
-                            }
-                        }
-                        else
+                @foreach (var category in Model.GoodsList.GroupBy(g => g.goodsType))
+                {
+                    <h3>@category.Key</h3>
+                    <div class="goods-container" id="@category.Key" style="display:none;">
+                        @foreach (var item in category)
                         {
-                            <span>No Image Provided</span>
+                            <div class="goods-item">
+                                @if (!string.IsNullOrEmpty(item.goodsImage))
+                                {
+                                    var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.goodsImage.Trim());
+
+                                    if (image != null)
+                                    {
+                                        string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
+                                        <img src="@imageURL" width="100" height="100" />
+                                    }
+                                    else
+                                    {
+                                        <span>No Image Found for Key: @item.goodsImage</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>No Image Provided</span>
+                                }
+                                <div class="goods-details">
+                                    <span class="item-name">@item.goodsName</span>
+                                    <span class="item-price">RM @item.goodsPrice</span>
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="goodsId" value="@item.goodsId" />
+                                        <input type="number" name="quantity" value="1" min="1" max="@item.goodsQuantity" class="form-control" />
+                                        <button type="submit" class="btn add-to-cart">Add to cart</button>
+                                    </form>
+                                    <button class="btn view" onclick="location.href='@Url.Action("GoodsDetails", "Goods", new { goodsId = item.goodsId })'">View</button>
+                                </div>
+                            </div>
                         }
-                        <div class="goods-details">
-                            <span class="item-name">@item.goodsName</span>
-                            <span class="item-price">RM @item.goodsPrice</span>
-                            <form asp-controller="Cart" asp-action="AddToCart" method="post" enctype="multipart/form-data">
-                                <input type="hidden" name="goodsId" value="@item.goodsId" />
-                                <input type="number" name="quantity" value="1" min="1" max="@item.goodsQuantity" class="form-control" />
-                                <button type="submit" class="btn add-to-cart">Add to cart</button>
-                            </form>
-                            <button class="btn view" onclick="location.href='@Url.Action("GoodsDetails", "Goods", new { goodsId = item.goodsId })'">View</button>
-                        </div>
                     </div>
                 }
             </div>
-        }
+
+            @if (TempData["ItemAdded"] != null && (bool)TempData["ItemAdded"])
+            {
+                <div id="notification" class="notification-message">Item added to cart successfully!</div>
+                <script>
+                    // Show the success message
+                    document.getElementById('notification').style.display = 'block';
+
+                    // Hide the success message after 5 seconds
+                    setTimeout(function () {
+                        document.getElementById('notification').style.display = 'none';
+                    }, 2000);
+                </script>
+            }
+
+            <!-- Cart Icon Button -->
+            <a href="@Url.Action("Index", "Cart")" class="cart-icon-button">
+                <i class="fas fa-shopping-cart"></i>
+            </a>
+
+
     </div>
 
-    @if (TempData["ItemAdded"] != null && (bool)TempData["ItemAdded"])
-    {
-        <div id="notification" class="notification-message">Item added to cart successfully!</div>
-        <script>
-            // Show the success message
-            document.getElementById('notification').style.display = 'block';
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Define the search function
+            function searchGoods() {
+                // Get the search term from the input box
+                var searchTerm = document.querySelector('.search-input').value.toLowerCase();
 
-            // Hide the success message after 5 seconds
-            setTimeout(function () {
-                document.getElementById('notification').style.display = 'none';
-            }, 2000);
-        </script>
-    }
+                // Get all the goods items and their names
+                var goodsItems = document.querySelectorAll('.goods-item');
+                var itemNames = document.querySelectorAll('.item-name');
 
-    <!-- Cart Icon Button -->
-    <a href="@Url.Action("Index", "Cart")" class="cart-icon-button">
-        <i class="fas fa-shopping-cart"></i>
-    </a>
+                // Loop through the goods items
+                goodsItems.forEach(function (item, index) {
+                    // Check if the item name includes the search term
+                    if (itemNames[index].textContent.toLowerCase().includes(searchTerm)) {
+                        item.style.display = 'block'; // Show the item
+                    } else {
+                        item.style.display = 'none'; // Hide the item
+                    }
+                });
+            }
 
+            // Attach the search function to the search button click event
+            document.querySelector('.search-button').addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent the form from submitting
+                searchGoods(); // Call the search function
+            });
+
+            // Attach the search function to the search input box keyup event to search as the user types
+            document.querySelector('.search-input').addEventListener('keyup', function (event) {
+                searchGoods(); // Call the search function
+            });
+
+            // Initially display all items
+            filterGoods('All');
+        });
+
+        // Function to clear the search input and reset the item view
+        function clearSearch() {
+            // Clear the value of the search input
+            document.querySelector('.search-input').value = '';
+
+            // Show all items again
+            var goodsItems = document.querySelectorAll('.goods-item');
+            goodsItems.forEach(function (item) {
+                item.style.display = 'block';
+            });
+        }
+
+        // Attach the clear function to the clear button click event
+        document.querySelector('.clear-button').addEventListener('click', function () {
+            clearSearch(); // Call the clear function
+        });
+
+
+        function filterGoods(category) {
+            // Hide all categories
+            var containers = document.querySelectorAll('.goods-container');
+            var headers = document.querySelectorAll('.content h3'); // Select all headers
+
+            containers.forEach((div, index) => {
+                div.style.display = 'none'; // Hide all containers
+                headers[index].style.display = 'none'; // Hide all headers
+            });
+
+            // Remove 'active' class from all sidebar links
+            document.querySelectorAll('.sidebar a').forEach((a) => {
+                a.classList.remove('active');
+            });
+
+            // Find the link that was clicked, add the 'active' class
+            var activeLink = Array.from(document.querySelectorAll('.sidebar a')).find(a => a.textContent.trim() === category);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            // Show the selected category or all if 'All' is selected
+            if (category === 'All') {
+                containers.forEach((div, index) => {
+                    div.style.display = 'flex'; // Show all containers
+                    headers[index].style.display = 'block'; // Show all headers
+                });
+            } else {
+                var selectedCategory = document.getElementById(category);
+                var selectedHeader = Array.from(headers).find(header => header.textContent.trim() === category); // Find the header for the selected category
+                if (selectedCategory && selectedHeader) {
+                    selectedCategory.style.display = 'flex'; // Show only the selected container
+                    selectedHeader.style.display = 'block'; // Show only the selected header
+                }
+            }
+        }
+
+        // Automatically click the 'All' category on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            filterGoods('All'); // Use this to show all items when the page loads
+        });
+    </script>
 </body>
 </html>
 
@@ -92,25 +203,37 @@
     .goods-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px; /* Increase gap for better spacing */
+        justify-content: flex-start; /* Align items to the start of the container */
+        gap: 20px; /* Adjust this value if necessary */
+        margin-bottom: 40px;
+    }
+
+    h3 {
+        margin-top: 0px; /* No space by default */
+        margin-bottom: 20px; /* This adds some space below the category title */
+        padding-left: 15px; /* Adjust padding if necessary for alignment */
+        background-color: #f8f9fa;
+        border-left: 4px solid #1a73e8;
+        display: inline-block;
     }
 
     .goods-item {
-        flex: 1;
+        flex: 1 1 calc(33.333% - 20px); /* Adjust the 20px to reflect your actual gap */
         min-width: 250px; /* Minimum width of each card */
         max-width: 300px; /* Maximum width of each card */
         border: 1px solid #ccc;
         padding: 15px;
         text-align: center;
-        background-color: #fff; /* Set background to white */
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Add some shadow for depth */
-        border-radius: 10px; /* Rounded corners for the cards */
-        transition: 0.3s; /* Transition for hover effect */
+        background-color: #fff;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        border-radius: 10px;
+        transition: 0.3s;
+        box-sizing: border-box; /* Include padding and border in the width */
     }
 
-        .goods-item:hover {
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); /* Shadow effect on hover */
-        }
+    .goods-item:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); /* Shadow effect on hover */
+    }
 
     .goods-image {
         width: 100%;
@@ -231,14 +354,14 @@
         text-decoration: none; /* No underline on the icon */
     }
 
-        .cart-icon-button:hover {
-            background-color: #0c47a1; /* Darker blue on hover */
-            color: white; /* Keep the icon white on hover */
-        }
+    .cart-icon-button:hover {
+        background-color: #0c47a1; /* Darker blue on hover */
+        color: white; /* Keep the icon white on hover */
+    }
 
-        .cart-icon-button i {
-            font-size: 24px; /* Size of the cart icon */
-        }
+    .cart-icon-button i {
+        font-size: 24px; /* Size of the cart icon */
+    }
 
     .notification-message {
         position: fixed; /* Fixed position */
@@ -255,6 +378,64 @@
 
     .cart-icon-button {
         z-index: 1000; /* Ensure the cart icon is above the message */
+    }
+
+
+    .wrapper {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .sidebar {
+        flex: 0 0 250px; /* Sidebar width */
+        background-color: #f4f4f4;
+        padding: 20px;
+        height: 80vh;
+        overflow-y: auto;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 10px;
+        color: black;
+        text-decoration: none;
+        margin-bottom: 5px;
+    }
+
+    .sidebar a:hover {
+        background-color: #ddd;
+    }
+
+    .content {
+        flex-grow: 1;
+        padding: 20px;
+    }
+
+
+    .sidebar a.active {
+        background-color: #ddd;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .active-category {
+        margin-top: 80px; /* Increased space for active category */
+    }
+
+    .clear-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #f44336; /* Red color for clear button */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 10px; /* Space from the search box */
+    }
+
+    .clear-button:hover {
+        background-color: #d32f2f; /* Darker red on hover */
     }
 
 </style>

@@ -11,73 +11,196 @@
 </head>
 <body>
 
-    <div class="container">
-        <div class="search-container">
-            <form asp-action="Search" asp-controller="Products" method="get">
-                <input type="text" name="searchTerm" placeholder="Search products..." class="search-input" />
-                <button type="submit" class="search-button">Search</button>
-            </form>
+    <div class="wrapper">
+        <!-- Sidebar navigation -->
+        <div class="sidebar">
+            <a href="javascript:void(0);" onclick="filter('All')">All</a>
+            @foreach (var group in Model.ProductsList.GroupBy(g => g.productsType).OrderBy(g => g.Key))
+            {
+                <a href="javascript:void(0);" onclick="filterProducts('@group.Key')">@group.Key</a>
+            }
         </div>
 
-        @foreach (var category in Model.ProductsList.GroupBy(g => g.productsType))
-        {
-            <h3>@category.Key</h3>
-            <div class="products-container">
-                @foreach (var item in category)
-                {
-                    <div class="products-item">
-                        @if (!string.IsNullOrEmpty(item.productsImage))
-                        {
-                            var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.productsImage.Trim());
+        <div class="content">
+            <div class="search-container">
+                <form asp-action="Search" asp-controller="Products" method="get">
+                    <input type="text" name="searchTerm" placeholder="Search products..." class="search-input" />
+                    <button type="submit" class="search-button">Search</button>
+                    <button type="button" class="clear-button">Clear</button>
+                </form>
+            </div>
 
-
-                            if (image != null)
+            @foreach (var category in Model.ProductsList.GroupBy(g => g.productsType))
+            {
+                <h3>@category.Key</h3>
+                <div class="products-container" id="@category.Key" style="display:none;">
+                    @foreach (var item in category)
+                    {
+                        <div class="products-item">
+                            @if (!string.IsNullOrEmpty(item.productsImage))
                             {
-                                string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
-                                <img src="@imageURL" width="100" height="100" />
+                                var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.productsImage.Trim());
+
+
+                                if (image != null)
+                                {
+                                    string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
+                                    <img src="@imageURL" width="100" height="100" />
+                                }
+                                else
+                                {
+                                    <span>No Image Provided @item.productsImage</span>
+                                }
                             }
                             else
                             {
-                                <span>No Image Provided @item.productsImage</span>
+                                <span>No Image Provided</span>
                             }
-                        }
-                        else
-                        {
-                            <span>No Image Provided</span>
-                        }
-                        <div class="products-details">
-                            <span class="item-name">@item.productsName</span>
-                            <span class="item-price">RM @item.productsPrice</span>
-                            <form asp-controller="ProductsCart" asp-action="AddToProductsCart" method="post" enctype="multipart/form-data">
-                                <input type="hidden" name="productsId" value="@item.productsId" />
-                                <input type="number" name="quantity" value="1" min="1" max="@item.productsQuantity" class="form-control" />
-                                <button type="submit" class="btn add-to-cart">Add to cart</button>
-                            </form>
-                            <button class="btn view" onclick="location.href='@Url.Action("ProductsDetails", "Products", new { productsId = item.productsId })'">View</button>
+                            <div class="products-details">
+                                <span class="item-name">@item.productsName</span>
+                                <span class="item-price">RM @item.productsPrice</span>
+                                <form asp-controller="ProductsCart" asp-action="AddToProductsCart" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="productsId" value="@item.productsId" />
+                                    <input type="number" name="quantity" value="1" min="1" max="@item.productsQuantity" class="form-control" />
+                                    <button type="submit" class="btn add-to-cart">Add to cart</button>
+                                </form>
+                                <button class="btn view" onclick="location.href='@Url.Action("ProductsDetails", "Products", new { productsId = item.productsId })'">View</button>
+                            </div>
                         </div>
-                    </div>
-                }
-            </div>
+                    }
+                </div>
+            }
+        </div>
+        @if (TempData["ItemAdded"] != null && (bool)TempData["ItemAdded"])
+        {
+            <div id="notification" class="notification-message">Item added to cart successfully!</div>
+            <script>
+                // Show the success message
+                document.getElementById('notification').style.display = 'block';
+
+                // Hide the success message after 5 seconds
+                setTimeout(function () {
+                    document.getElementById('notification').style.display = 'none';
+                }, 2000);
+            </script>
         }
+
+        <!-- Cart Icon Button -->
+        <a href="@Url.Action("Index", "ProductsCart")" class="cart-icon-button">
+            <i class="fas fa-shopping-cart"></i>
+        </a>
     </div>
-    @if (TempData["ItemAdded"] != null && (bool)TempData["ItemAdded"])
-    {
-        <div id="notification" class="notification-message">Item added to cart successfully!</div>
-        <script>
-            // Show the success message
-            document.getElementById('notification').style.display = 'block';
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Define the search function
+            function searchProducts() {
+                // Get the search term from the input box
+                var searchTerm = document.querySelector('.search-input').value.toLowerCase();
 
-            // Hide the success message after 5 seconds
-            setTimeout(function () {
-                document.getElementById('notification').style.display = 'none';
-            }, 2000);
-        </script>
-    }
+                // Get all the products items and their names
+                var productsItems = document.querySelectorAll('.products-item');
+                var itemNames = document.querySelectorAll('.item-name');
 
-    <!-- Cart Icon Button -->
-    <a href="@Url.Action("Index", "ProductsCart")" class="cart-icon-button">
-        <i class="fas fa-shopping-cart"></i>
-    </a>
+                // Loop through the products items
+                productsItems.forEach(function (item, index) {
+                    // Check if the item name includes the search term
+                    if (itemNames[index].textContent.toLowerCase().includes(searchTerm)) {
+                        item.style.display = 'block'; // Show the item
+                    } else {
+                        item.style.display = 'none'; // Hide the item
+                    }
+                });
+            }
+
+            // Attach the search function to the search button click event
+            document.querySelector('.search-button').addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent the form from submitting
+                searchProducts(); // Call the search function
+            });
+
+            // Attach the search function to the search input box keyup event to search as the user types
+            document.querySelector('.search-input').addEventListener('keyup', function (event) {
+                searchProducts(); // Call the search function
+            });
+
+            // Initially display all items
+            filterProducts('All');
+        });
+
+        // Function to clear the search input and reset the item view
+        function clearSearch() {
+            // Clear the value of the search input
+            document.querySelector('.search-input').value = '';
+
+            // Show all items again
+            var productsItems = document.querySelectorAll('.products-item');
+            productsItems.forEach(function (item) {
+                item.style.display = 'block';
+            });
+        }
+
+        // Attach the clear function to the clear button click event
+        document.querySelector('.clear-button').addEventListener('click', function () {
+            clearSearch(); // Call the clear function
+        });
+
+
+        function filterProducts(category) {
+            // Get all containers and headers
+            var containers = document.querySelectorAll('.products-container');
+            var headers = document.querySelectorAll('.content h3');
+
+            // Reset display states
+            containers.forEach((container) => {
+                container.style.display = 'none';
+            });
+            headers.forEach((header) => {
+                header.style.display = 'none';
+            });
+
+            // Clear 'active' class from sidebar links
+            var sidebarLinks = document.querySelectorAll('.sidebar a');
+            sidebarLinks.forEach((link) => {
+                link.classList.remove('active');
+            });
+
+            // Set active state on the selected category
+            var activeLink = Array.from(sidebarLinks).find(link => link.textContent.trim() === category);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            // Display the selected category or all
+            if (category === 'All') {
+                containers.forEach((container) => {
+                    container.style.display = 'flex';
+                });
+                headers.forEach((header) => {
+                    header.style.display = 'block';
+                });
+            } else {
+                var selectedContainer = document.getElementById(category);
+                var selectedHeader = Array.from(headers).find(header => header.textContent.trim() === category);
+                if (selectedContainer && selectedHeader) {
+                    selectedContainer.style.display = 'flex';
+                    selectedHeader.style.display = 'block';
+                }
+            }
+        }
+
+        // Bind the filter function to sidebar links
+        document.querySelectorAll('.sidebar a').forEach((link) => {
+            link.addEventListener('click', () => filterProducts(link.textContent.trim()));
+        });
+
+        // Call filterProducts initially with 'All'
+        filterProducts('All');
+
+        // Automatically click the 'All' category on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            filterProducts('All'); // Use this to show all items when the page loads
+        });
+    </script>
 </body>
 </html>
 
@@ -91,25 +214,37 @@
     .products-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px; /* Increase gap for better spacing */
+        justify-content: flex-start; /* Align items to the start of the container */
+        gap: 20px; /* Adjust this value if necessary */
+        margin-bottom: 40px;
     }
 
     .products-item {
-        flex: 1;
+        flex: 1 1 calc(33.333% - 20px); /* Adjust the 20px to reflect your actual gap */
         min-width: 250px; /* Minimum width of each card */
         max-width: 300px; /* Maximum width of each card */
         border: 1px solid #ccc;
         padding: 15px;
         text-align: center;
-        background-color: #fff; /* Set background to white */
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Add some shadow for depth */
-        border-radius: 10px; /* Rounded corners for the cards */
-        transition: 0.3s; /* Transition for hover effect */
+        background-color: #fff;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        border-radius: 10px;
+        transition: 0.3s;
+        box-sizing: border-box; /* Include padding and border in the width */
     }
 
-        .products-item:hover {
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); /* Shadow effect on hover */
-        }
+    h3 {
+        margin-top: 0px; /* No space by default */
+        margin-bottom: 20px; /* This adds some space below the category title */
+        padding-left: 15px; /* Adjust padding if necessary for alignment */
+        background-color: #f8f9fa;
+        border-left: 4px solid #1a73e8;
+        display: inline-block;
+    }
+
+    .products-item:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); /* Shadow effect on hover */
+    }
 
     .products-image {
         width: 100%;
@@ -255,6 +390,62 @@
         z-index: 1000; /* Ensure the cart icon is above the message */
     }
 
+    .wrapper {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .sidebar {
+        flex: 0 0 250px; /* Sidebar width */
+        background-color: #f4f4f4;
+        padding: 20px;
+        height: 80vh;
+        overflow-y: auto;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 10px;
+        color: black;
+        text-decoration: none;
+        margin-bottom: 5px;
+    }
+
+    .sidebar a:hover {
+        background-color: #ddd;
+    }
+
+    .content {
+        flex-grow: 1;
+        padding: 20px;
+    }
+
+
+    .sidebar a.active {
+        background-color: #ddd;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .active-category {
+        margin-top: 80px; /* Increased space for active category */
+    }
+
+    .clear-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #f44336; /* Red color for clear button */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 10px; /* Space from the search box */
+    }
+
+        .clear-button:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+        }
 
 </style>
 
