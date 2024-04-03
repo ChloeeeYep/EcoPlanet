@@ -282,9 +282,13 @@ namespace EcoPlanet.Controllers
             }
         }
 
+        
+        //Display Goods for users to browse
         public async Task<IActionResult> BrowseGoods()
         {
-            var goods = await _context.GoodsTable.ToListAsync();
+            var goods = await _context.GoodsTable
+                                    .Where(g => g.goodsStatus == "Available")
+                                    .ToListAsync();
 
             //1.connect to the AWS account
             List<string> keys = getKeys();

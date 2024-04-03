@@ -130,11 +130,12 @@
 						<option value="">Select Status</option>
 						<option value="Available">Available</option>
 						<option value="Unavailable">Unavailable</option>
+						<option value="Out of Stocks">Out of Stocks</option>
 					</select>
 				</td>
 				<td><span asp-validation-for="productsStatus"></span></td>
 			</tr>
-			<tr>
+			<tr style="display:none;">
 				<th><label asp-for="adminId"></label></th>
 				<td><input asp-for="adminId" /></td>
 				<td><span asp-validation-for="adminId"></span></td>

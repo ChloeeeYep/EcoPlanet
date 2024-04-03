@@ -283,6 +283,31 @@ namespace EcoPlanet.Controllers
                         order.OrderItems.Add(orderItem);
                     }
 
+                    // Deduct the purchased quantities from GoodsTable
+                    foreach (var cartItem in cartItems)
+                    {
+                        var goodsItem = await _context.GoodsTable.FirstOrDefaultAsync(g => g.goodsId == cartItem.goodsId);
+                        if (goodsItem != null && goodsItem.goodsQuantity >= cartItem.goodsQuantity)
+                        {
+                            goodsItem.goodsQuantity -= cartItem.goodsQuantity; // Deduct the quantity
+                            if (goodsItem.goodsQuantity == 0)
+                            {
+                                goodsItem.goodsStatus = "Out of Stocks"; // Update the status to Unavailable
+                            }
+                        }
+                        else
+                        {
+                            // Handle the case where there isn't enough stock
+                            // You might want to return a user-friendly error message or handle this scenario differently
+                            transaction.Rollback();
+                            return View("NotEnoughStock", cartItem);
+                        }
+                    }
+
+                    // Save changes for GoodsTable quantities
+                    await _context.SaveChangesAsync();
+
+
                     // Save the order to the database
                     _context.OrderTable.Add(order);
                     await _context.SaveChangesAsync();

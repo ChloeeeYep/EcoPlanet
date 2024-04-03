@@ -276,10 +276,12 @@ namespace EcoPlanet.Controllers
 
         public async Task<IActionResult> BrowseProducts()
         {
-            var products = await _context.ProductsTable.ToListAsync();
+            var products = await _context.ProductsTable
+                            .Where(p => p.productsStatus == "Available")
+									.ToListAsync();
 
-            //1.connect to the AWS account
-            List<string> keys = getKeys();
+			//1.connect to the AWS account
+			List<string> keys = getKeys();
             AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
 
             //2. create empty lists that can store the retrieved images from S3
