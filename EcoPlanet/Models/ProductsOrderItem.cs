@@ -18,5 +18,7 @@ namespace EcoPlanet.Models
         public decimal TotalPrice => productsQuantity * productsPrice;
 
         public virtual ProductsOrder ProductsOrder { get; set; }
+
+        public string productsImage { get; set; }
     }
 }
