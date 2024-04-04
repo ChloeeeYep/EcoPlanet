@@ -2,7 +2,7 @@
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Log In";
 }
 
 <div class="container mt-custom">
@@ -31,9 +31,9 @@
                                     @Html.DisplayNameFor(m => m.Input.RememberMe)
                                 </label>
                             </div>
-                            <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                            <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log In</button>
                             <div class="mt-4 text-center">
-                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register A New Account</a>
                             </div>
                         </form>
                     </section>
