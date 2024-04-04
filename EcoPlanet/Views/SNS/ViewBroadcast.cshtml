@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewData["Title"] = "ViewBroadcast";
+    int counter = 1; // Start the counter at 1
+}
+@model List<SNS>
+
+<div class="header-container">
+    <h1>ViewBroadcast</h1>
+    <a href="@Url.Action("sendBroadcastMessage", "SNS")" class="action-button edit">Back to Broadcast Message Page</a>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>CreatedAt</th>         
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@counter</td>
+                    <td>@item.Title</td>
+                    <td>@item.Content</td>
+                    <td>@item.CreatedAt</td>               
+                </tr>
+                counter++;
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .header-container {
+        display: flex;
+        justify-content: space-between; /* Aligns children to opposite ends */
+        align-items: center; /* Centers children vertically */
+        margin-bottom: 20px; /* Adds some space below the header */
+    }
+
+    h1 {
+        margin: 0; /* Removes default margin to align properly with the button */
+        flex-grow: 1; /* Allows the title to grow and push the button to the right */
+    }
+
+    .table-container {
+        margin: 0 auto;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #dee2e6;
+        vertical-align: middle; /* Add this line to vertically center the content */
+    }
+
+    td {
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #dee2e6;
+        vertical-align: middle; /* Add this line to vertically center the content */
+    }
+
+
+    .td img {
+        display: block; /* Make sure the image is block level to respect max-width/height */
+        margin: 0 auto; /* Center the image in the cell */
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center; /* Center the buttons horizontally */
+        align-items: center;
+        gap: 10px; /* Adjust the space between buttons */
+        margin: 0;
+    }
+
+    .action-button {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 8px 16px; /* Providing a bit more horizontal padding for aesthetics */
+        border-radius: 4px;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        flex: 0 0 auto; /* Do not allow the buttons to grow or shrink */
+    }
+
+    /* Styling for Edit button */
+    .edit {
+        padding: 10px 20px;
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: background-color 0.3s;
+        text-decoration: none;
+    }
+
+    .edit:hover, .edit:focus {
+        background-color: #003d82;
+        color: #fff;
+    }
+
+ 
+</style>
+
+

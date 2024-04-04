@@ -37,6 +37,8 @@ public class EcoPlanetContext : IdentityDbContext<EcoPlanetUser>
 
     public DbSet<ProductsOrderItem> ProductsOrderItemTable { get; set; }
 
+    public DbSet<SNS> SNSTable { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
