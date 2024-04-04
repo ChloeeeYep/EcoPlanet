@@ -53,6 +53,8 @@ namespace EcoPlanet.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
+            var productsCartItems = new List<ProductsCartItem>();
+            List<int> removedItemsIds = new List<int>();
             var maxQuantities = new Dictionary<int, int>();
 
             if (user == null)
@@ -65,19 +67,37 @@ namespace EcoPlanet.Controllers
                                           .Where(c => c.ProductsCart.userId == user.Id)
                                           .ToListAsync();
 
+            foreach (var item in productsCartItem)
+            {
+                var products = await _context.ProductsTable
+                                          .AsNoTracking()
+                                          .FirstOrDefaultAsync(g => g.productsId == item.productsId);
+                if (products != null && products.productsQuantity > 0)
+                {
+                    productsCartItems.Add(item);
+                }
+                else
+                {
+                    _context.ProductsCartItemTable.Remove(item); // Remove the item from the cart
+                    removedItemsIds.Add(item.productsId);
+                }
+            }
+
+            // Save changes if any items were removed
+            if (removedItemsIds.Count > 0)
+            {
+                await _context.SaveChangesAsync();
+                TempData["RemovedItems"] = $"Some items were removed from your cart as they are no longer available.";
+            }
+
+
             // Generate the image URLs for each cart item
             var imageUrls = await GetImageUrlsForCartItems(productsCartItem);
 
-            foreach (var productsCartItems in productsCartItem)
+
+            foreach (var item in productsCartItems)
             {
-                // Assuming cartItem has a property goodsId that corresponds to goodsId in GoodsTable
-                var products = await _context.ProductsTable
-                                          .AsNoTracking()
-                                          .FirstOrDefaultAsync(p => p.productsId == productsCartItems.productsId);
-                if (products != null)
-                {
-                    maxQuantities[productsCartItems.productsId] = products.productsQuantity;
-                }
+                maxQuantities[item.productsId] = (await _context.ProductsTable.FindAsync(item.productsId))?.productsQuantity ?? 0;
             }
 
             // Prepare the view model
@@ -208,27 +228,52 @@ namespace EcoPlanet.Controllers
         }
 
         // POST: ProductsCart/UpdateQuantity/5
+        // POST: ProductsCart/UpdateQuantity/5
         [HttpPost]
-        public IActionResult UpdateQuantity(int productsCartItemId, int quantity)
+        public async Task<IActionResult> UpdateQuantity(int productsCartItemId, int quantity)
         {
-            var productsCartItem = _context.ProductsCartItemTable.Find(productsCartItemId);
-            if (productsCartItem != null)
+            var productsCartItem = await _context.ProductsCartItemTable
+                                         .Include(ci => ci.Products) // Make sure you include the navigation property
+                                         .FirstOrDefaultAsync(ci => ci.productsCartItemId == productsCartItemId);
+
+            if (productsCartItem == null)
             {
-                productsCartItem.productsQuantity = quantity;
-                _context.SaveChanges();
+                return NotFound(); // or handle as appropriate if the cart item doesn't exist
+            }
+
+            // Check if there is associated goods and the quantity is valid
+            if (productsCartItem.Products != null && productsCartItem.Products.productsQuantity > 0)
+            {
+                int updatedQuantity = Math.Min(quantity, productsCartItem.Products.productsQuantity);
+                productsCartItem.productsQuantity = updatedQuantity; // update the quantity
+                await _context.SaveChangesAsync();
+
+                // If quantity had to be adjusted, notify the user
+                if (updatedQuantity < quantity)
+                {
+                    TempData["QuantityAdjusted"] = $"The quantity for {productsCartItem.Products.productsName} has been adjusted to {updatedQuantity} due to stock limits.";
+                }
+            }
+            else
+            {
+                // If the goods are not available, remove the cart item and notify the user
+                _context.ProductsCartItemTable.Remove(productsCartItem);
+                await _context.SaveChangesAsync();
+                TempData["RemovedItems"] = $"The item {productsCartItem.Products?.productsName ?? "with ID: " + productsCartItemId} was removed from your cart as it is no longer available.";
             }
 
             return RedirectToAction(nameof(Index));
         }
 
+
         // POST: Cart/RemoveFromCart/5
         [HttpPost]
         public IActionResult RemoveFromCart(int productsCartItemId)
         {
-            var productsCartItem = _context.CartItemTable.Find(productsCartItemId);
-            if (productsCartItem != null)
+            var productscartItem = _context.ProductsCartItemTable.Find(productsCartItemId);
+            if (productscartItem != null)
             {
-                _context.CartItemTable.Remove(productsCartItem);
+                _context.ProductsCartItemTable.Remove(productscartItem);
                 _context.SaveChanges();
             }
 

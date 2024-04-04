@@ -21,6 +21,20 @@
 
 <div class="container mt-5">
     <div class="row">
+        <!-- Notification Area -->
+        @if (TempData["RemovedItems"] != null)
+        {
+            <div class="alert alert-warning" role="alert">
+                @Html.Raw(TempData["RemovedItems"].ToString())
+            </div>
+        }
+        @if (TempData["QuantityAdjusted"] != null)
+        {
+            <div class="alert alert-warning" role="alert">
+                @Html.Raw(TempData["QuantityAdjusted"].ToString())
+            </div>
+        }
+
         <!-- Checkout form and Shipping Information -->
         <div class="col-md-7">
             <h2>Checkout</h2>
@@ -82,15 +96,15 @@
                     <tbody>
                         <tr>
                             <td>Subtotal</td>
-                            <td>RM @total</td>
+                            <td><span class="subtotal-amount">RM @total</span></td>
                         </tr>
                         <tr>
                             <td>Shipping</td>
-                            <td>RM @shipping</td>
+                            <td><span class="shipping-amount">RM @shipping</span></td>
                         </tr>
                         <tr>
                             <td><strong>Total</strong></td>
-                            <td><strong>RM @totalAmount</strong></td>
+                            <td><strong><span class="grand-total-amount"><strong>RM @totalAmount</span></strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -104,15 +118,29 @@
                 <div class="bag-summary">
                     @foreach (var item in Model.ProductsCart.Items)
                     {
-                        <div class="bag-item d-flex justify-content-start align-items-center mb-3">
-                            <img src="@Model.ImageUrls[item.productsImage.Trim()]" class="img-fluid bag-item-image mr-2" alt="@item.productsName">
-                            <div class="bag-item-detail">
+                        <div class="bag-item" data-item-id="@item.productsId">
+                            <img src="@Model.ImageUrls[item.productsImage.Trim()]" class="bag-item-image" alt="@item.productsName">
+                            <div class="bag-item-details">
                                 <div class="bag-item-name">@item.productsName</div>
-                                <div class="bag-item-price">
-                                    <span class="productsPrice">RM @item.productsPrice</span>
-                                </div>
-                                <div class="bag-item-quantity">Qty: @item.productsQuantity</div>
-                                <div class="bag-item-quantity">Total: RM @item.totalPrice</div>
+                                <div class="bag-item-price">RM <span class="productsPrice">@item.productsPrice</span></div>
+                                <!-- Quantity form for each item -->
+                                <form asp-controller="ProductsCart" asp-action="UpdateQuantity" method="post" onchange="this.submit();">
+                                    <input type="hidden" name="productsCartItemId" value="@item.productsCartItemId" />
+                                    <input type="number" name="quantity" class="quantity-input"
+                                           value="@item.productsQuantity" min="1"
+                                           data-max-quantity="@Model.MaxQuantities[item.productsId]"
+                                           data-item-id="@item.productsId" />
+                                    <input type="submit" value="Update" style="display: none;" />
+                                    @Html.AntiForgeryToken()
+                                </form>
+                                <div>Total: RM <span class="item-total">@item.productsPrice * @item.productsQuantity</span></div>
+                                <form asp-controller="ProductsCart" asp-action="RemoveFromCart" method="post">
+                                    <input type="hidden" name="productsCartItemId" value="@item.productsCartItemId" />
+                                        <button type="submit" class="btn-remove-item icon-button" title="Remove item">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    @Html.AntiForgeryToken()
+                                </form>
                             </div>
                         </div>
                     }
@@ -124,45 +152,38 @@
 
 @section Scripts {
     <script>
-        function quantityChanged(input) {
-            var maxQuantity = parseInt(input.getAttribute('data-max-quantity'), 10);
-            var inputQuantity = parseInt(input.value, 10);
+        document.addEventListener('DOMContentLoaded', function () {
+            function updateTotals() {
+                let subtotal = 0;
 
-            // Check if the deletion has already been confirmed
-            if (!input.dataset.deletionConfirmed && inputQuantity === 0) {
-                // Confirm deletion logic
-                var confirmDeletion = confirm('Are you sure you want to remove this item from your cart?');
-                if (confirmDeletion) {
-                    // Mark the deletion as confirmed
-                    input.dataset.deletionConfirmed = 'true';
-                    // Find and click the associated 'Remove' button
-                    var removeButton = input.closest('tr').querySelector('.btn-danger');
-                    removeButton.click();
-                } else {
-                    // Revert to the initial value if deletion is not confirmed
-                    input.value = input.dataset.initialValue;
-                }
-            } else if (inputQuantity > maxQuantity) {
-                alert('The quantity entered exceeds the available stock. The available quantity for this item is only ' + maxQuantity);
-                input.value = input.dataset.initialValue;
-            } else if (inputQuantity > 0) {
-                // If the quantity is within the valid range, submit the form to update the cart
-                input.form.submit();
-            }
-            // Reset the deletionConfirmed flag if the value is not zero
-            if (inputQuantity > 0) {
-                input.dataset.deletionConfirmed = 'false';
-            }
-        }
+                document.querySelectorAll('.bag-item').forEach(function (item) {
+                    const input = item.querySelector('.quantity-input');
+                    const maxQuantity = parseInt(input.getAttribute('data-max-quantity'), 10);
+                    let quantity = parseInt(input.value, 10);
 
-        document.querySelectorAll('.quantity-input').forEach(input => {
-            // Store the initial value on page load
-            input.dataset.initialValue = input.value;
-            // Initialize the deletionConfirmed flag
-            input.dataset.deletionConfirmed = 'false';
-            input.addEventListener('change', function () {
-                quantityChanged(this);
-            });
+                    // Ensure the quantity does not exceed the maximum
+                    if (quantity > maxQuantity) {
+                        quantity = maxQuantity;
+                        input.value = maxQuantity; // Reset the value in the input box
+                    }
+
+                    const price = parseFloat(item.querySelector('.productsPrice').textContent.replace('RM ', ''));
+                    const total = quantity * price;
+                    item.querySelector('.item-total').textContent = 'RM ' + total.toFixed(2);
+                    subtotal += total;
+                });
+
+                // Update the subtotal in the summary
+                document.querySelector('.subtotal-amount').textContent = 'RM ' + subtotal.toFixed(2);
+
+                // Update the grand total in the summary
+                const shippingCost = parseFloat(document.querySelector('.shipping-amount').textContent.replace('RM ', ''));
+                const grandTotal = subtotal + shippingCost;
+                document.querySelector('.grand-total-amount').textContent = 'RM ' + grandTotal.toFixed(2);
+            }
+
+            // Call updateTotals to set the correct totals when the page loads
+            updateTotals();
         });
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -226,9 +247,9 @@
                 input.value = formattedInputValue;
             });
         });
-
     </script>
 }
+
 
 
 <style>
@@ -268,6 +289,8 @@
         display: flex;
         margin-bottom: 10px;
         align-items: center;
+        position: relative;
+        column-gap: 10px;
     }
 
     .bag-item-image {
@@ -337,14 +360,27 @@
 
         .btn-primary:hover {
             color: #fff;
-            background-color: #0069d9;
+            background-color: #62af7a;
             border-color: #0062cc;
         }
 
-        .btn-primary:focus,
-        .btn-primary.focus {
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    .btn-info {
+        color: #fff;
+        background-color: #62af7a;
+        border-radius: 10px;
+    }
+
+        .btn-info:hover {
+            color: #fff;
+            background-color: darkolivegreen;
+            border-radius: 10px;
         }
+
+
+    .btn-primary:focus,
+    .btn-primary.focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
 
     .btn-block {
         display: block;
@@ -368,6 +404,27 @@
             color: #fff;
             background-color: #5a6268;
             border-color: #545b62;
+        }
+
+    .icon-button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+        margin: 0 5px;
+        position: absolute;
+        top: 50%; /* Center vertically relative to the parent bag-item */
+        right: 0; /* Align to the right side of the bag-item */
+        transform: translateY(-50%); /* This will ensure it's centered vertically */
+    }
+
+        .icon-button i {
+            color: slategrey;
+            font-size: 1.2rem;
+        }
+
+        .icon-button:hover i {
+            color: darkslategrey;
         }
 
 </style>

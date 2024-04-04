@@ -127,7 +127,7 @@
                                 <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" onchange="this.submit();">
                                     <input type="hidden" name="cartItemId" value="@item.cartItemId" />
                                     <input type="number" name="quantity" class="quantity-input"
-                                           value="@item.goodsQuantity"
+                                           value="@item.goodsQuantity" min="1"
                                            data-max-quantity="@Model.MaxQuantities[item.goodsId]"
                                            data-item-id="@item.goodsId" />
                                     <input type="submit" value="Update" style="display: none;" />
