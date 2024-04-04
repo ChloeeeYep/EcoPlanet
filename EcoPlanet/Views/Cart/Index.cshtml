@@ -46,7 +46,8 @@
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone Number <span style="color:red">*</span></label>
-                    <input type="tel" id="phone" name="PhoneNumber" class="form-control" value="@phone" required>
+                    <input type="tel" id="phone" name="PhoneNumber" class="form-control" value="@phone"
+                           pattern="\d{3}-?\d{7,8}" title="Phone number must be 10 or 11 digits and formatted as XXX-XXXXXXX or XXX-XXXXXXXX." required>
                 </div>
                 <br />
                 <h4>Shipping Address</h4>
@@ -67,17 +68,18 @@
                     <div class="form-group">
                         <label for="cardNumber">Card Number <span style="color:red">*</span></label>
                         <input type="text" id="CardNumber" name="CardNumber" class="form-control"
-                               pattern="\d{16}" title="Card number must be a 16-digit number." required>
+                               pattern="\d{16}" title="Card number must be a 16-digit number." maxlength="16" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="expiryDate">Expiry Date <span style="color:red">*</span></label>
-                            <input type="text" id="ExpiryDate" name="ExpiryDate" class="form-control" placeholder="MM/YY" required>
+                            <input type="text" id="ExpiryDate" name="ExpiryDate" class="form-control" placeholder="MM/YY"
+                                   pattern="\d{2}/\d{2}" title="Expiry date must be formatted as MM/YY." required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="cvv">CVV <span style="color:red">*</span></label>
                             <input type="text" id="CVV" name="CVV" class="form-control"
-                                   pattern="\d{3}" title="CVV must be a 3-digit number." required>
+                                   pattern="\d{3}" title="CVV must be a 3-digit number." maxlength="3" required>
                         </div>
                     </div>
                 </div>
@@ -184,6 +186,67 @@
             updateTotals();
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+            // Restrict Card Holder Name to alphabet and spaces
+            var cardHolderInput = document.getElementById('CardHolderName');
+            cardHolderInput.addEventListener('input', function (e) {
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            });
+
+            // Restrict Card Number to digits only
+            var cardNumberInput = document.getElementById('CardNumber');
+            cardNumberInput.addEventListener('input', function (e) {
+                this.value = this.value.replace(/\D/g, '');
+            });
+
+            // Restrict CVV to digits only
+            var cvvInput = document.getElementById('CVV');
+            cvvInput.addEventListener('input', function (e) {
+                this.value = this.value.replace(/\D/g, '');
+            });
+
+            // Phone Number formatting (existing code)
+            var phoneInput = document.getElementById('phone');
+            phoneInput.addEventListener('input', function (e) {
+                var input = e.target;
+                var inputValue = input.value;
+
+                // Remove any non-digit characters and previously added hyphens
+                var numericValue = inputValue.replace(/\D/g, '');
+
+                // Add a hyphen after the first 3 digits (if more than 3 digits are entered)
+                if (numericValue.length > 3) {
+                    input.value = numericValue.slice(0, 3) + '-' + numericValue.slice(3);
+                } else {
+                    input.value = numericValue;
+                }
+
+                // Enforce maxlength (since pattern doesn't restrict character count)
+                if (input.value.length > 12) { // Allowing for 11 digits plus the hyphen
+                    input.value = input.value.slice(0, 12);
+                }
+            });
+
+            // Expiry Date formatting (existing code)
+            var expiryDateInput = document.getElementById('ExpiryDate');
+            expiryDateInput.addEventListener('input', function (e) {
+                var input = e.target;
+                var inputValue = input.value.replace(/\D/g, ''); // Remove non-digit characters
+
+                // Ensure the input is not longer than 4 digits
+                if (inputValue.length > 4) {
+                    inputValue = inputValue.slice(0, 4);
+                }
+
+                // Add slash after 2 digits if more than 2 digits are entered
+                var formattedInputValue = inputValue;
+                if (inputValue.length > 2) {
+                    formattedInputValue = inputValue.slice(0, 2) + '/' + inputValue.slice(2);
+                }
+
+                input.value = formattedInputValue;
+            });
+        });
     </script>
 }
 
@@ -364,51 +427,4 @@
     }
 
 </style>
-
-<script>
-    document.getElementById('ExpiryDate').addEventListener('input', function (e) {
-        var input = e.target;
-        var inputValue = input.value;
-
-        // Remove any non-digit characters
-        var numericValue = inputValue.replace(/\D/g, '');
-
-        // Slice and add slash after 2 digits
-        if (numericValue.length > 2) {
-            input.value = numericValue.slice(0, 2) + '/' + numericValue.slice(2, 4);
-        } else {
-            input.value = numericValue;
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var cardHolderInput = document.getElementById('CardHolderName');
-        var cardNumberInput = document.getElementById('CardNumber');
-        var cvvInput = document.getElementById('CVV');
-
-        // Pattern validation messages
-        cardHolderInput.oninvalid = function (event) {
-            event.target.setCustomValidity('Card holder name must contain more than 5 alphabetic characters and spaces only.');
-        };
-        cardNumberInput.oninvalid = function (event) {
-            event.target.setCustomValidity('Card number must be a 16-digit number.');
-        };
-        cvvInput.oninvalid = function (event) {
-            event.target.setCustomValidity('CVV must be a 3-digit number.');
-        };
-
-        // Reset the custom validation message on input
-        cardHolderInput.oninput = function (event) {
-            event.target.setCustomValidity('');
-        };
-        cardNumberInput.oninput = function (event) {
-            event.target.setCustomValidity('');
-        };
-        cvvInput.oninput = function (event) {
-            event.target.setCustomValidity('');
-        };
-    });
-
-</script>
-
             
