@@ -286,6 +286,36 @@ namespace EcoPlanet.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
+
+            //3.read image by image and store to the lists
+            string? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
+
             // Start a transaction in case anything goes wrong you can rollback
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -316,7 +346,8 @@ namespace EcoPlanet.Controllers
                             productsId = cartItem.productsId,
                             productsName = cartItem.productsName,
                             productsQuantity = cartItem.productsQuantity,
-                            productsPrice = cartItem.productsPrice
+                            productsPrice = cartItem.productsPrice,
+                            productsImage = cartItem.productsImage
                         };
 
                         productsOrder.ProductsOrderItems.Add(productsOrderItem);
