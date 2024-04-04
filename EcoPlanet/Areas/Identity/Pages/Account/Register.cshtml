@@ -1,7 +1,22 @@
 ﻿@page
+@using EcoPlanet.Areas.Identity.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<EcoPlanetUser> UserManager
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+
+    var isAdmin = false;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        var Id = UserManager.GetUserId(User);
+        var currentUser = await UserManager.FindByIdAsync(Id);
+        isAdmin = currentUser?.UserType == 'A';
+    }
+
 }
 
 <div class="container mt-custom">
@@ -39,10 +54,24 @@
                                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                             </div>
+                            @if (isAdmin)
+                            {
+                                <div class="form-floating mb-3">
+                                    <select asp-for="Input.UserType" class="form-control">
+                                        <option value="">Select User Type</option>
+                                        <option value="U">User</option>
+                                        <option value="A">Admin</option>
+                                        <option value="S">Seller</option>
+                                    </select>
+                                </div>
+                            }
                             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-                            <div class="mt-4 text-center">
-                                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Already have an account? Log in here</a>
-                            </div>
+                            @if (!isAdmin)
+                            {
+                                <div class="mt-4 text-center">
+                                    <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Already have an account? Log in here</a>
+                                </div>
+                            }
                         </form>
                     </section>
                 </div>

@@ -1,8 +1,29 @@
 ﻿@page
+@using EcoPlanet.Areas.Identity.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<EcoPlanetUser> UserManager
 @model IndexModel
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
+
+    var isAdmin = false;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        var Id = UserManager.GetUserId(User);
+        var currentUser = await UserManager.FindByIdAsync(Id);
+        isAdmin = currentUser?.UserType == 'A';
+    }
+
+    var userTypeOptions = new Dictionary<char, string>
+    {
+        {'U', "User"},
+        {'A', "Admin"},
+        {'S', "Seller"}
+    };
 }
 
 <h3>@ViewData["Title"]</h3>
@@ -11,17 +32,13 @@
     <div class="col-md-6">
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input asp-for="Input.Id" class="form-control" hidden />
             <div class="form-floating mb-3">
                 <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
                 <label asp-for="Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
-                <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.fullname" class = "form-control" />
+                <input asp-for="Input.fullname" class="form-control" />
                 <label asp-for="Input.fullname"></label>
                 <span asp-validation-for="Input.fullname" class="text-danger"></span>
             </div>
@@ -31,10 +48,25 @@
                 <span asp-validation-for="Input.DoB" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Input.Address" class="form-control" />
                 <label asp-for="Input.Address"></label>
                 <span asp-validation-for="Input.Address" class="text-danger"></span>
             </div>
+            @if (isAdmin)
+            {
+                <select asp-for="Input.UserType" class="form-control">
+                    <option value="">Select User Type</option>
+                    <option value="U" selected="@(Model.Input.UserType == 'U')">User</option>
+                    <option value="A" selected="@(Model.Input.UserType == 'A')">Admin</option>
+                    <option value="S" selected="@(Model.Input.UserType == 'S')">Seller</option>
+                </select>
+            }
+            <br />
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </form>
     </div>
