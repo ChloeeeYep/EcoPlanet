@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Amazon.S3.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace EcoPlanet.Models
 {
@@ -20,5 +21,8 @@ namespace EcoPlanet.Models
         public string SellerId { get; set; }
 
         public virtual Order Order { get; set; }
+
+        public string goodsImage { get; set; }
+
     }
 }

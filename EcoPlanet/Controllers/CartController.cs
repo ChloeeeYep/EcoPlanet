@@ -213,7 +213,7 @@ namespace EcoPlanet.Controllers
                     goodsName = goods.goodsName,
                     goodsQuantity = quantity,
                     goodsPrice = goods.goodsPrice,
-                    goodsImage = goods.goodsImage, // Adjust the default image path as necessary
+                    goodsImage = goods.goodsImage,
                     Cart = cart
                 };
 
@@ -284,6 +284,35 @@ namespace EcoPlanet.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
+
+            //3.read image by image and store to the lists
+            string? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
             // Start a transaction in case anything goes wrong you can rollback
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -309,13 +338,15 @@ namespace EcoPlanet.Controllers
                     // Convert cart items to order items
                     foreach (var cartItem in cartItems)
                     {
+
                         var orderItem = new OrderItem
                         {
                             goodsId = cartItem.goodsId,
                             goodsName = cartItem.goodsName,
                             goodsQuantity = cartItem.goodsQuantity,
                             goodsPrice = cartItem.goodsPrice,
-                            SellerId = user.Id
+                            SellerId = user.Id,
+                            goodsImage = cartItem.goodsImage
                         };
 
                         order.OrderItems.Add(orderItem);

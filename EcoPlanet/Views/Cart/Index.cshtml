@@ -117,7 +117,7 @@
                     @foreach (var item in Model.Cart.Items)
                     {
                         <div class="bag-item" data-item-id="@item.goodsId">
-                            <img src="@Model.ImageUrls[item.goodsImage.Trim()]" class="bag-item-image" alt="@item.goodsName">
+                            <img src="@Model.ImageUrls[item.goodsImage.Trim()]" class="bag-item-image" alt="@item.goodsName" name="@item.goodsImage">
                             <div class="bag-item-details">
                                 <div class="bag-item-name">@item.goodsName</div>
                                 <div class="bag-item-price">RM <span class="goodsPrice">@item.goodsPrice</span></div>
