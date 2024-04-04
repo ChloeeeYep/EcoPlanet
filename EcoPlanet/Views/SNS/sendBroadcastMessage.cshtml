@@ -15,7 +15,7 @@
 
         .wrap {
             position: absolute;
-            top: 59%;
+            top: 57%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 80%;
@@ -56,6 +56,42 @@
         textarea {
             min-height:60px;
             max-height: 149px;
+            height: 100px;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between; /* Aligns items to the edges */
+            align-items: center; /* Centers items vertically */
+            text-align: center;
+            margin-bottom: 1em; /* Adds space below the header */
+        }
+
+        .header-container h1 {
+            flex-grow: 1; /* Allows the <h1> to grow and occupy the available space */
+            margin: 0; /* Resets the margin */
+        }
+
+        .header-container button.action-button{
+            margin: 0; /* Resets the margin */
+            align-self: flex-end; /* Aligns button to the right */
+        }
+
+        .edit {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+
+        .edit:hover, .edit:focus {
+            background-color: #003d82;
+            color: #fff;
         }
 
         button.btn-primary {
@@ -77,7 +113,10 @@
 </head>
 <body>
     <div>
-        <h1>Send Broadcast Message</h1>
+        <div class="header-container">
+            <h1>Send Broadcast Message</h1>
+            <a href="@Url.Action("ViewBroadcast", "SNS")" class="action-button edit">View Broadcast</a>
+        </div>
         <hr>
     </div>
     <div class="wrap">
