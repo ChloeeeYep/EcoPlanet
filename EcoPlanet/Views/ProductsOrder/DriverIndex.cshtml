@@ -74,7 +74,7 @@
         .action-button.view:hover,
         .action-button.view:focus {
             background-color: #138496;
-            color:white
+            color: white
         }
 
         .action-button.edit {
@@ -130,13 +130,10 @@
                     <td>@order.Email</td>
                     <td>Rm @order.TotalPrice</td>
                     <td>@order.OrderStatus</td>
-                    <td>@(order.DriverFullName?? "N/A")</td>           
+                    <td>@(order.DriverFullName ?? "N/A")</td>
                     <td class="action-buttons">
-                        <a href="@Url.Action("ManageOrdersDetails", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="action-button view">View</a>
-                        <a href="@Url.Action("EditOrders", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="action-button edit">Edit</a>                    
-                        <form method="post" asp-action="CancelOrders" asp-controller="ProductsOrder" asp-route-orderId="@order.ProductsOrderId">
-                            <button type="submit" class="action-button delete">Cancel</button>
-                        </form>
+                        <a href="@Url.Action("DriverOrdersDetails", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="action-button view">View</a>
+                        <a href="@Url.Action("DriverEditOrders", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="action-button edit">Edit</a>
                     </td>
                 </tr>
                 counter++;
@@ -145,4 +142,6 @@
     </table>
 </div>
 </html>
+
+
 

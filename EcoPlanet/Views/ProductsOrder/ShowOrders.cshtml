@@ -167,6 +167,7 @@
         return orderStatus.ToLower() switch
         {
             "canceled" => "red",
+            "delivery failed" => "red",
             _ => "green",
         };
     }

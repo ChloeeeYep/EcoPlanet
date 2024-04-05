@@ -49,27 +49,51 @@ namespace EcoPlanet.Controllers
             return keylist;
         }
 
+
+
+        //Admin Order
+
         public async Task<IActionResult> Index()
         {
-            // Fetch orders for the user based on their email
-            var userOrders = await _context.ProductsOrderTable                                        
-                                           .Include(o => o.ProductsOrderItems)
-                                           .OrderByDescending(o => o.ProductsOrderDate)
-                                           .ToListAsync();
+            // Fetch orders and include the user's full name for drivers
+            var userOrdersWithDriverName = await _context.ProductsOrderTable
+                .Include(o => o.ProductsOrderItems)
+                .Select(o => new {
+                    ProductsOrderId = o.ProductsOrderId,
+                    Email = o.Email,
+                    TotalPrice = o.TotalPrice, // Make sure these property names match your entity
+                    OrderStatus = o.OrderStatus,
+                    OrderDate = o.ProductsOrderDate, // Correct property name
+                    DriverFullName = _context.Users.Where(u => u.Id == o.DriverId).Select(u => u.FullName).FirstOrDefault() ?? "N/A"
+                })
+                .OrderByDescending(o => o.OrderDate) // Correct property name
+                .ToListAsync();
 
-            // Return the view with the user's orders
-            return View(userOrders);
+            // Pass the data to the view using ViewData
+            ViewData["Orders"] = userOrdersWithDriverName;
+
+            return View();
         }
+
+
 
         public async Task<IActionResult> ManageOrdersDetails(int orderId)
         {
-            // Get the order details for the specified order ID
+            // Get the order details for the specified order ID, including the driver's full name
             var orderDetails = await _context.ProductsOrderTable
                                              .Where(o => o.ProductsOrderId == orderId)
                                              .Include(o => o.ProductsOrderItems)
+                                             .Select(o => new
+                                             {
+                                                 Order = o, // Preserve the original order details
+                                                 DriverFullName = _context.Users
+                                                                   .Where(u => u.Id == o.DriverId)
+                                                                   .Select(u => u.FullName)
+                                                                   .FirstOrDefault() // Retrieve the driver's full name
+                                             })
                                              .FirstOrDefaultAsync();
 
-            if (orderDetails == null)
+            if (orderDetails?.Order == null) // Check if the result or the Order is null
             {
                 return NotFound(); // Or another appropriate response
             }
@@ -78,9 +102,13 @@ namespace EcoPlanet.Controllers
             var baseUrl = $"https://{bucketname}.s3.amazonaws.com/";
             ViewData["BaseUrl"] = baseUrl;
 
+            // Pass the driver's full name to the view through ViewData or ViewBag
+            ViewData["DriverFullName"] = orderDetails.DriverFullName;
+
             // Return the view with the order's details
-            return View(orderDetails);
+            return View(orderDetails.Order);
         }
+
 
 
         public async Task<IActionResult> EditOrders(int ? orderId)
@@ -95,7 +123,16 @@ namespace EcoPlanet.Controllers
             {
                 return BadRequest(orderId + " is not found in the table");
             }
-            return View(orders);
+
+			var drivers = await _context.Users
+	           .Where(u => u.UserType == 'D')
+	           .Select(u => new { u.Id, u.FullName })
+	           .ToListAsync();
+
+			// Passing the list of drivers to the view using ViewBag
+			ViewBag.Drivers = drivers;
+
+			return View(orders);
         }
 
         [HttpPost]
@@ -153,6 +190,10 @@ namespace EcoPlanet.Controllers
         }
 
 
+
+
+        //User Order
+
         public async Task<IActionResult> ShowOrders()
         {
             // Get the current logged-in user
@@ -179,13 +220,21 @@ namespace EcoPlanet.Controllers
 
         public async Task<IActionResult> ShowOrdersDetails(int orderId)
         {
-            // Get the order details for the specified order ID
+            // Get the order details for the specified order ID, including the driver's full name
             var orderDetails = await _context.ProductsOrderTable
                                              .Where(o => o.ProductsOrderId == orderId)
                                              .Include(o => o.ProductsOrderItems)
+                                             .Select(o => new
+                                             {
+                                                 Order = o, // Preserve the original order details
+                                                 DriverFullName = _context.Users
+                                                                   .Where(u => u.Id == o.DriverId)
+                                                                   .Select(u => u.FullName)
+                                                                   .FirstOrDefault() // Retrieve the driver's full name
+                                             })
                                              .FirstOrDefaultAsync();
 
-            if (orderDetails == null)
+            if (orderDetails?.Order == null) // Check if the result or the Order is null
             {
                 return NotFound(); // Or another appropriate response
             }
@@ -194,8 +243,130 @@ namespace EcoPlanet.Controllers
             var baseUrl = $"https://{bucketname}.s3.amazonaws.com/";
             ViewData["BaseUrl"] = baseUrl;
 
+            // Pass the driver's full name to the view through ViewData or ViewBag
+            ViewData["DriverFullName"] = orderDetails.DriverFullName;
+
             // Return the view with the order's details
-            return View(orderDetails);
+            return View(orderDetails.Order);
         }
-    }
+
+
+
+        //Drive Order
+
+        public async Task<IActionResult> DriverIndex()
+        {
+            // Get the current logged-in user's Id
+            var currentUserId = _userManager.GetUserId(User); // This gets the logged-in user's Id
+
+            // Fetch orders assigned to the current logged-in driver and include the user's full name for drivers
+            var userOrdersWithDriverName = await _context.ProductsOrderTable
+                .Include(o => o.ProductsOrderItems)
+                .Where(o => o.DriverId == currentUserId) // Filter by the current driver's Id
+                .Select(o => new {
+                    ProductsOrderId = o.ProductsOrderId,
+                    Email = o.Email,
+                    TotalPrice = o.TotalPrice,
+                    OrderStatus = o.OrderStatus,
+                    OrderDate = o.ProductsOrderDate,
+                    // Since we're filtering by driver, we know this is the current user
+                    DriverFullName = _context.Users.Where(u => u.Id == o.DriverId).Select(u => u.FullName).FirstOrDefault() ?? "N/A"
+                })
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
+            // Pass the data to the view using ViewData
+            ViewData["Orders"] = userOrdersWithDriverName;
+
+            return View();
+        }
+
+        public async Task<IActionResult> DriverOrdersDetails(int orderId)
+        {
+            // Get the order details for the specified order ID, including the driver's full name
+            var orderDetails = await _context.ProductsOrderTable
+                                             .Where(o => o.ProductsOrderId == orderId)
+                                             .Include(o => o.ProductsOrderItems)
+                                             .Select(o => new
+                                             {
+                                                 Order = o, // Preserve the original order details
+                                                 DriverFullName = _context.Users
+                                                                   .Where(u => u.Id == o.DriverId)
+                                                                   .Select(u => u.FullName)
+                                                                   .FirstOrDefault() // Retrieve the driver's full name
+                                             })
+                                             .FirstOrDefaultAsync();
+
+            if (orderDetails?.Order == null) // Check if the result or the Order is null
+            {
+                return NotFound(); // Or another appropriate response
+            }
+
+            // Construct the base URL for the S3 bucket and pass it to the view
+            var baseUrl = $"https://{bucketname}.s3.amazonaws.com/";
+            ViewData["BaseUrl"] = baseUrl;
+
+            // Pass the driver's full name to the view through ViewData or ViewBag
+            ViewData["DriverFullName"] = orderDetails.DriverFullName;
+
+            // Return the view with the order's details
+            return View(orderDetails.Order);
+        }
+
+        public async Task<IActionResult> DriverEditOrders(int? orderId)
+        {
+            if (orderId == null)
+            {
+                return NotFound();
+            }
+            var orders = await _context.ProductsOrderTable.FindAsync(orderId);
+
+            if (orders == null)
+            {
+                return BadRequest(orderId + " is not found in the table");
+            }
+
+            var drivers = await _context.Users
+               .Where(u => u.UserType == 'D')
+               .Select(u => new { u.Id, u.FullName })
+               .ToListAsync();
+
+			// Find the full name of the driver for this order
+			var driverName = drivers.FirstOrDefault(d => d.Id == orders.DriverId)?.FullName;
+
+			// Pass the full name to the view using ViewBag
+			ViewBag.DriverFullName = driverName;
+
+			// Passing the list of drivers to the view using ViewBag (if needed for other purposes)
+			ViewBag.Drivers = drivers;
+
+			return View(orders);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DriverUpdateOrders(int productsOrderId, string orderStatus)
+		{
+			var orderToUpdate = await _context.ProductsOrderTable
+											  .FirstOrDefaultAsync(o => o.ProductsOrderId == productsOrderId);
+
+			if (orderToUpdate == null)
+			{
+				return NotFound();
+			}
+
+			// Update the order status with the new value
+			orderToUpdate.OrderStatus = orderStatus;
+
+			// Flag the OrderStatus property as modified
+			_context.Entry(orderToUpdate).Property(o => o.OrderStatus).IsModified = true;
+
+			// Save the changes to the database
+			await _context.SaveChangesAsync();
+
+			// Redirect back to a safe page, such as the order details or order list
+			return RedirectToAction("DriverIndex", "ProductsOrder");
+		}
+
+	}
 }

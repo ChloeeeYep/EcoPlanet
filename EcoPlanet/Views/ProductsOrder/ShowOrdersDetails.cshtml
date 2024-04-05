@@ -7,9 +7,9 @@
     <div class="order-header">
         <h1>Order# @Model.ProductsOrderId</h1>
         <h1>Order Date: @Model.ProductsOrderDate</h1>
-        @if (!string.IsNullOrEmpty(Model.DriverId))
+        @if (!string.IsNullOrEmpty(ViewData["DriverFullName"] as string))
         {
-            <span class="order-driver">Driver: @Model.DriverId</span>
+            <span class="order-driver">Driver: @(ViewData["DriverFullName"])</span>
         }
         <span class="order-status @GetOrderStatusClass(Model.OrderStatus)">@Model.OrderStatus</span>
     </div>
@@ -202,6 +202,7 @@
         return orderStatus.ToLower() switch
         {
             "canceled" => "red",
+            "delivery failed" => "red",
             _ => "green",
         };
     }

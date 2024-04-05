@@ -82,26 +82,25 @@
 		padding: 0 20px; /* Add some padding on the sides */
 	}
 
-	.header .btn-back {
-		background-color: #ddd;
-		color: #333;
-		padding: 10px 20px;
-		text-decoration: none;
-		border-radius: 4px;
-		font-size: 16px;
-		font-weight: bold;
-	}
-
+		.header .btn-back {
+			background-color: #ddd;
+			color: #333;
+			padding: 10px 20px;
+			text-decoration: none;
+			border-radius: 4px;
+			font-size: 16px;
+			font-weight: bold;
+		}
 
 </style>
 <center>
 	<div class="header">
-		<a href="@Url.Action("Index", "ProductsOrder")" class="btn-back">Back</a>
+		<a href="@Url.Action("DriverIndex", "ProductsOrder")" class="btn-back">Back</a>
 		<h1>Assign Orders</h1>
-		<div></div> 
+		<div></div>
 	</div>
 	<br /><hr />
-	<form method="post" asp-action="UpdateOrders" asp-controller="ProductsOrder">
+	<form method="post" asp-action="DriverUpdateOrders" asp-controller="ProductsOrder">
 		<table border="1">
 			<tr>
 				<th><label asp-for="ProductsOrderId">Order Id</label></th>
@@ -113,23 +112,22 @@
 				<td><span asp-validation-for="Email"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="OrderStatus">Order Status</label></th>
-				<td><input asp-for="OrderStatus" readonly /></td>
-				<td><span asp-validation-for="OrderStatus"></span></td>
+				<th><label asp-for="DriverId">Driver Name</label></th>
+				<td><input type="text" value="@ViewBag.DriverFullName" readonly /></td>
+				<td><span asp-validation-for="DriverId"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="DriverId">Driver</label></th>
+				<th><label asp-for="OrderStatus">Order Status</label></th>
 				<td>
-					<select asp-for="DriverId" required>
-						<option value="">Select a Driver</option>
-						@foreach (var driver in ViewBag.Drivers)
-						{
-							<option value="@driver.Id">@driver.FullName</option>
-						}
+					<select asp-for="OrderStatus" required>
+						<option value="">Please select...</option>
+						<option value="Delivery Failed">Delivery Failed</option>
+						<option value="Delivered">Delivered</option>
 					</select>
 				</td>
-				<td><span asp-validation-for="DriverId"></span></td>
-			</tr>					
+				<td><span asp-validation-for="OrderStatus"></span></td>
+			</tr>
+
 			<tr>
 				<td colspan="2" style="text-align:center">
 					<button type="submit" class="btn-edit">Update</button>

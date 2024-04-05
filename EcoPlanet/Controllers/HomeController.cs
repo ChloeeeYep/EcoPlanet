@@ -31,9 +31,9 @@ namespace EcoPlanet.Controllers
                 switch (userType)
                 {
                     case 'A':
-                        return RedirectToAction("AdminIndex");
+                        return RedirectToAction("Index","ProductsOrder");
                     case 'D':
-                        return RedirectToAction("DriverIndex");
+                        return RedirectToAction("DriverIndex","ProductsOrder");
                     default:
                         return View();
                 }
@@ -44,15 +44,8 @@ namespace EcoPlanet.Controllers
             }
         }
 
-        public IActionResult AdminIndex()
-        {
-            return View("AdminIndex");
-        }
+      
 
-        public IActionResult DriverIndex()
-        {
-            return View("DriverIndex");
-        }
 
         public IActionResult Privacy()
         {

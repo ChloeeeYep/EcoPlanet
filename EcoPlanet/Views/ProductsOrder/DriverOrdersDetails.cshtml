@@ -3,7 +3,7 @@
 <br></br>
 <br></br>
 <div class="container">
-    <a href="@Url.Action("Index", "ProductsOrder")" class="btn-back">Back</a>
+    <a href="@Url.Action("DriverIndex", "ProductsOrder")" class="btn-back">Back</a>
     <div class="order-header">
         <h1>Order# @Model.ProductsOrderId</h1>
         <h1>Order Date: @Model.ProductsOrderDate</h1>
@@ -66,9 +66,9 @@
         font-weight: bold;
     }
 
-    .btn-back:hover {
-        color: #333;
-    }
+        .btn-back:hover {
+            color: #333;
+        }
 
     .order-header {
         display: flex;
@@ -209,3 +209,4 @@
         };
     }
 }
+
