@@ -329,7 +329,7 @@ namespace EcoPlanet.Controllers
                         Contact = model.PhoneNumber,
                         Address = model.Address,
                         PaymentMethod = "Credit Card/Debit Card",
-                        PaymentStatus = "Pending",
+                        PaymentStatus = "Completed",
                         OrderStatus = "In Progress"
                     };
 

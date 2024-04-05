@@ -31,6 +31,9 @@
             <li class="nav-item">
                 <a id="SNS" class="nav-link text-dark" asp-action="sendBroadcastMessage" asp-controller="SNS">Broadcast Message</a>
             </li>
+            <li class="nav-item">
+                <a id="manageorder" class="nav-link text-dark" asp-action="Index" asp-controller="ProductsOrder">Manage Orders</a>
+            </li>
         }
         else if (user.UserType == 'U')
         {
@@ -59,7 +62,7 @@
                 <a id="ShowOrders" class="nav-link text-dark" asp-action="ShowOrders" asp-controller="ProductsOrder"> Order History </a>
             </li>
         }
-        else if (user.UserType == 'S')
+        else if (user.UserType == 'D')
         {
             <li class="nav-item">
                 <a id="addgoods" class="nav-link text-dark" asp-action="Index" asp-controller="Goods">Manage Goods</a>
