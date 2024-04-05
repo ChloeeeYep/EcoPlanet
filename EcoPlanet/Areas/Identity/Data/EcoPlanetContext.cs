@@ -15,17 +15,7 @@ public class EcoPlanetContext : IdentityDbContext<EcoPlanetUser>
 
     public DbSet<Trashpedia> TrashpediaTable { get; set; }
 
-    public DbSet<Goods> GoodsTable { get; set; }   
-
     public DbSet<Products> ProductsTable { get; set; }
-
-    public DbSet<Cart> CartTable { get; set; }
-
-    public DbSet<CartItem> CartItemTable { get; set; }
-
-    public DbSet<Order> OrderTable { get; set; }
-
-    public DbSet<OrderItem> OrderItemTable { get; set; }
 
     public DbSet<Quiz> QuizTable { get; set; }
 

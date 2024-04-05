@@ -61,54 +61,57 @@ namespace EcoPlanet.Controllers
             {
                 return Challenge(); // Prompt the user to log in
             }
-
-            // Retrieve the cart items for the user
-            var productsCartItem = await _context.ProductsCartItemTable
-                                          .Where(c => c.ProductsCart.userId == user.Id)
-                                          .ToListAsync();
-
-            foreach (var item in productsCartItem)
+            else
             {
-                var products = await _context.ProductsTable
-                                          .AsNoTracking()
-                                          .FirstOrDefaultAsync(g => g.productsId == item.productsId);
-                if (products != null && products.productsQuantity > 0)
+                // Retrieve the cart items for the user
+                var productsCartItem = await _context.ProductsCartItemTable
+                                              .Where(c => c.ProductsCart.userId == user.Id)
+                                              .ToListAsync();
+
+                foreach (var item in productsCartItem)
                 {
-                    productsCartItems.Add(item);
+                    var products = await _context.ProductsTable
+                                              .AsNoTracking()
+                                              .FirstOrDefaultAsync(g => g.productsId == item.productsId);
+                    if (products != null && products.productsQuantity > 0)
+                    {
+                        productsCartItems.Add(item);
+                    }
+                    else
+                    {
+                        _context.ProductsCartItemTable.Remove(item); // Remove the item from the cart
+                        removedItemsIds.Add(item.productsId);
+                    }
                 }
-                else
+
+                // Save changes if any items were removed
+                if (removedItemsIds.Count > 0)
                 {
-                    _context.ProductsCartItemTable.Remove(item); // Remove the item from the cart
-                    removedItemsIds.Add(item.productsId);
+                    await _context.SaveChangesAsync();
+                    TempData["RemovedItems"] = $"Some items were removed from your cart as they are no longer available.";
                 }
+
+
+                // Generate the image URLs for each cart item
+                var imageUrls = await GetImageUrlsForCartItems(productsCartItem);
+
+
+                foreach (var item in productsCartItems)
+                {
+                    maxQuantities[item.productsId] = (await _context.ProductsTable.FindAsync(item.productsId))?.productsQuantity ?? 0;
+                }
+
+                // Prepare the view model
+                var viewModel = new ProductsCartViewModel
+                {
+                    ProductsCart = new ProductsCart { Items = productsCartItem }, // Use the cartItems variable here directly
+                    ImageUrls = imageUrls,
+                    MaxQuantities = maxQuantities
+                };
+
+                return View(viewModel);
             }
 
-            // Save changes if any items were removed
-            if (removedItemsIds.Count > 0)
-            {
-                await _context.SaveChangesAsync();
-                TempData["RemovedItems"] = $"Some items were removed from your cart as they are no longer available.";
-            }
-
-
-            // Generate the image URLs for each cart item
-            var imageUrls = await GetImageUrlsForCartItems(productsCartItem);
-
-
-            foreach (var item in productsCartItems)
-            {
-                maxQuantities[item.productsId] = (await _context.ProductsTable.FindAsync(item.productsId))?.productsQuantity ?? 0;
-            }
-
-            // Prepare the view model
-            var viewModel = new ProductsCartViewModel
-            {
-                ProductsCart = new ProductsCart { Items = productsCartItem }, // Use the cartItems variable here directly
-                ImageUrls = imageUrls,
-                MaxQuantities = maxQuantities
-            };
-
-            return View(viewModel);
         }
 
         private async Task<Dictionary<string, string>> GetImageUrlsForCartItems(IEnumerable<ProductsCartItem> items)
@@ -160,8 +163,15 @@ namespace EcoPlanet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToProductsCart(int productsId, int quantity)
         {
-            var products = await _context.ProductsTable.FirstOrDefaultAsync(p => p.productsId == productsId);
+            //get current logged in users if no login prompt user to login
+            var user = await _userManager.GetUserAsync(User);
 
+            if (user == null)
+            {
+                return Challenge(); // Prompt the user to log in
+            }
+
+            var products = await _context.ProductsTable.FirstOrDefaultAsync(p => p.productsId == productsId);
             if (products == null)
             {
                 return NotFound();
@@ -396,7 +406,7 @@ namespace EcoPlanet.Controllers
                     // Log the exception
                     transaction.Rollback();
                     // Handle the error, maybe return a view with an error message
-                    return View("Error");
+                    return View("Error: " + ex.Message);
                 }
             }
         }

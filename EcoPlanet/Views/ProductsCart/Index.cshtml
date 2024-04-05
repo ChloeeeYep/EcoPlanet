@@ -9,7 +9,6 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    int counter = 1; // Start the counter at 1
     var total = Model.ProductsCart.Items.Sum(i => i.productsPrice * i.productsQuantity);
     var shipping = 10;
     var totalAmount = total + shipping;

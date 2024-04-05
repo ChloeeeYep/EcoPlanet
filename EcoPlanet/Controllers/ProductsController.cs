@@ -327,12 +327,12 @@ namespace EcoPlanet.Controllers
             List<string> keys = getKeys();
             AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
 
-            string videoKey = "Design/@Ecoplanet.mp4";
+            string imageKey = "Design/responsible.png";
 
             var request = new GetPreSignedUrlRequest
             {
                 BucketName = bucketname,
-                Key = videoKey, 
+                Key = imageKey, 
                 Expires = DateTime.Now.AddMinutes(10)
             };
 
@@ -341,7 +341,6 @@ namespace EcoPlanet.Controllers
 
         public async Task<IActionResult> IntroPage()
         {
-            // Fetch the introduction video URL
             var videoUrl = await GetIntroductionVideoUrlAsync();
 
             ViewBag.VideoUrl = videoUrl;

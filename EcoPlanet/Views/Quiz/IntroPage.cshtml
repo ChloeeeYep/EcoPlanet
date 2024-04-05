@@ -42,26 +42,25 @@
             margin-top: 20px;
             font-size: 18px;
             color: #044a08;
-            line-height: 1.6; 
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
     <!-- Image -->
-    <center><img src="@ViewBag.VideoUrl" type="image/png" width="60%" height="60%"></img></center>
+    <center><img src="@ViewBag.ImageUrl" type="image/png" width="70%" height="70%"></img></center>
 
     <!-- Description -->
-    <p class="description">
-        In order to halve per capital global food waste at the retail and consumer levels and reduce food losses along production and supply chains, including post-harvest losses and 
-        encourage companies, especially large and transnational companies, to adopt sustainable practices and to integrate sustainability information into their reporting cycle.
-        EcoPlanet has collaborated with well-known local bakeries, transnational supermarkets, multinational convenience store chain to sell goods nearing their expiration dates 
-        at a discounted retail price to help reduce food waste, provide value to consumers, and encourage companies to adopt sustainable practices. Shop Wisely with EcoPlanet Now!
-
+    <center>
+        <p class="description">
+        How Much Do you Know About Sustainable Lifestyle ?
+        Let's Figure Out Together By Taking A Quiz Now!
     </p>
+    </center>
 
     <!-- Form with button -->
-    <form method="get" action="@Url.Action("BrowseProducts", "Products")">
-        <button type="submit" class="startbtn">Start Browsing!</button>
+    <form method="get" action="@Url.Action("ShowQuiz", "Quiz")">
+        <center><button type="submit" class="startbtn">Start Quiz!</button>
     </form>
 </body>
 </html>

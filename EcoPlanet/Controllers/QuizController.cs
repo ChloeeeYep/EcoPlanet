@@ -3,6 +3,16 @@ using EcoPlanet.Models;
 using EcoPlanet.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Amazon.S3.Model;
+using Amazon.S3;
+using Microsoft.Build.Execution;
+using Amazon; //for linking your AWS account
+using Microsoft.Extensions.Configuration; //appsettings.json section
+using System.IO; // input output
+using Microsoft.AspNetCore.Http;
+using NuGet.Packaging.Signing;
+using System.Drawing;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EcoPlanet.Controllers
 {
@@ -10,10 +20,32 @@ namespace EcoPlanet.Controllers
     {
 
         private readonly EcoPlanetContext _context;
+        private const string bucketname = "ecoplanet";
 
         public QuizController(EcoPlanetContext context)
         {
             _context = context;
+        }
+
+        //Create a function to retrieve the keys back from json file
+        private List<string> getKeys()
+        {
+            //1.1 create emppty list for storing the keys
+            List<string> keylist = new List<string>();
+
+            //1.2 get the keys back from json
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+            IConfiguration conf = builder.Build(); //build the file
+
+            //1.3 add the retrieved to the list
+            keylist.Add(conf["keys:key1"]);
+            keylist.Add(conf["keys:key2"]);
+            keylist.Add(conf["keys:key3"]);
+
+            //1.4 return the key list
+            return keylist;
         }
 
         public async Task<IActionResult> Index()
@@ -136,6 +168,31 @@ namespace EcoPlanet.Controllers
             var totalQuestions = TempData["TotalQuestions"] ?? 0;
             ViewBag.Score = score;
             ViewBag.TotalQuestions = totalQuestions; 
+            return View();
+        }
+
+        private async Task<string> GetImageUrlAsync()
+        {
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            string imageKey = "Design/tips.png";
+
+            var request = new GetPreSignedUrlRequest
+            {
+                BucketName = bucketname,
+                Key = imageKey,
+                Expires = DateTime.Now.AddMinutes(10)
+            };
+
+            return agent.GetPreSignedURL(request);
+        }
+
+        public async Task<IActionResult> IntroPage()
+        {
+            var imageUrl = await GetImageUrlAsync();
+
+            ViewBag.ImageUrl = imageUrl;
             return View();
         }
 
