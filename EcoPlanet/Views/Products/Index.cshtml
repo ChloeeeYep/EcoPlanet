@@ -117,12 +117,12 @@
                 <th> No.</th>
                 <th> Category</th>
                 <th> Name</th>
-                <th> Descriptions</th>
                 <th> Price</th>
                 <th> Quantity</th>
                 <th> Status</th>
+                <th> Expiry Date</th>
                 <th> Image</th>
-                <th>Created/Updated</th>
+                <th>Created/Updated At</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -134,10 +134,10 @@
                     <td>@counter</td>
                     <td>@item.productsType</td>
                     <td>@item.productsName</td>
-                    <td>@item.productsDescriptions</td>
                     <td>@item.productsPrice</td>
                     <td>@item.productsQuantity</td>
                     <td>@item.productsStatus</td>
+                    <td>@(item.expiryDate?.ToShortDateString() ?? "N/A")</td>
                     <td>
                         @if (!string.IsNullOrEmpty(item.productsImage))
                         {
@@ -159,7 +159,7 @@
                             <span>No Image Provided</span>
                         }
                     </td>
-                    <td>@item.createdAt.ToString("MM/dd/yyyy")</td>
+                    <td>@item.createdAt</td>
                     <td class="action-buttons">
                         <a href="@Url.Action("EditProducts", "Products", new { productsId = item.productsId })" class="action-button edit">Edit</a>
                         <a href="@Url.Action("DeleteProducts", "Products", new { productsId = item.productsId })" class="action-button delete">Delete</a>

@@ -54,20 +54,44 @@ namespace EcoPlanet.Controllers
                 = new AmazonSimpleNotificationServiceClient(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
             try
             {
-                SubscribeRequest request = new SubscribeRequest
+                // Find the user by email
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
                 {
-                    TopicArn = TopicARN,
-                    Endpoint = email,
-                    Protocol = "email"
-                };
-                SubscribeResponse response = await agent.SubscribeAsync(request);
-                ViewBag.requestID = response.ResponseMetadata.RequestId;
+                    // Handle the case where the user is not found
+                    return BadRequest("User not found.");
+                }
+
+                if (user.isSubscribed == false)
+                {
+                    SubscribeRequest request = new SubscribeRequest
+                    {
+                        TopicArn = TopicARN,
+                        Endpoint = email,
+                        Protocol = "email"
+                    };
+                    SubscribeResponse response = await agent.SubscribeAsync(request);
+                    ViewBag.requestID = response.ResponseMetadata.RequestId;
+                    ViewBag.Message = "Thank you for subscribing us!";
+
+                    // Update the isSubscribed property to true
+                    user.isSubscribed = true;
+                    _context.Update(user);
+                    await _context.SaveChangesAsync(); // Save changes to the database
+                    return View();
+                }
+                else
+                {
+                    // The user is already subscribed
+                    TempData["AlreadySubscribed"] = true;
+                    TempData["Message"] = "You Already Subscribed Us Before. Thanks!";
+                    return RedirectToAction("Index", "SNS");
+                }
             }
             catch (AmazonSimpleNotificationServiceException ex)
             {
-                return BadRequest("Error:" + ex.Message);
+                return BadRequest("Error: " + ex.Message);
             }
-            return View();
         }
 
         //function 3: create admin pae for broadcast the msg to subscribe customer
@@ -124,6 +148,19 @@ namespace EcoPlanet.Controllers
             List<SNS> sns = await _context.SNSTable.ToListAsync();
             return View(sns);
         }
+
+        //function to retrieved the users who had subscribed
+        public async Task<IActionResult> ViewSubscribers()
+        {
+            // Retrieve users who are subscribed
+            var subscribedUsers = await _context.Users
+                                                .Where(u => u.isSubscribed)
+                                                .ToListAsync();
+
+            // Pass the list of subscribed users to the View
+            return View(subscribedUsers);
+        }
+
 
     }
 }

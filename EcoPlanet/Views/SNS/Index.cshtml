@@ -125,11 +125,17 @@ form .btn button{
   margin-top: 5px;
 }
 
+    .subscription-message {
+        color: #4BB543; /* Success green, or use #FF4136 for errors */
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
 </style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Form | CodingNepal</title>
+    <title>Subscription Form</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -140,6 +146,10 @@ form .btn button{
         <div class="content">
             <header>Become a Subscriber</header>
             <p>Subscribe to our blog and get the latest updates straight to your inbox.</p>
+            @if (TempData["AlreadySubscribed"] != null && (bool)TempData["AlreadySubscribed"])
+            {
+                <div class="alert alert-info">@TempData["Message"]</div>
+            }
         </div>
         <form method="post" asp-action="subscribeNewsletter" asp-controller="SNS">
             <div class="field">

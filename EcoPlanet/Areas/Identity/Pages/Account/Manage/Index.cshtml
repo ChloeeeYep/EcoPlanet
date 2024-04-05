@@ -22,7 +22,7 @@
     {
         {'U', "User"},
         {'A', "Admin"},
-        {'S', "Seller"}
+        {'D', "Driver"}
     };
 }
 
@@ -63,7 +63,7 @@
                     <option value="">Select User Type</option>
                     <option value="U" selected="@(Model.Input.UserType == 'U')">User</option>
                     <option value="A" selected="@(Model.Input.UserType == 'A')">Admin</option>
-                    <option value="S" selected="@(Model.Input.UserType == 'S')">Seller</option>
+                    <option value="D" selected="@(Model.Input.UserType == 'D')">Driver</option>
                 </select>
             }
             <br />

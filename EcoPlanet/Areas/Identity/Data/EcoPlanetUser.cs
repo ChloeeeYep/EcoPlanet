@@ -21,5 +21,7 @@ public class EcoPlanetUser : IdentityUser
     [PersonalData]
     public char UserType { get; set; }
 
+    public bool isSubscribed { get; set; } = false;
+
 }
 
