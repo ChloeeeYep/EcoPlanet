@@ -147,6 +147,7 @@ namespace EcoPlanet.Controllers
             // Save the trashpedia object to the database
             if (ModelState.IsValid)
             {
+                trashpedia.CreatedAt = DateTime.Now;
                 _context.TrashpediaTable.Add(trashpedia);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -214,6 +215,7 @@ namespace EcoPlanet.Controllers
 
             if (ModelState.IsValid)
             {
+                trashpedia.CreatedAt = DateTime.Now;
                 _context.TrashpediaTable.Update(trashpedia);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", "Trashpedia");

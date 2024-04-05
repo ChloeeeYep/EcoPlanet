@@ -79,7 +79,7 @@
 
         .edit {
             padding: 10px 20px;
-            background-color: #0056b3;
+            background-color: #0056b3c9;
             color: white;
             border: none;
             border-radius: 5px;
@@ -91,6 +91,23 @@
 
         .edit:hover, .edit:focus {
             background-color: #003d82;
+            color: #fff;
+        }
+
+        .view {
+            padding: 10px 20px;
+            background-color: seagreen;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+
+        .view:hover, .view:focus {
+            background-color: darkgreen;
             color: #fff;
         }
 
@@ -109,15 +126,28 @@
         button.btn-primary:hover {
             background-color: #003d82;
         }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1em;
+        }
+
+        .action-button {
+            margin: 0 10px; /* Adjust the spacing between buttons if needed */
+        }
     </style>
 </head>
 <body>
     <div>
         <div class="header-container">
-            <h1>Send Broadcast Message</h1>
-            <a href="@Url.Action("ViewBroadcast", "SNS")" class="action-button edit">View Broadcast</a>
+            <h1> Broadcast Message</h1>
         </div>
         <hr>
+    </div>
+    <div class="button-container">
+        <a href="@Url.Action("ViewBroadcast", "SNS")" class="action-button edit" >View Broadcast History</a>
+        <a href="@Url.Action("ViewSubscribers", "SNS")" class="action-button view">View Subscribers Lists</a>
     </div>
     <div class="wrap">
         <form method="post" asp-action="broadcast" asp-controller="SNS">
@@ -127,7 +157,7 @@
             <label for="msgbody">Message Body</label>
             <textarea id="msgbody" name="msgbody" rows="10" placeholder="Today...." required></textarea>
 
-            <button type="submit" class="btn-primary">Broadcast Message to Customers!</button>
+            <button type="submit" class="btn-primary">Send Now!</button>
         </form>
     </div>
 </body>

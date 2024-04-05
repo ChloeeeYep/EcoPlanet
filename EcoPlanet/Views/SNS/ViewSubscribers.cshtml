@@ -1,13 +1,19 @@
 ﻿
 @{
-    ViewData["Title"] = "View Broadcast";
+    ViewData["Title"] = "View Subscribers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     int counter = 1; // Start the counter at 1
 }
-@model List<SNS>
+
+<h1>Subscribers Lists</h1>
+<br /><br /><hr />
+
 
 <div class="header-container">
-    <h1>Broadcast Messages</h1>
-    <a href="@Url.Action("sendBroadcastMessage", "SNS")" class="action-button edit">Back to Broadcast Message Page</a>
+    <div class="total-subscribers">
+        <span>Total Subscribers:</span>
+        <span class="subscribers-count">@Model.Count</span>
+    </div>
 </div>
 
 <div class="table-container">
@@ -15,19 +21,17 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Title</th>
-                <th>Content</th>
-                <th>CreatedAt</th>         
+                <th>Email</th>
+                <th>Name</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var user in Model)
             {
                 <tr>
                     <td>@counter</td>
-                    <td>@item.Title</td>
-                    <td>@item.Content</td>
-                    <td>@item.CreatedAt</td>               
+                    <td>@user.Email</td>
+                    <td>@user.FullName</td>
                 </tr>
                 counter++;
             }
@@ -104,25 +108,58 @@
         flex: 0 0 auto; /* Do not allow the buttons to grow or shrink */
     }
 
+        .action-button:hover {
+            color: white; /* Text color changes to white on hover */
+        }
+
+    /* Styling for Add button */
+    .add {
+        background-color: #17a2b8;
+    }
+
+        .add:hover, .add:focus {
+            background-color: #138496;
+        }
+
     /* Styling for Edit button */
     .edit {
-        padding: 10px 20px;
-        background-color: #0056b3;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 18px;
-        transition: background-color 0.3s;
-        text-decoration: none;
+        background-color: #ffc107;
     }
 
-    .edit:hover, .edit:focus {
-        background-color: #003d82;
-        color: #fff;
+        .edit:hover, .edit:focus {
+            background-color: #e0a800;
+        }
+
+    /* Styling for Delete button */
+    .delete {
+        background-color: #dc3545;
     }
 
- 
+        .delete:hover, .delete:focus {
+            background-color: #c82333;
+        }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between; /* Aligns children to opposite ends */
+        align-items: center; /* Centers children vertically */
+        margin-bottom: 20px; /* Adds some space below the header */
+    }
+
+    h1 {
+        margin: 0; /* Removes default margin to align properly with the button */
+        flex-grow: 1; /* Allows the title to grow and push the button to the right */
+    }
+
+    .total-subscribers {
+        background-color: #007bff; /* Blue background color */
+        color: #fff; /* White text color */
+        padding: 8px 16px; /* Padding around the total subscribers count */
+        border-radius: 4px; /* Rounded corners */
+    }
+
+    .subscribers-count {
+        font-weight: bold; /* Bold text for the subscriber count */
+        margin-left: 8px; /* Add some space between "Total Subscribers:" and the count */
+    }
 </style>
-
-

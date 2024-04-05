@@ -58,7 +58,8 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [StringLength(11, ErrorMessage = "Please Enter Your Phone Number", MinimumLength = 10)]
+            [Display(Name = "Phone Number")]
             public string PhoneNumber { get; set; }
 
             [Required(ErrorMessage = "Please Provide Your Full Name Before Submitting The Form")]
@@ -197,7 +198,7 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
 
             // If the current user updated their own profile, just refresh sign-in and stay on the page
             await _signInManager.RefreshSignInAsync(userToEdit);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Your Profile Has Been Updated";
             return RedirectToPage();
         }
     }

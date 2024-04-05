@@ -4,6 +4,7 @@ using EcoPlanet.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPlanet.Migrations
 {
     [DbContext(typeof(EcoPlanetContext))]
-    partial class EcoPlanetContextModelSnapshot : ModelSnapshot
+    [Migration("20240405140607_addisSubscribedToUsersTable")]
+    partial class addisSubscribedToUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,9 +297,6 @@ namespace EcoPlanet.Migrations
                     b.Property<DateTime>("createdAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("expiryDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("productsDescriptions")
                         .HasColumnType("nvarchar(max)");
 
@@ -394,6 +394,7 @@ namespace EcoPlanet.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DriverId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")

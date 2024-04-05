@@ -32,8 +32,8 @@ namespace EcoPlanet.Controllers
                 {
                     case 'A':
                         return RedirectToAction("AdminIndex");
-                    case 'S':
-                        return RedirectToAction("SellerIndex");
+                    case 'D':
+                        return RedirectToAction("DriverIndex");
                     default:
                         return View();
                 }
@@ -49,9 +49,9 @@ namespace EcoPlanet.Controllers
             return View("AdminIndex");
         }
 
-        public IActionResult SellerIndex()
+        public IActionResult DriverIndex()
         {
-            return View("SellerIndex");
+            return View("DriverIndex");
         }
 
         public IActionResult Privacy()

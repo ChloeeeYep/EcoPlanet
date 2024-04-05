@@ -33,6 +33,7 @@
 
 	input[type="text"],
 	input[type="number"],
+	textarea,
 	input[type="date"],
 	input[type="datetime-local"],
 	select {
@@ -47,6 +48,7 @@
 
 		input[type="text"]:focus,
 		input[type="number"]:focus,
+		textarea,
 		input[type="date"]:focus,
 		input[type="datetime-local"]:focus,
 		select:focus {
@@ -133,7 +135,7 @@
 			</tr>
 			<tr>
 				<th><label asp-for="productsDescriptions">Descriptions</label></th>
-				<td><input asp-for="productsDescriptions" required /></td>
+				<td><textarea asp-for="productsDescriptions" required></textarea></td>
 				<td><span asp-validation-for="productsDescriptions"></span></td>
 			</tr>
 			<tr>
@@ -143,7 +145,7 @@
 			</tr>
 			<tr>
 				<th><label asp-for="productsQuantity">Quantity</label></th>
-				<td><input asp-for="productsQuantity" required /></td>
+				<td><input asp-for="productsQuantity" min ="1" max="1000" required /></td>
 				<td><span asp-validation-for="productsQuantity"></span></td>
 			</tr>
 			<tr>
@@ -157,6 +159,11 @@
 					</select>
 				</td>
 				<td><span asp-validation-for="productsStatus"></span></td>
+			</tr>
+			<tr id="expiryDateRow" style="display:none;">
+				<th><label asp-for="expiryDate">Expiry Date</label></th>
+				<td><input asp-for="expiryDate" type="date" /></td>
+				<td><span asp-validation-for="expiryDate"></span></td>
 			</tr>
 			<tr>
 				<th><label asp-for="productsImage">Image</label></th>
@@ -172,6 +179,24 @@
 			</tr>
 		</table>
 	</form>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var productsTypeDropdown = document.querySelector('select[name="productsType"]');
+			var expiryDateRow = document.getElementById('expiryDateRow');
+
+			function toggleExpiryDateRow() {
+				expiryDateRow.style.display = (productsTypeDropdown.value === 'Food and Beverages') ? 'table-row' : 'none';
+			}
+
+			// Initial state
+			toggleExpiryDateRow();
+
+			// Add change event listener to productsTypeDropdown
+			productsTypeDropdown.addEventListener('change', toggleExpiryDateRow);
+		});
+	</script>
+
 </center>
 
 

@@ -17,22 +17,22 @@
         @if (user.UserType == 'A')
         {
             <li class="nav-item">
-                <a id="manageusers" class="nav-link text-dark" asp-action="Index" asp-controller="Admin">Manage Users</a>
+                <a id="manageusers" class="nav-link text-dark" asp-action="Index" asp-controller="Admin"> Users</a>
             </li>
             <li class="nav-item">
-                <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia"> Manage Trashpedia </a>
+                <a id="addtrashpedia" class="nav-link text-dark" asp-action="Index" asp-controller="Trashpedia"> Trashpedia </a>
             </li>
             <li class="nav-item">
-                <a id="addproducts" class="nav-link text-dark" asp-action="Index" asp-controller="Products"> Manage Products </a>
+                <a id="addproducts" class="nav-link text-dark" asp-action="Index" asp-controller="Products"> Products </a>
             </li>
             <li class="nav-item">
-                <a id="addquiz" class="nav-link text-dark" asp-action="Index" asp-controller="Quiz">Manage Quiz</a>
+                <a id="addquiz" class="nav-link text-dark" asp-action="Index" asp-controller="Quiz"> Quiz</a>
             </li>
             <li class="nav-item">
-                <a id="SNS" class="nav-link text-dark" asp-action="sendBroadcastMessage" asp-controller="SNS">Broadcast Message</a>
+                <a id="SNS" class="nav-link text-dark" asp-action="sendBroadcastMessage" asp-controller="SNS">Broadcast</a>
             </li>
             <li class="nav-item">
-                <a id="manageorder" class="nav-link text-dark" asp-action="Index" asp-controller="ProductsOrder">Manage Orders</a>
+                <a id="manageorder" class="nav-link text-dark" asp-action="Index" asp-controller="ProductsOrder"> Orders</a>
             </li>
         }
         else if (user.UserType == 'U')
@@ -64,9 +64,7 @@
         }
         else if (user.UserType == 'D')
         {
-            <li class="nav-item">
-                <a id="addgoods" class="nav-link text-dark" asp-action="Index" asp-controller="Goods">Manage Goods</a>
-            </li>
+               
         }
 
         //Common Items

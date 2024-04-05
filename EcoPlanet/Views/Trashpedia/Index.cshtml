@@ -19,6 +19,7 @@
                 <th>Materials</th>
                 <th>Actions</th>
                 <th>Alternatives</th>
+                <th>Created/Updated At</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -53,6 +54,7 @@
                     <td>@item.Materials</td>
                     <td>@item.Actions</td>
                     <td>@item.Alternatives</td>
+                    <td>@item.CreatedAt</td>
                     <td>
                         <a href="@Url.Action("EditData", "Trashpedia", new { Id = item.Id })" class="action-button edit">Edit</a>
                         <a href="@Url.Action("DeleteData", "Trashpedia", new { Id = item.Id })" class="action-button delete">Delete</a>

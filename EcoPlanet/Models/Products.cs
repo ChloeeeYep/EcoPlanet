@@ -28,5 +28,9 @@ namespace EcoPlanet.Models
         public DateTime createdAt { get; set; }
 
 
+        [DataType(DataType.Date)]
+        public DateTime ? expiryDate { get; set; }
+
+
     }
 }

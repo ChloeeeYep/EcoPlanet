@@ -152,6 +152,7 @@ namespace EcoPlanet.Controllers
             // Save the products object to the database
             if (ModelState.IsValid)
             {
+                products.createdAt = DateTime.Now;
                 _context.ProductsTable.Add(products);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -218,6 +219,7 @@ namespace EcoPlanet.Controllers
 
             if (ModelState.IsValid)
             {
+                products.createdAt = DateTime.Now;
                 _context.ProductsTable.Update(products);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", "Products");
