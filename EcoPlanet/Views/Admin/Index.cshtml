@@ -1,9 +1,27 @@
-﻿@{
+﻿@model List<EcoPlanet.Areas.Identity.Data.EcoPlanetUser>
+
+@{
+    ViewData["Title"] = "Manage Users";
     int counter = 1; // Start the counter at 1
 }
 
-@model ProductsViewModel
-
+@functions {
+    // Helper method to convert user type abbreviation to full form
+    public string GetUserTypeFullName(char userType)
+    {
+        switch (userType)
+        {
+            case 'U':
+                return "User";
+            case 'A':
+                return "Admin";
+            case 'S':
+                return "Seller";
+            default:
+                return "User";
+        }
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,8 +123,8 @@
 </head>
 
 <div class="header-container">
-    <h1>Products Information</h1>
-    <a asp-action="AddProducts" class="action-button add">Add New Products</a>
+    <h1>Users Information</h1>
+    <a class="action-button add" id="register" asp-area="Identity" asp-page="/Account/Register">Add New Users</a>
 </div>
 
 
@@ -115,54 +133,31 @@
         <thead>
             <tr>
                 <th> No.</th>
-                <th> Category</th>
+                <th> Email</th>
                 <th> Name</th>
-                <th> Descriptions</th>
-                <th> Price</th>
-                <th> Quantity</th>
-                <th> Status</th>
-                <th> Image</th>
-                <th>Created/Updated</th>
-                <th>Actions</th>
+                <th> Date of Birth</th>
+                <th> Contact</th>
+                <th> Address</th>
+                <th> User Type</th>
+                <th> Actions</th>
             </tr>
         </thead>
 
         <tbody>
-            @foreach (var item in Model.ProductsList)
+            @foreach (var users in Model)
             {
                 <tr>
                     <td>@counter</td>
-                    <td>@item.productsType</td>
-                    <td>@item.productsName</td>
-                    <td>@item.productsDescriptions</td>
-                    <td>@item.productsPrice</td>
-                    <td>@item.productsQuantity</td>
-                    <td>@item.productsStatus</td>
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.productsImage))
-                        {
-                            var image = Model.ImageList.FirstOrDefault(i => i.Key.Trim() == item.productsImage.Trim());
-
-
-                            if (image != null)
-                            {
-                                string imageURL = "https://" + image.BucketName + ".s3.amazonaws.com/" + image.Key;
-                                <img src="@imageURL" width="100" height="100" />
-                            }
-                            else
-                            {
-                                <span>No Image Found for Key: @item.productsImage</span>
-                            }
-                        }
-                        else
-                        {
-                            <span>No Image Provided</span>
-                        }
-                    </td>
-                    <td>@item.createdAt.ToString("MM/dd/yyyy")</td>
+                    <td>@users.Email</td>
+                    <td>@users.FullName</td>
+                    <td>@users.DOB.ToString("MM/dd/yyyy")</td>
+                    <td>@(users.PhoneNumber ?? "N/A")</td>
+                    <td>@(users.Address ?? "N/A")</td>
+                    <td>@GetUserTypeFullName(users.UserType)</td>
                     <td class="action-buttons">
-                        <a href="@Url.Action("EditProducts", "Products", new { productsId = item.productsId })" class="action-button edit">Edit</a>
-                        <a href="@Url.Action("DeleteProducts", "Products", new { productsId = item.productsId })" class="action-button delete">Delete</a>
+                        <a asp-area="Identity" asp-page="/Account/Manage/Index" asp-route-userId="@users.Id" class="action-button edit">Edit</a>
+                        <a asp-controller="Admin" asp-action="DeleteUser" asp-route-id="@users.Id" class="action-button delete" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+
                     </td>
                 </tr>
                 counter++;

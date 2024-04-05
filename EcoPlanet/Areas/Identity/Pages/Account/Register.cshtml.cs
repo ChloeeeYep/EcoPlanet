@@ -113,6 +113,8 @@ namespace EcoPlanet.Areas.Identity.Pages.Account
 
             public DateTime DoB { get; set; }
 
+            public char UserType { get; set; } = 'U';
+
         }
 
 
@@ -120,6 +122,12 @@ namespace EcoPlanet.Areas.Identity.Pages.Account
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                ViewData["IsAdmin"] = currentUser?.UserType == 'A';
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -132,6 +140,15 @@ namespace EcoPlanet.Areas.Identity.Pages.Account
                 user.FullName = Input.fullname;
                 user.DOB = Input.DoB;
                 user.EmailConfirmed = true;
+                user.UserType = Input.UserType == default(char) ? 'U' : Input.UserType;
+
+                var isAdmin = false;
+                if (User.Identity.IsAuthenticated)
+                {
+                    var currentUser = await _userManager.GetUserAsync(User);
+                    isAdmin = currentUser?.UserType == 'A';
+                }
+                ViewData["IsAdmin"] = isAdmin;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -153,15 +170,23 @@ namespace EcoPlanet.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");*/
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    if (isAdmin == true)
                     {
-                        /*return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });*/
-                        return RedirectToPage("Login");
+                        // Redirect admins to the admin index page
+                        return RedirectToAction("Index", "Admin");
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        // Redirect non-admin users to login or the home page based on the confirmation account setting
+                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        {
+                            return RedirectToPage("Login");
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
                     }
                 }
                 foreach (var error in result.Errors)

@@ -74,11 +74,15 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
 
             public DateTime DoB { get; set; }
 
-            [Required]
+
             [DataType(DataType.MultilineText)]
             [Display(Name = "Your Address")]
 
             public string Address { get; set; }
+
+            public char UserType { get; set; }
+
+            public string Id { get; set; }
         }
 
         private async Task LoadAsync(EcoPlanetUser user)
@@ -90,44 +94,65 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                Id = user.Id,
                 PhoneNumber = phoneNumber,
                 fullname = user.FullName,
                 DoB = user.DOB,
                 Address = user.Address,
-
+                UserType = user.UserType
             };
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string userId = null)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            EcoPlanetUser userToEdit = null;
+
+            // Load the user specified by userId, or the current logged-in user if userId is not provided
+            if (!string.IsNullOrEmpty(userId))
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                userToEdit = await _userManager.FindByIdAsync(userId);
+            }
+            else
+            {
+                userToEdit = await _userManager.GetUserAsync(User);
             }
 
-            await LoadAsync(user);
+            if (userToEdit == null)
+            {
+                return NotFound($"Unable to load user with ID '{userId ?? _userManager.GetUserId(User)}'.");
+            }
+
+            await LoadAsync(userToEdit);
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string userId = null)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            // Get the ID of the user being edited or the current logged-in user if no ID is provided
+            var userToEdit = !string.IsNullOrEmpty(userId) ? await _userManager.FindByIdAsync(userId) : await _userManager.GetUserAsync(User);
+
+            if (userToEdit == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Unable to load user with ID '{userId ?? _userManager.GetUserId(User)}'.");
             }
+
+            // Retrieve the UserType of the currently logged-in user
+            var currentUserType = (await _userManager.GetUserAsync(User)).UserType;
+
+            // Check if an admin is editing another user's profile
+            var isEditingAnotherUser = currentUserType == 'A' && userToEdit.Id != _userManager.GetUserId(User);
 
             if (!ModelState.IsValid)
             {
-                await LoadAsync(user);
+                await LoadAsync(userToEdit);
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            // Update the user details
+            var phoneNumber = await _userManager.GetPhoneNumberAsync(userToEdit);
             if (Input.PhoneNumber != phoneNumber)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+                var setPhoneResult = await _userManager.SetPhoneNumberAsync(userToEdit, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
@@ -135,23 +160,43 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if(Input.fullname != user.FullName)
+            // Other properties
+            if (Input.fullname != userToEdit.FullName)
             {
-                user.FullName = Input.fullname;
+                userToEdit.FullName = Input.fullname;
+            }
+            if (Input.DoB != userToEdit.DOB)
+            {
+                userToEdit.DOB = Input.DoB;
+            }
+            if (Input.Address != userToEdit.Address)
+            {
+                userToEdit.Address = Input.Address;
+            }
+            if (Input.UserType != userToEdit.UserType)
+            {
+                userToEdit.UserType = Input.UserType;
             }
 
-            if(Input.DoB != user.DOB)
+            // Save the changes
+            var result = await _userManager.UpdateAsync(userToEdit);
+            if (!result.Succeeded)
             {
-                user.DOB = Input.DoB;
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return Page();
             }
 
-            if(Input.Address != user.Address)
+            // If an admin edited another user's profile, redirect to the admin index
+            if (isEditingAnotherUser)
             {
-                user.Address = Input.Address;
+                return RedirectToAction("Index", "Admin");
             }
 
-            await _userManager.UpdateAsync(user);
-            await _signInManager.RefreshSignInAsync(user);
+            // If the current user updated their own profile, just refresh sign-in and stay on the page
+            await _signInManager.RefreshSignInAsync(userToEdit);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }
