@@ -83,7 +83,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Confirm Checkout</button>
+                <button type="submit" class="btn btn-primary" id="confirmCheckoutButton">Confirm Checkout</button>
             </form>
         </div>
 
@@ -152,6 +152,24 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            function checkCartItemsAndToggleCheckoutButton() {
+                // Get the count of items in the bag summary
+                const itemCount = document.querySelectorAll('.bag-item').length;
+                // Get the "Confirm Checkout" button
+                const confirmCheckoutButton = document.getElementById('confirmCheckoutButton');
+
+                // If there are no items in the bag, disable the button; otherwise, enable it
+                if (itemCount === 0) {
+                    confirmCheckoutButton.disabled = true;
+                } else {
+                    confirmCheckoutButton.disabled = false;
+                }
+            }
+
+            // Call the function on page load
+            checkCartItemsAndToggleCheckoutButton();
+
+
             function updateTotals() {
                 let subtotal = 0;
 
