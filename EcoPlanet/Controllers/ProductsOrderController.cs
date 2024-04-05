@@ -11,7 +11,6 @@ using EcoPlanet.ViewModels;
 using System.Linq;
 using System;
 using EcoPlanet.Areas.Identity.Data;
-using EcoPlanet.Data;
 
 namespace EcoPlanet.Controllers
 {
