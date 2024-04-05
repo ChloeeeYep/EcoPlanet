@@ -4,6 +4,7 @@ using EcoPlanet.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoPlanet.Migrations
 {
     [DbContext(typeof(EcoPlanetContext))]
-    partial class EcoPlanetContextModelSnapshot : ModelSnapshot
+    [Migration("20240405123115_changedriver")]
+    partial class changedriver
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,9 +90,6 @@ namespace EcoPlanet.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(1)");
 
-                    b.Property<bool>("isSubscribed")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -101,6 +101,183 @@ namespace EcoPlanet.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.Cart", b =>
+                {
+                    b.Property<int>("cartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cartId"));
+
+                    b.Property<string>("userId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("cartId");
+
+                    b.ToTable("CartTable");
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.CartItem", b =>
+                {
+                    b.Property<int>("cartItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cartItemId"));
+
+                    b.Property<int>("cartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("goodsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("goodsImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("goodsName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("goodsPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("goodsQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("cartItemId");
+
+                    b.HasIndex("cartId");
+
+                    b.HasIndex("goodsId");
+
+                    b.ToTable("CartItemTable");
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.Goods", b =>
+                {
+                    b.Property<int>("goodsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("goodsId"));
+
+                    b.Property<string>("SellerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("goodsDescriptions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("goodsExpiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("goodsImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("goodsName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("goodsPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("goodsQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("goodsStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("goodsType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("goodsId");
+
+                    b.ToTable("GoodsTable");
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.Order", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DriverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("OrderId");
+
+                    b.ToTable("OrderTable");
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.OrderItem", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SellerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("goodsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("goodsImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("goodsName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("goodsPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("goodsQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderItemId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItemTable");
                 });
 
             modelBuilder.Entity("EcoPlanet.Models.Products", b =>
@@ -115,9 +292,6 @@ namespace EcoPlanet.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("expiryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("productsDescriptions")
@@ -496,6 +670,36 @@ namespace EcoPlanet.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("EcoPlanet.Models.CartItem", b =>
+                {
+                    b.HasOne("EcoPlanet.Models.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("cartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EcoPlanet.Models.Goods", "Goods")
+                        .WithMany()
+                        .HasForeignKey("goodsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Goods");
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.OrderItem", b =>
+                {
+                    b.HasOne("EcoPlanet.Models.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("EcoPlanet.Models.ProductsCartItem", b =>
                 {
                     b.HasOne("EcoPlanet.Models.ProductsCart", "ProductsCart")
@@ -575,6 +779,16 @@ namespace EcoPlanet.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("EcoPlanet.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("EcoPlanet.Models.ProductsCart", b =>

@@ -3,7 +3,7 @@
 <br></br>
 <br></br>
 <div class="container">
-    <a href="@Url.Action("ShowOrders", "ProductsOrder")" class="btn-back">Back</a>
+    <a href="@Url.Action("Index", "ProductsOrder")" class="btn-back">Back</a>
     <div class="order-header">
         <h1>Order# @Model.ProductsOrderId</h1>
         <h1>Order Date: @Model.ProductsOrderDate</h1>
@@ -17,6 +17,7 @@
 
     <div class="delivery-details">
         <h4>Delivery Address</h4>
+        <p>@Model.Email</p>
         <p>@Model.Contact</p>
         <p>@Model.Address</p>
     </div>
@@ -65,7 +66,7 @@
     }
 
     .btn-back:hover {
-            color: #333;
+        color: #333;
     }
 
     .order-header {
@@ -180,7 +181,7 @@
         font-weight: bold;
         padding-top: 10px;
         border-top: 1px solid #ddd;
-        color:rgb(238, 77, 45)
+        color: rgb(238, 77, 45)
     }
 
     .payment-method {

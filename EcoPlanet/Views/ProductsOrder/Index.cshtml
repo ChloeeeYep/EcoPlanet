@@ -1,0 +1,148 @@
+﻿@{
+    int counter = 1; // Start the counter at 1
+}
+
+@model IEnumerable<EcoPlanet.Models.ProductsOrder>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        .header-container {
+            display: flex;
+            justify-content: space-between; /* Aligns children to opposite ends */
+            align-items: center; /* Centers children vertically */
+            margin-bottom: 20px; /* Adds some space below the header */
+        }
+
+        h1 {
+            margin: 0; /* Removes default margin to align properly with the button */
+            flex-grow: 1; /* Allows the title to grow and push the button to the right */
+        }
+
+        .table-container {
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #333;
+            text-align: center;
+            padding: 10px;
+            font-size: 16px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        td {
+            padding: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px; /* Adjust the space between buttons if necessary */
+            justify-content: center;
+        }
+
+        .action-button {
+            padding: 8px 16px; /* Adjust padding if necessary */
+            border-radius: 4px;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: none; /* Remove border for buttons */
+            outline: none; /* Remove outline for buttons */
+        }
+
+        .action-button.view {
+            background-color: #17a2b8;
+        }
+
+        .action-button.view:hover,
+        .action-button.view:focus {
+            background-color: #138496;
+            color:white
+        }
+
+        .action-button.edit {
+            background-color: #ffc107;
+            color: white; /* Text color for the edit button for contrast */
+        }
+
+        .action-button.edit:hover,
+        .action-button.edit:focus {
+            background-color: #e0a800;
+        }
+
+        .action-button.delete {
+            background-color: #dc3545;
+        }
+
+        .action-button.delete:hover,
+        .action-button.delete:focus {
+            background-color: #c82333;
+        }
+
+        /* Additional styling to unify the design of the buttons */
+        .action-buttons form {
+            display: contents; /* This ensures the button inside form fits into the flex layout */
+        }
+    </style>
+</head>
+
+<div class="header-container">
+    <h1>Manage Orders</h1>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th> No.</th>
+                <th> OrderId</th>
+                <th> User Email</th>
+                <th> Price</th>
+                <th> Order Status</th>
+                <th> Driver</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@counter</td>
+                    <td>@order.ProductsOrderId</td>
+                    <td>@order.Email</td>
+                    <td>Rm @order.TotalPrice</td>
+                    <td>@order.OrderStatus</td>
+                    <td>@(order.DriverId ?? "N/A")</td>              
+                    <td class="action-buttons">
+                        <a href="@Url.Action("ManageOrdersDetails", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="action-button view">View</a>
+                        <a href="@Url.Action("EditOrders", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="action-button edit">Edit</a>                    
+                        <form method="post" asp-action="CancelOrders" asp-controller="ProductsOrder" asp-route-orderId="@order.ProductsOrderId">
+                            <button type="submit" class="action-button delete">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                counter++;
+            }
+        </tbody>
+    </table>
+</div>
+</html>
+

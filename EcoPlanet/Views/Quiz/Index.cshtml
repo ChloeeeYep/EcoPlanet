@@ -32,7 +32,7 @@
                     <td>@item.Wrong1</td>
                     <td>@item.Wrong2</td>
                     <td>@item.Wrong3</td>
-                    <td>
+                    <td class ="action-buttons">
                         <a href="@Url.Action("EditData", "Quiz", new { Id = item.Id })" class="action-button edit">Edit</a>
                         <a href="@Url.Action("DeleteData", "Quiz", new { Id = item.Id })" class="action-button delete">Delete</a>
                     </td>
@@ -44,6 +44,11 @@
 </div>
 
 <style>
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
     .header-container {
         display: flex;
         justify-content: space-between; /* Aligns children to opposite ends */

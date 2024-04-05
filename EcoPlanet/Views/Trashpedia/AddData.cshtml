@@ -1,6 +1,10 @@
 ﻿@model EcoPlanet.Models.Trashpedia
 <center>
-    <h1>Add Trashpedia</h1>
+	<div class="header">
+		<a href="@Url.Action("Index", "Trashpedia")" class="btn-back">Back</a>
+		<h1>Add Trashpedia</h1>
+		<div></div>
+	</div>
     <br /><hr />
     <form asp-action="AddData" method="post" asp-controller="Trashpedia" enctype="multipart/form-data">
         <table border="1">
@@ -38,6 +42,22 @@
 </center>
 
 <style>
+	.header {
+		display: flex; /* Use flexbox to align items in the same row */
+		justify-content: space-between; /* Space between the elements */
+		align-items: center; /* Align items vertically */
+		padding: 0 20px; /* Add some padding on the sides */
+	}
+
+	.header .btn-back {
+		background-color: #ddd;
+		color: #333;
+		padding: 10px 20px;
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 16px;
+		font-weight: bold;
+	}
 	form {
 		max-width: 600px;
 	}
