@@ -34,14 +34,26 @@
             <li class="nav-item">
                 <a id="viewtrashpedia" class="nav-link text-dark" asp-action="ShowTrashpedia" asp-controller="Trashpedia">Trashpedia</a>
             </li>
-            <li class="nav-item">
+            @* <li class="nav-item">
                 <a id="browsegoods" class="nav-link text-dark" asp-action="BrowseGoods" asp-controller="Goods"> Goods </a>
-            </li>
+            </li> *@
             <li class="nav-item">
                 <a id="browseproducts" class="nav-link text-dark" asp-action="IntroPage" asp-controller="Products"> Reusable Products </a>
             </li>
             <li class="nav-item">
                 <a id="quiz" class="nav-link text-dark" asp-action="ShowQuiz" asp-controller="Quiz"> Quiz </a>
+            </li>
+           @*  <li class="nav-item dropdown">
+                <a id="orders" class="nav-link text-dark dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Orders History
+                </a>
+                <div class="dropdown-menu" aria-labelledby="orders">
+                    <a href="@Url.Action("ShowOrders", "ProductsOrder")" class="dropdown-item">Products</a>
+                    <a href="@Url.Action("ShowOrders", "Order")" class="dropdown-item">Goods</a>
+                </div>
+            </li> *@
+            <li class="nav-item">
+                <a id="ShowOrders" class="nav-link text-dark" asp-action="ShowOrders" asp-controller="ProductsOrder"> Order History </a>
             </li>
         }
         else if (user.UserType == 'S')
@@ -97,4 +109,28 @@
         margin-right: 10px; /* Space between register and login */
     }
 
+    .nav-item.dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        left: 0;
+        z-index: 1000;
+        box-shadow: 0 0 5px rgba(0,0,0,.2);
+        background-color: #fff;
+        padding: 10px;
+    }
+
+    .dropdown-item {
+        display: block;
+        padding: 5px 10px;
+        text-decoration: none;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: black;
+    }
 </style>

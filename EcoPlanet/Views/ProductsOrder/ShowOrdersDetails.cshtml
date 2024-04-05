@@ -1,0 +1,181 @@
+﻿@model EcoPlanet.Models.ProductsOrder
+
+<br></br>
+<br></br>
+<div class="container">
+    <a href="@Url.Action("ShowOrders", "ProductsOrder")" class="btn-back">Back</a>
+    <div class="order-header">
+        <h1>Order# @Model.ProductsOrderId</h1>
+        <h1>Order Date: @Model.ProductsOrderDate</h1>
+        <span class="order-status">@Model.OrderStatus</span>
+    </div>
+
+
+    <div class="delivery-details">
+        <h4>Delivery Address</h4>
+        <p>@Model.Contact</p>
+        <p>@Model.Address</p>
+    </div>
+
+    <div class="order-body">
+        <h4>Items:</h4>
+        @foreach (var item in Model.ProductsOrderItems)
+        {
+            <div class="order-item">
+                <img class="order-image" src="@($"{ViewData["BaseUrl"]}{item.productsImage.Trim()}")" alt="@item.productsName">
+                <div class="item-details">
+                    <div class="item-name">@item.productsName</div>
+                    <div class="item-quantity-and-price">
+                        <span class="item-quantity">Qty: <span class="quantity-badge">@item.productsQuantity</span></span>
+                        <span class="item-price">RM @item.productsPrice</span>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="order-total">
+            Total Price: RM @Model.TotalPrice
+        </div>
+        <div class="payment-method">
+            Payment Method: @Model.PaymentMethod
+        </div>
+    </div>
+
+    <!-- Add additional details as needed -->
+</div>
+
+<style>
+    .container {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 10px 20px;
+        background-color: #ddd;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .btn-back:hover {
+            color: #333;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .order-header h1 {
+        font-size: 1.5em;
+    }
+
+    .order-status {
+        font-size: 1em;
+        color: #4CAF50;
+        font-weight: bold;
+    }
+
+    .progress-bar {
+        /* Style your progress bar */
+    }
+
+    .delivery-details {
+        background-color: #f8f8f8;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+    }
+
+    .order-body {
+        background-color: #f8f8f8;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .order-item {
+        display: grid;
+        grid-template-columns: 100px auto;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #ffffff;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+
+    .order-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .item-details {
+        display: grid;
+        grid-template-rows: auto;
+        gap: 5px;
+    }
+
+    .item-name {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .item-quantity-and-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .item-quantity {
+        font-size: 0.9em;
+        /* Other styles if needed */
+    }
+
+    .item-price {
+        margin-left: auto; /* Pushes the price to the right */
+        font-weight: bold;
+        color: #4CAF50; /* Color for the price */
+    }
+
+    .quantity-badge {
+        display: inline-block;
+        background-color: #f0f0f0;
+        color: #333;
+        padding: 3px 6px;
+        border-radius: 12px;
+        margin-left: 5px;
+        font-weight: bold;
+    }
+
+    .order-total {
+        text-align: right;
+        font-size: 15px;
+        font-weight: bold;
+        padding-top: 10px;
+        border-top: 1px solid #ddd;
+        color:rgb(238, 77, 45)
+    }
+
+    .payment-method {
+        text-align: right;
+        font-size: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #ddd;
+    }
+
+    header {
+        position: fixed;
+        width: 100%;
+    }
+</style>

@@ -322,7 +322,7 @@ namespace EcoPlanet.Controllers
                     var order = new Order
                     {
                         Email = user.Email,
-                        OrderDate = DateTime.UtcNow,
+                        OrderDate = DateTime.Now,
                         Contact = model.PhoneNumber,
                         Address = model.Address,
                         PaymentMethod = "Credit Card/Debit Card",

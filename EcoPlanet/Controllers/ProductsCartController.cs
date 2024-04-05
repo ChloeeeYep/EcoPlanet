@@ -325,7 +325,7 @@ namespace EcoPlanet.Controllers
                     var productsOrder = new ProductsOrder
                     {
                         Email = user.Email,
-                        ProductsOrderDate = DateTime.UtcNow,
+                        ProductsOrderDate = DateTime.Now,
                         Contact = model.PhoneNumber,
                         Address = model.Address,
                         PaymentMethod = "Credit Card/Debit Card",

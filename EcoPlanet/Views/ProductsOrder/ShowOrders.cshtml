@@ -1,0 +1,157 @@
+﻿@model IEnumerable<EcoPlanet.Models.ProductsOrder>
+
+@{
+    int orderSequence = 1; // Initialize a sequence counter
+}
+<br></br>
+<br></br>
+<div class="order-tracking-container">
+    @foreach (var order in Model)
+    {
+        <div class="order-card">
+            <div class="order-header">
+                <h2>Order# @order.ProductsOrderId</h2>
+                <span class="order-status">@order.OrderStatus</span>
+            </div>
+            <div class="order-body">
+                <h3>Items:</h3>
+                @foreach (var item in order.ProductsOrderItems)
+                {
+                    <!-- Wrap the entire order-item with an anchor tag -->
+                    <a href="@Url.Action("ShowOrdersDetails", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="order-item-link">
+                        <div class="order-item">
+                            <img class="order-image" src="@($"{ViewData["BaseUrl"]}{item.productsImage.Trim()}")" alt="@item.productsName">
+                            <div class="item-details">
+                                <div class="item-name">@item.productsName</div>
+                                <div class="item-quantity-and-price">
+                                    <span class="item-quantity">Qty: <span class="quantity-badge">@item.productsQuantity</span></span>
+                                    <span class="item-price">RM @item.productsPrice</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }
+                <div class="order-total">
+                    Total Price: RM @order.TotalPrice
+                </div>
+            </div>
+        </div>
+        orderSequence++;
+    }
+</div>
+
+<style>
+    .order-tracking-container {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .order-item-link {
+        text-decoration: none; /* Removes the underline from the link */
+        color: inherit; /* Keeps the text color consistent with the rest of the design */
+        display: block; /* Makes the link block level to fill the container */
+    }
+
+    .order-item-link:hover {
+        color:black;
+    }
+
+    .order-card {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .order-status {
+        font-weight: bold;
+        color: #4CAF50; /* Green for in-progress, change color based on status */
+    }
+
+    .order-body {
+        margin-bottom: 10px;
+    }
+
+    .order-item {
+        display: grid;
+        grid-template-columns: 100px auto;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #ffffff;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+
+    .order-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .item-details {
+        display: grid;
+        grid-template-rows: auto;
+        gap: 5px;
+    }
+
+    .item-name {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .item-quantity-and-price {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .item-quantity {
+        font-size: 0.9em;
+        /* Other styles if needed */
+    }
+
+    .item-price {
+        margin-left: auto; /* Pushes the price to the right */
+        font-weight: bold;
+        color: #4CAF50; /* Color for the price */
+    }
+
+    .quantity-badge {
+        display: inline-block;
+        background-color: #f0f0f0;
+        color: #333;
+        padding: 3px 6px;
+        border-radius: 12px;
+        margin-left: 5px;
+        font-weight: bold;
+    }
+
+    .fas {
+        margin-right: 5px;
+    }
+
+    .order-total {
+        font-size: 17px;
+        margin-top: 10px;
+        font-weight: bold;
+        text-align: right;
+        color: rgb(238, 77, 45)
+    }
+
+    header {
+        position: fixed;
+        width: 100%;
+    }
+</style>
