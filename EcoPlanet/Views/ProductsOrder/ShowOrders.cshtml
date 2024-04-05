@@ -11,7 +11,7 @@
         <div class="order-card">
             <div class="order-header">
                 <h2>Order# @order.ProductsOrderId</h2>
-                <span class="order-status">@order.OrderStatus</span>
+                <span class="order-status @GetOrderStatusClass(order.OrderStatus)">@order.OrderStatus</span>
             </div>
             <div class="order-body">
                 <h3>Items:</h3>
@@ -71,9 +71,14 @@
         margin-bottom: 15px;
     }
 
-    .order-status {
+    .order-status.green {
+        color: #4CAF50; /* Green color for the status */
         font-weight: bold;
-        color: #4CAF50; /* Green for in-progress, change color based on status */
+    }
+
+    .order-status.red {
+        color: red; /* Red color for the status */
+        font-weight: bold;
     }
 
     .order-body {
@@ -125,7 +130,7 @@
     .item-price {
         margin-left: auto; /* Pushes the price to the right */
         font-weight: bold;
-        color: #4CAF50; /* Color for the price */
+        color: black; /* Color for the price */
     }
 
     .quantity-badge {
@@ -155,3 +160,14 @@
         width: 100%;
     }
 </style>
+
+@functions {
+    public string GetOrderStatusClass(string orderStatus)
+    {
+        return orderStatus.ToLower() switch
+        {
+            "canceled" => "red",
+            _ => "green",
+        };
+    }
+}

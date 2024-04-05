@@ -27,7 +27,7 @@ namespace EcoPlanet.Models
 
         public string OrderStatus { get; set; }
 
-        public string DriverId { get; set; }
+        public string ? DriverId { get; set; }
 
         public virtual List<ProductsOrderItem> ProductsOrderItems { get; set; } = new List<ProductsOrderItem>();
 
