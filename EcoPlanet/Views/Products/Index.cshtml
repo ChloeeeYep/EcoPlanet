@@ -71,36 +71,51 @@
             flex: 0 0 auto; /* Do not allow the buttons to grow or shrink */
         }
 
-            .action-button:hover {
-                color: white;
-            }
+        .action-button:hover {
+            color: white;
+        }
 
         /* Styling for Add button */
         .add {
             background-color: #17a2b8;
         }
 
-            .add:hover, .add:focus {
-                background-color: #138496;
-            }
+        .add:hover, .add:focus {
+            background-color: #138496;
+        }
 
         /* Styling for Edit button */
         .edit {
             background-color: #ffc107;
         }
 
-            .edit:hover, .edit:focus {
-                background-color: #e0a800;
-            }
+        .edit:hover, .edit:focus {
+            background-color: #e0a800;
+        }
 
         /* Styling for Delete button */
         .delete {
             background-color: #dc3545;
         }
 
-            .delete:hover, .delete:focus {
-                background-color: #c82333;
-            }
+        .delete:hover, .delete:focus {
+            background-color: #c82333;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center; /* Center the search box horizontally */
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        #searchProductsInput {
+            width: 300px; /* Adjust the width as necessary */
+            padding: 10px;
+            margin: 10px 0; /* Adjust the margins if necessary */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
     </style>
 </head>
 
@@ -109,9 +124,13 @@
     <a asp-action="AddProducts" class="action-button add">Add New Products</a>
 </div>
 
+<hr />
+<div class="search-container">
+    <input type="text" id="searchProductsInput" onkeyup="searchProducts()" placeholder="Search for products..." title="Type in a product detail">
+</div>
 
 <div class="table-container">
-    <table>
+    <table id="ProductsTable">
         <thead>
             <tr>
                 <th> No.</th>
@@ -171,3 +190,29 @@
     </table>
 </div>
 </html>
+
+<script>
+    function searchProducts() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchProductsInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("ProductsTable"); // Ensure your table has this ID
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+            tr[i].style.display = "none"; // Start by hiding all rows
+            td = tr[i].getElementsByTagName("td");
+            for (var j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = ""; // Show the row if there's a match
+                        break;
+                    }
+                }
+            }
+        }
+    }
+</script>

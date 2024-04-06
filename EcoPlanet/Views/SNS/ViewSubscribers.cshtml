@@ -5,9 +5,11 @@
     int counter = 1; // Start the counter at 1
 }
 
-<h1>Subscribers Lists</h1>
-<br /><br /><hr />
-
+<div class="header-container">
+    <h1>Subscribers Lists</h1>
+    <a href="@Url.Action("sendBroadcastMessage", "SNS")" class="action-button edit">Back</a>
+</div>
+<hr />
 
 <div class="header-container">
     <div class="total-subscribers">
@@ -162,4 +164,21 @@
         font-weight: bold; /* Bold text for the subscriber count */
         margin-left: 8px; /* Add some space between "Total Subscribers:" and the count */
     }
+
+    .edit {
+        padding: 10px 20px;
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: background-color 0.3s;
+        text-decoration: none;
+    }
+
+        .edit:hover, .edit:focus {
+            background-color: #003d82;
+            color: #fff;
+        }
 </style>

@@ -31,7 +31,7 @@
     <style>
         .header-container {
             display: flex;
-            justify-content: space-between; /* Aligns children to opposite ends */
+            justify-content: space-between;
             align-items: center; /* Centers children vertically */
             margin-bottom: 20px; /* Adds some space below the header */
         }
@@ -89,36 +89,57 @@
             flex: 0 0 auto; /* Do not allow the buttons to grow or shrink */
         }
 
-            .action-button:hover {
-                color: white;
-            }
+        .action-button:hover {
+            color: white;
+        }
 
         /* Styling for Add button */
         .add {
             background-color: #17a2b8;
         }
 
-            .add:hover, .add:focus {
-                background-color: #138496;
-            }
+        .add:hover, .add:focus {
+            background-color: #138496;
+        }
 
         /* Styling for Edit button */
         .edit {
             background-color: #ffc107;
         }
 
-            .edit:hover, .edit:focus {
-                background-color: #e0a800;
-            }
+        .edit:hover, .edit:focus {
+            background-color: #e0a800;
+        }
 
         /* Styling for Delete button */
         .delete {
             background-color: #dc3545;
         }
 
-            .delete:hover, .delete:focus {
-                background-color: #c82333;
-            }
+        .delete:hover, .delete:focus {
+            background-color: #c82333;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center; /* Center the search box */
+            padding: 0; /* Adjust padding if needed */
+            margin-bottom: 20px; /* Space below the search box */
+        }
+
+        #searchUserInput {
+            display: inline-flex;
+            width: 300px; /* Adjust width as needed */
+            padding: 10px;
+            margin: 0; /* Adjust margins if needed */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .wrap-text {
+            word-wrap: break-word; /* Allow long words to be able to break and wrap onto the next line */
+            max-width: 200px; /* Set a max-width to the content, adjust as needed */
+        }
     </style>
 </head>
 
@@ -126,9 +147,12 @@
     <h1>Users Information</h1>
     <a class="action-button add" id="register" asp-area="Identity" asp-page="/Account/Register">Add New Users</a>
 </div>
+<hr />
+<div class="search-container">
+    <input type="text" id="searchUserInput" onkeyup="searchUsers()" placeholder="Search for users..." title="Type in a user detail">
+</div>
 
-
-<div class="table-container">
+<div class="table-container" id="UserTable">
     <table>
         <thead>
             <tr>
@@ -152,7 +176,7 @@
                     <td>@users.FullName</td>
                     <td>@users.DOB.ToString("MM/dd/yyyy")</td>
                     <td>@(users.PhoneNumber ?? "N/A")</td>
-                    <td>@(users.Address ?? "N/A")</td>
+                    <td class="wrap-text">@(users.Address ?? "N/A")</td>
                     <td>@GetUserTypeFullName(users.UserType)</td>
                     <td class="action-buttons">
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" asp-route-userId="@users.Id" class="action-button edit">Edit</a>
@@ -166,3 +190,27 @@
     </table>
 </div>
 </html>
+
+<script>
+    function searchUsers() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchUserInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("UserTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "none"; // Start by hiding all rows
+            td = tr[i].getElementsByTagName("td");
+            for (var j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = ""; // Show the row if there's a match
+                        break;
+                    }
+                }
+            }
+        }
+    }
+</script>

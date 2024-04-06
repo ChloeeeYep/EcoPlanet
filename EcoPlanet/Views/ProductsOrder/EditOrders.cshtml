@@ -60,6 +60,7 @@
 			background-color: #357ABD;
 		}
 
+
 	/* This targets the td elements that contain the span for validation message */
 	td:has(> span[data-valmsg-for]:empty) {
 		display: none;
@@ -108,12 +109,12 @@
 				<td><input asp-for="ProductsOrderId" readonly /></td>
 			</tr>
 			<tr>
-				<th><label asp-for="Email">User Email</label></th>
+				<th><label asp-for="Email">Email</label></th>
 				<td><input asp-for="Email" readonly /></td>
 				<td><span asp-validation-for="Email"></span></td>
 			</tr>
 			<tr>
-				<th><label asp-for="OrderStatus">Order Status</label></th>
+				<th><label asp-for="OrderStatus">Status</label></th>
 				<td><input asp-for="OrderStatus" readonly /></td>
 				<td><span asp-validation-for="OrderStatus"></span></td>
 			</tr>
@@ -127,12 +128,13 @@
 							<option value="@driver.Id">@driver.FullName</option>
 						}
 					</select>
+					<small class="form-text text-muted">Notes: Assigning a driver will automatically update the order status to "Delivering"</small>
 				</td>
 				<td><span asp-validation-for="DriverId"></span></td>
 			</tr>					
 			<tr>
 				<td colspan="2" style="text-align:center">
-					<button type="submit" class="btn-edit">Update</button>
+					<button type="submit" class="btn-edit" onclick="return confirm('Are you sure you want to update this information');">Update</button>
 				</td>
 			</tr>
 		</table>

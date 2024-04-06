@@ -8,9 +8,13 @@
     <h1>Quiz</h1>
     <a href="@Url.Action("AddData", "Quiz")" class="action-button add">Add New Quiz</a>
 </div>
+<hr />
+<div class="search-container">
+    <input type="text" id="searchQuizInput" onkeyup="searchQuiz()" placeholder="Search for quizzes..." title="Type in a quiz detail">
+</div>
 
 <div class="table-container">
-    <table>
+    <table id="QuizTable">
         <thead>
             <tr>
                 <th>No.</th>
@@ -34,7 +38,7 @@
                     <td>@item.Wrong3</td>
                     <td class ="action-buttons">
                         <a href="@Url.Action("EditData", "Quiz", new { Id = item.Id })" class="action-button edit">Edit</a>
-                        <a href="@Url.Action("DeleteData", "Quiz", new { Id = item.Id })" class="action-button delete">Delete</a>
+                        <a href="@Url.Action("DeleteData", "Quiz", new { Id = item.Id })" class="action-button delete" >Delete</a>
                     </td>
                 </tr>
                 counter++;
@@ -42,6 +46,30 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    function searchQuiz() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchQuizInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("QuizTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "none"; // Start by hiding all rows
+            td = tr[i].getElementsByTagName("td");
+            for (var j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = ""; // Show the row if there's a match
+                        break;
+                    }
+                }
+            }
+        }
+    }
+</script>
 
 <style>
     .action-buttons {
@@ -126,26 +154,41 @@
         background-color: #17a2b8;
     }
 
-        .add:hover, .add:focus {
-            background-color: #138496;
-        }
+    .add:hover, .add:focus {
+        background-color: #138496;
+    }
 
     /* Styling for Edit button */
     .edit {
         background-color: #ffc107;
     }
 
-        .edit:hover, .edit:focus {
-            background-color: #e0a800;
-        }
+    .edit:hover, .edit:focus {
+        background-color: #e0a800;
+    }
 
     /* Styling for Delete button */
     .delete {
         background-color: #dc3545;
     }
 
-        .delete:hover, .delete:focus {
-            background-color: #c82333;
-        }
+    .delete:hover, .delete:focus {
+        background-color: #c82333;
+    }
+
+    .search-container {
+        display: flex;
+        justify-content: center; /* Center the search box horizontally */
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    #searchQuizInput {
+        width: 300px; /* Adjust the width as necessary */
+        padding: 10px;
+        margin: 10px 0; /* Adjust the margins if necessary */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
 </style>
 

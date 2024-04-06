@@ -7,7 +7,8 @@
 
 <div class="header-container">
     <h1>Broadcast Messages</h1>
-    <a href="@Url.Action("sendBroadcastMessage", "SNS")" class="action-button edit">Back to Broadcast Message Page</a>
+    <a href="@Url.Action("sendBroadcastMessage", "SNS")" class="action-button edit">Back</a>
+    <hr />
 </div>
 
 <div class="table-container">
@@ -26,7 +27,7 @@
                 <tr>
                     <td>@counter</td>
                     <td>@item.Title</td>
-                    <td>@item.Content</td>
+                    <td class="wrap-text">@item.Content</td>
                     <td>@item.CreatedAt</td>               
                 </tr>
                 counter++;
@@ -104,7 +105,6 @@
         flex: 0 0 auto; /* Do not allow the buttons to grow or shrink */
     }
 
-    /* Styling for Edit button */
     .edit {
         padding: 10px 20px;
         background-color: #0056b3;
@@ -122,6 +122,11 @@
         color: #fff;
     }
 
+    .wrap-text {
+        word-wrap: break-word; /* Allow long words to be able to break and wrap onto the next line */
+        max-width: 200px; /* Set a max-width to the content, adjust as needed */
+        text-align:left;
+    }
  
 </style>
 

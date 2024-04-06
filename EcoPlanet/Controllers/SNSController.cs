@@ -58,8 +58,9 @@ namespace EcoPlanet.Controllers
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
                 if (user == null)
                 {
-                    // Handle the case where the user is not found
-                    return BadRequest("User not found.");
+                    TempData["Unregistered"] = true;
+                    TempData["Message"] = "Please Register An Account Before Subscribe Us. Thanks!";
+                    return RedirectToAction("Index", "SNS");
                 }
 
                 if (user.isSubscribed == false)
@@ -142,6 +143,7 @@ namespace EcoPlanet.Controllers
             }
             return View();
         }
+
 
         public async Task<IActionResult> ViewBroadcast()
         {

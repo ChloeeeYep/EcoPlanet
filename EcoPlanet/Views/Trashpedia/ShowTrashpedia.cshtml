@@ -6,6 +6,7 @@
 
 <center>
     <h1>Trashpedia</h1>
+    <input type="text" id="searchTrashpediaInput" onkeyup="searchTrashpedia()" placeholder="Search Trashpedia..." title="Type in a Trashpedia detail">
 </center>
 
 <div class="trashpedia-list">
@@ -72,4 +73,32 @@
         text-transform: uppercase;
         margin-bottom: 5px; /* Space above the image */
     }
+
+    #searchTrashpediaInput {
+        width: 50%; /* Adjust as per your layout */
+        padding: 10px;
+        margin-bottom: 20px; /* Space below the search box */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
 </style>
+
+<script>
+    function searchTrashpedia() {
+        var input, filter, list, items, name, i, txtValue;
+        input = document.getElementById("searchTrashpediaInput");
+        filter = input.value.toUpperCase();
+        list = document.getElementsByClassName("trashpedia-list")[0];
+        items = list.getElementsByClassName("trashpedia-item");
+
+        for (i = 0; i < items.length; i++) {
+            name = items[i].getElementsByClassName("trashpedia-name")[0];
+            txtValue = name.textContent || name.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                items[i].style.display = "";
+            } else {
+                items[i].style.display = "none";
+            }
+        }
+    }
+</script>

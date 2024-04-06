@@ -150,6 +150,10 @@ form .btn button{
             {
                 <div class="alert alert-info">@TempData["Message"]</div>
             }
+            @if (TempData["Unregistered"] != null)
+            {
+                <div class="alert alert-info">@TempData["Message"]</div>
+            }
         </div>
         <form method="post" asp-action="subscribeNewsletter" asp-controller="SNS">
             <div class="field">
