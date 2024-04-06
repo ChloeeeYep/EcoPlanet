@@ -18,6 +18,7 @@
     string address = user.Address;
 }
 
+<br /><br /><br />
 <div class="container mt-5">
     <div class="row">
         <!-- Notification Area -->
@@ -83,7 +84,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="confirmCheckoutButton">Confirm Checkout</button>
+                <button type="submit" class="btn btn-primary" id="confirmCheckoutButton" onclick="return confirm('Are you sure you want to checkout ?');">Confirm Checkout</button>
             </form>
         </div>
 
@@ -375,11 +376,11 @@
         transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
 
-        .btn-primary:hover {
-            color: #fff;
-            background-color: #62af7a;
-            border-color: #0062cc;
-        }
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #62af7a;
+        border-color: #0062cc;
+    }
 
     .btn-info {
         color: #fff;
@@ -387,11 +388,11 @@
         border-radius: 10px;
     }
 
-        .btn-info:hover {
-            color: #fff;
-            background-color: darkolivegreen;
-            border-radius: 10px;
-        }
+    .btn-info:hover {
+        color: #fff;
+        background-color: darkolivegreen;
+        border-radius: 10px;
+    }
 
 
     .btn-primary:focus,
@@ -417,11 +418,11 @@
         border-color: #6c757d;
     }
 
-        .btn-secondary:hover {
-            color: #fff;
-            background-color: #5a6268;
-            border-color: #545b62;
-        }
+    .btn-secondary:hover {
+        color: #fff;
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
 
     .icon-button {
         border: none;
@@ -435,13 +436,22 @@
         transform: translateY(-50%); /* This will ensure it's centered vertically */
     }
 
-        .icon-button i {
-            color: slategrey;
-            font-size: 1.2rem;
-        }
+    .icon-button i {
+        color: slategrey;
+        font-size: 1.2rem;
+    }
 
-        .icon-button:hover i {
-            color: darkslategrey;
-        }
+    .icon-button:hover i {
+        color: darkslategrey;
+    }
 
+    header {
+        position: fixed;
+        width: 100%;
+    }
+
+    body {
+        margin-bottom: 100px;
+        padding-top: 1px;
+    }
 </style>
