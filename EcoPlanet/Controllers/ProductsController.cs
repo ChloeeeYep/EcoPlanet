@@ -12,6 +12,10 @@ using Microsoft.AspNetCore.Http;
 using NuGet.Packaging.Signing;
 using System.Drawing;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Identity;
+using EcoPlanet.Areas.Identity.Data;
+using NuGet.Protocol.Plugins;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EcoPlanet.Controllers
 {
@@ -19,6 +23,7 @@ namespace EcoPlanet.Controllers
     {
         private readonly EcoPlanetContext _context;
         private const string bucketname = "ecoplanet";
+        private readonly UserManager<EcoPlanetUser> _userManager;
 
 
         public ProductsController(EcoPlanetContext context)
@@ -361,6 +366,110 @@ namespace EcoPlanet.Controllers
 
             //3.read image by image and store to the lists
             string ? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
+            if (products != null)
+            {
+                var viewModel = new ProductsViewModel
+                {
+                    ProductsList = new List<Products> { products },
+                    ImageList = imagelist
+                };
+
+                return View(viewModel);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        //Before Login
+        public async Task<IActionResult> IntroPageBefore()
+        {
+            var videoUrl = await GetIntroductionVideoUrlAsync();
+
+            ViewBag.VideoUrl = videoUrl;
+            return View();
+        }
+
+        public async Task<IActionResult> BrowseProductsBefore()
+        {
+            var products = await _context.ProductsTable
+                            .Where(p => p.productsStatus == "Available")
+                                    .ToListAsync();
+
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
+
+            //3.read image by image and store to the lists
+            string? nextToken = null;
+            do
+            {
+                //3.1 Create Lists Request
+                ListObjectsRequest request = new ListObjectsRequest
+                {
+                    BucketName = bucketname
+                };
+
+                //3.2 execute the request
+                ListObjectsResponse response = await agent.ListObjectsAsync(request);
+
+                //3.3 Store the images from response to the list
+                imagelist.AddRange(response.S3Objects);
+
+                //3.4 check the next addressing and store into the next token
+                nextToken = response.NextMarker;
+
+            }
+            while (nextToken != null);
+
+            // Create the ViewModel and populate it with goods and image data
+            var viewModel = new ProductsViewModel
+            {
+                ProductsList = products,
+                ImageList = imagelist
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> ProductsDetailsBefore(int productsId)
+        {
+            var products = await _context.ProductsTable
+                                          .FirstOrDefaultAsync(p => p.productsId == productsId);
+
+            //1.connect to the AWS account
+            List<string> keys = getKeys();
+            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            //2. create empty lists that can store the retrieved images from S3
+            List<S3Object> imagelist = new List<S3Object>();
+
+            //3.read image by image and store to the lists
+            string? nextToken = null;
             do
             {
                 //3.1 Create Lists Request

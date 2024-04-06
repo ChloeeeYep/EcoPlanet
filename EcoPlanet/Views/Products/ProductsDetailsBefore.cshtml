@@ -1,0 +1,114 @@
+﻿@model EcoPlanet.Models.ProductsViewModel
+
+@{
+    var products = Model.ProductsList.FirstOrDefault();
+    var imageKey = products?.productsImage;
+    var imageUrl = imageKey != null ? $"https://ecoplanet.s3.amazonaws.com/{imageKey}" : null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details for @products.productsName</title>
+    <link rel="stylesheet">
+</head>
+<body>
+
+    <div class="products-details-container">
+        <div class="products-image">
+            @if (imageUrl != null)
+            {
+                <img src="@imageUrl" alt="Image of @products.productsName" style="max-width:300px; max-height:300px; object-fit:cover;" />
+            }
+            else
+            {
+                <div class="placeholder">Image not available</div>
+            }
+        </div>
+        <div class="products-info">
+            <h1>@products.productsName</h1>
+            <br />
+            <p class="type">Type: @products.productsType</p>
+            <br />
+            <p class="description">Descriptions: @products.productsDescriptions</p>
+            <br />
+            <p class="price">Price: RM @products.productsPrice</p>
+            <br />
+            <p class="quantity">Available Quantity: @products.productsQuantity</p>
+            <br />
+
+            <div class="actions">
+                <a class="btn add-to-cart" id="login" asp-area="Identity" asp-page="/Account/Login">Add to cart</a>
+                <a href="@Url.Action("BrowseProductsBefore", "Products")" class="btn back">Back</a>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
+
+<style>
+    .products-details-container {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        max-width: 1000px;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+
+    .products-image,
+    .products-info {
+        flex: 1;
+    }
+
+    .placeholder {
+        width: 300px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f0f0f0;
+        color: #ccc;
+        font-style: italic;
+        font-size: 16px;
+        border: 1px dashed #ccc;
+    }
+
+    .products-info {
+        padding-left: 20px;
+    }
+
+        .products-info h1 {
+            margin-bottom: 0.5em;
+        }
+
+        .products-info p {
+            margin-bottom: 0.25em;
+            line-height: 1.5;
+        }
+
+    .btn {
+        padding: 10px 20px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .add-to-cart {
+        background-color: #008cba;
+        color: white;
+    }
+
+    .back {
+        background-color: #6c757d;
+        color: white;
+    }
+</style>
