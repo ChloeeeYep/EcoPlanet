@@ -29,6 +29,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
+        header {
+            position: fixed;
+            width: 100%;
+            z-index:1000
+        }
+
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -143,6 +149,8 @@
     </style>
 </head>
 
+<br></br>
+<br></br>
 <div class="header-container">
     <h1>Users Information</h1>
     <a class="action-button add" id="register" asp-area="Identity" asp-page="/Account/Register">Add New Users</a>

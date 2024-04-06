@@ -3,7 +3,8 @@
     int counter = 1; // Start the counter at 1
 }
 @model List<Quiz>
-
+<br>
+<br></br></br>
 <div class="header-container">
     <h1>Quiz</h1>
     <a href="@Url.Action("AddData", "Quiz")" class="action-button add">Add New Quiz</a>
@@ -72,6 +73,11 @@
 </script>
 
 <style>
+    header {
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+    }
     .action-buttons {
         display: flex;
         gap: 8px;

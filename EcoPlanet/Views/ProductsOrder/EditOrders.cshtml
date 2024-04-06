@@ -1,6 +1,12 @@
 ﻿@model EcoPlanet.Models.ProductsOrder
 
 <style>
+	header {
+		position: fixed;
+		width: 100%;
+		z-index: 1000;
+	}
+
 	form {
 		max-width: 600px;
 	}
@@ -96,6 +102,8 @@
 
 </style>
 <center>
+	<br>
+	<br></br></br>
 	<div class="header">
 		<a href="@Url.Action("Index", "ProductsOrder")" class="btn-back">Back</a>
 		<h1>Assign Orders</h1>

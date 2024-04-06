@@ -4,7 +4,8 @@
     int counter = 1; // Start the counter at 1
 }
 @model List<SNS>
-
+<br>
+<br></br></br>
 <div class="header-container">
     <h1>Broadcast Messages</h1>
     <a href="@Url.Action("sendBroadcastMessage", "SNS")" class="action-button edit">Back</a>
@@ -37,6 +38,11 @@
 </div>
 
 <style>
+    header {
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+    }
     .header-container {
         display: flex;
         justify-content: space-between; /* Aligns children to opposite ends */

@@ -87,6 +87,11 @@
 		display: none;
 	}
 
+	header {
+		position: fixed;
+		width: 100%;
+		z-index: 1000;
+	}
 	.header {
 		display: flex; /* Use flexbox to align items in the same row */
 		justify-content: space-between; /* Space between the elements */
@@ -106,6 +111,7 @@
 </style>
 
 <center>
+	<br><br></br></br>
 	<div class="header">
 		<a href="@Url.Action("Index", "Products")" class="btn-back">Back</a>
 		<h1>Add New Products</h1>

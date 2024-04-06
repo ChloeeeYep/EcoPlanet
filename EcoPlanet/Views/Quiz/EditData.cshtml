@@ -1,5 +1,6 @@
 ﻿@model EcoPlanet.Models.Quiz
 <center>
+	<br><br></br></br>
 	<div class="header">
 		<a href="@Url.Action("Index", "Quiz")" class="btn-back">Back</a>
 		<h1>Edit Quiz</h1>
@@ -46,6 +47,11 @@
 </center>
 
 <style>
+	header {
+		position: fixed;
+		width: 100%;
+		z-index: 1000;
+	}
 	.header {
 		display: flex; /* Use flexbox to align items in the same row */
 		justify-content: space-between; /* Space between the elements */
