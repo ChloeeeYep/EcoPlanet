@@ -173,7 +173,7 @@
 			</tr>
 			<tr>
 				<th><label asp-for="productsImage">Image</label></th>
-				<td><input type="file" name="productsImage" accept="image/*" multiple /></td>
+				<td><input type="file" name="productsImage" accept="image/*" multiple rerquired/></td>
 			</tr>
 			<tr>
 				<input type="hidden" asp-for="adminId" value="@currentUserId" />
@@ -200,6 +200,29 @@
 
 			// Add change event listener to productsTypeDropdown
 			productsTypeDropdown.addEventListener('change', toggleExpiryDateRow);
+		});
+
+		document.addEventListener('DOMContentLoaded', function () {
+			var priceInput = document.querySelector('input[name="productsPrice"]');
+
+			// Add input event listener to priceInput
+			priceInput.addEventListener('input', function () {
+				// Remove any non-numeric characters from the input value
+				var numericValue = this.value.replace(/[^0-9.]/g, '');
+
+				// Set the input value to the cleaned numeric value
+				this.value = numericValue;
+
+				// Check if the numeric value is negative
+				var isNegative = parseFloat(numericValue) <= 0;
+
+				// Display validation message if the value is negative or empty
+				if (isNegative || numericValue === '') {
+					this.setCustomValidity('Price must be a positive number and greater than 0');
+				} else {
+					this.setCustomValidity('');
+				}
+			});
 		});
 	</script>
 

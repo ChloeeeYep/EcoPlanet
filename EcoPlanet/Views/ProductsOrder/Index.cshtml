@@ -1,5 +1,39 @@
 ﻿@{
     int counter = 1; // Start the counter at 1
+    int totalOrders = 0;
+    int totalDeliveredOrders = 0;
+    int totalDeliveringOrders = 0;
+    int totalInProgressOrders = 0;
+    int totalDeliveryFailedOrders = 0;
+    int totalCanceledOrders = 0;
+
+    var orders = ViewData["Orders"] as IEnumerable<dynamic>;
+
+    // Calculate the totals
+    foreach (var order in orders)
+    {
+        totalOrders++; // Increment total orders count
+
+        // Increment the count for each status
+        switch (order.OrderStatus)
+        {
+            case "Delivered":
+                totalDeliveredOrders++;
+                break;
+            case "Delivering":
+                totalDeliveringOrders++;
+                break;
+            case "In Progress":
+                totalInProgressOrders++;
+                break;
+            case "Delivery Failed":
+                totalDeliveryFailedOrders++;
+                break;
+            case "Canceled":
+                totalCanceledOrders++;
+                break;
+        }
+    }
 }
 
 @model IEnumerable<EcoPlanet.Models.ProductsOrder>
@@ -116,6 +150,11 @@
             color: green;
         }
 
+        .status-delivering {
+            font-weight: bold;
+            color: royalblue;
+        }
+
         .search-container {
             display: flex;
             justify-content: center; /* Center horizontally */
@@ -131,6 +170,36 @@
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Optional: adds shadow for better visual */
         }
+
+        .order-stats {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .order-stats {
+            margin: 1rem auto; /* Centered with top and bottom margin */
+            padding: 0.5rem; /* Reduced padding */
+            border-radius: 0.25rem; /* Smoother rounded corners */
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); /* Softer shadow */
+            text-align: center;
+            max-width: 80%; /* Max width to avoid too wide block */
+            display: grid; /* Using grid layout */
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Responsive columns */
+            gap: 0.5rem; /* Space between items */
+            font-size: 0.9rem; /* Smaller font size */
+        }
+
+        .order-stats p {
+            margin: 0; /* Remove margin */
+            padding: 0.25rem 0; /* Padding for spacing */
+            background: white; /* Background to stand out from the container */
+            border: 1px solid #dee2e6; /* Border to define edges */
+            border-radius: 0.25rem; /* Rounded corners for each stat */
+        }
     </style>
 </head>
 <br>
@@ -142,6 +211,14 @@
 <hr />
 <div class="search-container">
 <input type="text" id="searchInput" onkeyup="searchOrders()" placeholder="Search Orders Details..." title="Type in an order detail">
+</div>
+<div class="order-stats">
+    <p>Total Orders: @totalOrders</p>
+    <p>Delivered: @totalDeliveredOrders</p>
+    <p>Delivering: @totalDeliveringOrders</p>
+    <p>In Progress: @totalInProgressOrders</p>
+    <p>Delivery Failed: @totalDeliveryFailedOrders</p>
+    <p>Canceled: @totalCanceledOrders</p>
 </div>
 
 <div class="table-container" id="OrderTable">
@@ -188,7 +265,9 @@
         return status switch
         {
             "Canceled" => "status-canceled",
-            "Completed" => "status-completed",
+            "Delivered" => "status-completed",
+            "Delivery Failed" => "status-canceled",
+            "Delivering" => "status-delivering",
             _ => ""
         };
     }

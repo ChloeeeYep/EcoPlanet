@@ -106,16 +106,81 @@
             width: 100%;
             z-index: 1000;
         }
+
+        .status-canceled {
+            font-weight: bold;
+            color: red;
+        }
+
+        .status-completed {
+            font-weight: bold;
+            color: green;
+        }
+
+        .status-delivering {
+            font-weight: bold;
+            color: royalblue;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            margin: 0 auto 20px; /* Adjust bottom margin as needed */
+            width: 100%;
+        }
+
+        #searchInput {
+            width: 300px; /* Fixed width or percentage as per your design */
+            padding: 10px;
+            margin-bottom: 10px; /* Margin at the bottom */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Optional: adds shadow for better visual */
+        }
+
+        .order-stats {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .order-stats {
+            margin: 1rem auto; /* Centered with top and bottom margin */
+            padding: 0.5rem; /* Reduced padding */
+            border-radius: 0.25rem; /* Smoother rounded corners */
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); /* Softer shadow */
+            text-align: center;
+            max-width: 80%; /* Max width to avoid too wide block */
+            display: grid; /* Using grid layout */
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Responsive columns */
+            gap: 0.5rem; /* Space between items */
+            font-size: 0.9rem; /* Smaller font size */
+        }
+
+        .order-stats p {
+            margin: 0; /* Remove margin */
+            padding: 0.25rem 0; /* Padding for spacing */
+            background: white; /* Background to stand out from the container */
+            border: 1px solid #dee2e6; /* Border to define edges */
+            border-radius: 0.25rem; /* Rounded corners for each stat */
+        }
     </style>
 </head>
 <br>
 <br></br></br>
 <div class="header-container">
-    <h1>Manage Orders</h1>
+    <h1> Orders Information</h1>
+</div>
+<hr />
+<div class="search-container">
+    <input type="text" id="searchInput" onkeyup="searchOrders()" placeholder="Search Orders Details..." title="Type in an order detail">
 </div>
 
 <div class="table-container">
-    <table>
+    <table class="table-container" id="OrderTable">
         <thead>
             <tr>
                 <th> No.</th>
@@ -136,7 +201,7 @@
                     <td>@order.ProductsOrderId</td>
                     <td>@order.Email</td>
                     <td>Rm @order.TotalPrice</td>
-                    <td>@order.OrderStatus</td>
+                    <td class="@GetStatusClass(order.OrderStatus)">@order.OrderStatus</td>
                     <td>@(order.DriverFullName ?? "N/A")</td>
                     <td class="action-buttons">
                         <a href="@Url.Action("DriverOrdersDetails", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="action-button view">View</a>
@@ -146,9 +211,53 @@
                 counter++;
             }
         </tbody>
-    </table>
+    </tabl>
 </div>
 </html>
 
+@functions {
+    public string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Canceled" => "status-canceled",
+            "Delivered" => "status-completed",
+            "Delivery Failed" => "status-canceled",
+            "Delivering" => "status-delivering",
+            _ => ""
+        };
+    }
+}
+
+<script>
+    function searchOrders() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("OrderTable"); // Replace with your actual table ID
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 1; i < tr.length; i++) { // Start from 1 to skip the header row
+            td = tr[i].getElementsByTagName("td");
+            var isMatch = false;
+            for (var j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        isMatch = true;
+                        break; // Stop looping through cells as we found a match
+                    }
+                }
+            }
+            if (isMatch) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+</script>
 
 

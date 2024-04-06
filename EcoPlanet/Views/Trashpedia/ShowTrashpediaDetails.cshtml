@@ -1,6 +1,5 @@
 ﻿@model EcoPlanet.Models.Trashpedia
-<br></br>
-<br></br>
+<br /><br />
 <div class="details-container">
     <div class="image-section">
         @if (!string.IsNullOrEmpty(Model.Images))
@@ -10,13 +9,32 @@
     </div>
     <div class="info-section">
         <br><h1><center>@Model.Name </center></h1></br>
-        <p>Materials: <br>  @Model.Materials</p>
-        <p>Actions: <br> @Model.Actions</p>
-        <p>Alternatives: <br>  @Model.Alternatives</p>
+        <p>Materials: <br>
+        <textarea class="info-textarea" readonly>@Model.Materials</textarea>
+        <p>Actions: <br> 
+        <textarea class="info-textarea" readonly>@Model.Actions</textarea>
+        <p>Alternatives: <br>  
+        <textarea class="info-textarea" readonly>@Model.Alternatives</textarea>
         <br><br>
         <a asp-action="ShowTrashpedia" asp-controller="Trashpedia" class="btnL">Back</a>
     </div>
 </div>
+
+<script>
+    // Function to resize textarea based on content
+    function resizeTextarea(el) {
+        el.style.height = 'auto'; // Reset the height
+        el.style.height = el.scrollHeight + 'px'; // Set the height to the scroll height
+    }
+
+    // Apply the resizeTextarea function on each readonly textarea
+    document.addEventListener('DOMContentLoaded', function() {
+        const textareas = document.querySelectorAll('.info-textarea[readonly]');
+        textareas.forEach(textarea => {
+            resizeTextarea(textarea);
+        });
+    });
+</script>
 
 <style>
     header {
@@ -95,4 +113,27 @@
         background-color: #3F66AF;
         color: white; /* Keep the text color white on hover */
     }
+
+    /* Textarea styling without a predefined height */
+    .info-textarea {
+        width: 100%; /* Full width of the container */
+        padding: 10px; /* Inner space of the textarea */
+        background-color: #white; /* Light grey background */
+        border: none; 
+        border-radius: 4px; /* Rounded corners */
+        margin-bottom: 1rem; /* Space below each textarea */
+        overflow: hidden; /* Hide the overflow to remove scrollbar */
+        resize: none; /* Prevent resizing */
+        font-family: 'Poppins', sans-serif; /* Match font to the rest of the page */
+        font-size: 1rem; /* Slightly smaller font size */
+        color: #45424b; /* Match font color to the rest of the page */
+        line-height: 1.5; /* Line height for better readability */
+    }
+
+        /* No changes to the read-only style */
+        .info-textarea[readonly] {
+            background-color: white; /* Different background for readonly */
+            cursor: not-allowed; /* Show a not-allowed cursor on hover */
+            border: none;
+        }
 </style>
