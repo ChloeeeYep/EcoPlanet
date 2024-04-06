@@ -3,7 +3,8 @@
 }
 
 @model TrashpediaViewModel
-
+<br></br>
+<br></br>
 <center>
     <h1>Trashpedia</h1>
     <input type="text" id="searchTrashpediaInput" onkeyup="searchTrashpedia()" placeholder="Search Trashpedia..." title="Type in a Trashpedia detail">
@@ -39,6 +40,10 @@
 </div>
 
 <style>
+    header {
+        position: fixed;
+        width: 100%;
+    }
     .trashpedia-list {
         display: flex;
         flex-wrap: wrap;

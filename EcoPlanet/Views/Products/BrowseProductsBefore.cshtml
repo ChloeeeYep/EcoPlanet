@@ -60,36 +60,15 @@
                             <div class="products-details">
                                 <span class="item-name">@item.productsName</span>
                                 <span class="item-price">RM @item.productsPrice</span>
-                                <form asp-controller="ProductsCart" asp-action="AddToProductsCart" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="productsId" value="@item.productsId" />
-                                    <input type="number" name="quantity" value="1" min="1" max="@item.productsQuantity" class="form-control" />
-                                    <button type="submit" class="btn add-to-cart">Add to cart</button>
-                                </form>
-                                <button class="btn view" onclick="location.href='@Url.Action("ProductsDetails", "Products", new { productsId = item.productsId })'">View</button>
+                                    <a class="btn add-to-cart" id="login" asp-area="Identity" asp-page="/Account/Login">Add to cart</a>
+                                <button class="btn view" onclick="location.href='@Url.Action("ProductsDetailsBefore", "Products", new { productsId = item.productsId })'">View</button>
                             </div>
                         </div>
                     }
                 </div>
             }
         </div>
-        @if (TempData["ItemAdded"] != null && (bool)TempData["ItemAdded"])
-        {
-            <div id="notification" class="notification-message">Item added to cart successfully!</div>
-            <script>
-                // Show the success message
-                document.getElementById('notification').style.display = 'block';
-
-                // Hide the success message after 5 seconds
-                setTimeout(function () {
-                    document.getElementById('notification').style.display = 'none';
-                }, 2000);
-            </script>
-        }
-
-        <!-- Cart Icon Button -->
-        <a href="@Url.Action("Index", "ProductsCart")" class="cart-icon-button">
-            <i class="fas fa-shopping-cart"></i>
-        </a>
+     
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -378,14 +357,14 @@
         text-decoration: none; /* No underline on the icon */
     }
 
-    .cart-icon-button:hover {
-        background-color: #0c47a1; /* Darker blue on hover */
-        color: white; /* Keep the icon white on hover */
-    }
+        .cart-icon-button:hover {
+            background-color: #0c47a1; /* Darker blue on hover */
+            color: white; /* Keep the icon white on hover */
+        }
 
-    .cart-icon-button i {
-        font-size: 24px; /* Size of the cart icon */
-    }
+        .cart-icon-button i {
+            font-size: 24px; /* Size of the cart icon */
+        }
 
     .notification-message {
         position: fixed; /* Fixed position */
@@ -418,17 +397,17 @@
         overflow-y: auto;
     }
 
-    .sidebar a {
-        display: block;
-        padding: 10px;
-        color: black;
-        text-decoration: none;
-        margin-bottom: 5px;
-    }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            color: black;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
 
-    .sidebar a:hover {
-        background-color: #ddd;
-    }
+            .sidebar a:hover {
+                background-color: #ddd;
+            }
 
     .content {
         flex-grow: 1;
@@ -462,5 +441,6 @@
         }
 
 </style>
+
 
 
