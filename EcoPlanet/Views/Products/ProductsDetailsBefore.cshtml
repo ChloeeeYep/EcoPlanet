@@ -36,6 +36,8 @@
             <br />
             <p class="price">Price: RM @products.productsPrice</p>
             <br />
+            <p class="expiry-date">Expiry Date: @(products.expiryDate.HasValue ? products.expiryDate.Value.ToString("dd MMM yyyy") : "Not Applicable")</p>
+            <br />
             <p class="quantity">Available Quantity: @products.productsQuantity</p>
             <br />
 

@@ -36,11 +36,13 @@
             <br />
             <p class="price">Price: RM @products.productsPrice</p>
             <br />
+            <p class="expiry-date">Expiry Date: @(products.expiryDate.HasValue ? products.expiryDate.Value.ToString("dd MMM yyyy") : "Not Applicable")</p>
+            <br />
             <p class="quantity">Available Quantity: @products.productsQuantity</p>
             <br />
 
             <div class="actions">
-                <form asp-controller="ProductsCart" asp-action="AddToCart" method="post" enctype="multipart/form-data">
+                <form asp-controller="ProductsCart" asp-action="AddToProductsCart" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="productsId" value="@products.productsId" />
                     <input type="number" name="quantity" value="1" min="1" max="@products.productsQuantity" class="form-control" />
                     <br />

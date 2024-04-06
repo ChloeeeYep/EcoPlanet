@@ -237,7 +237,7 @@ namespace EcoPlanet.Controllers
             return RedirectToAction("BrowseProducts", "Products"); // Redirect to the cart index view
         }
 
-        // POST: ProductsCart/UpdateQuantity/5
+
         // POST: ProductsCart/UpdateQuantity/5
         [HttpPost]
         public async Task<IActionResult> UpdateQuantity(int productsCartItemId, int quantity)

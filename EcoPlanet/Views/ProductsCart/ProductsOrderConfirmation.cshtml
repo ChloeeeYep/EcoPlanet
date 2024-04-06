@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "ProductsOrderConfirmation";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    decimal shippingFee = 10.00M; // Fixed shipping fee
+    decimal shippingFee = 5.00M; // Fixed shipping fee
     decimal total = Model.ProductsOrderItems.Sum(item => item.productsPrice * item.productsQuantity) + shippingFee; // Total cost calculation
 }
 
