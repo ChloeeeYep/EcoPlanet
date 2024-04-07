@@ -54,16 +54,8 @@ namespace EcoPlanet.Controllers
                 = new AmazonSimpleNotificationServiceClient(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
             try
             {
-                // Find the user by email
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-                if (user == null)
-                {
-                    TempData["Unregistered"] = true;
-                    TempData["Message"] = "Please Register An Account Before Subscribe Us. Thanks!";
-                    return RedirectToAction("Index", "SNS");
-                }
-
-                if (user.isSubscribed == false)
+                bool isSubscribed = await IsEmailSubscribedAsync(email);
+                if (!isSubscribed)
                 {
                     SubscribeRequest request = new SubscribeRequest
                     {
@@ -74,11 +66,6 @@ namespace EcoPlanet.Controllers
                     SubscribeResponse response = await agent.SubscribeAsync(request);
                     ViewBag.requestID = response.ResponseMetadata.RequestId;
                     ViewBag.Message = "Thank you for subscribing us!";
-
-                    // Update the isSubscribed property to true
-                    user.isSubscribed = true;
-                    _context.Update(user);
-                    await _context.SaveChangesAsync(); // Save changes to the database
                     return View();
                 }
                 else
@@ -127,7 +114,6 @@ namespace EcoPlanet.Controllers
                 {
                     Title = title,
                     Content = msgbody,
-                    //CreatedAt = DateTime.Now
                 };
 
                 _context.Add(newSNS);
@@ -151,17 +137,60 @@ namespace EcoPlanet.Controllers
             return View(sns);
         }
 
-        //function to retrieved the users who had subscribed
+        //Function to retrieved the users who had confirm subscribed
+        private async Task<List<Subscription>> GetConfirmedSubscribedEmailsAsync()
+        {
+            List<string> keys = getKeys();
+            using var client = new AmazonSimpleNotificationServiceClient(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+            var request = new ListSubscriptionsByTopicRequest { TopicArn = TopicARN };
+            ListSubscriptionsByTopicResponse response = await client.ListSubscriptionsByTopicAsync(request);
+
+            // Filter only confirmed subscriptions
+            return response.Subscriptions
+                           .Where(s => s.SubscriptionArn.StartsWith("arn:aws:sns") && s.TopicArn == TopicARN)
+                           .ToList();
+        }
+
+
+        //Display the lists of subscribers
         public async Task<IActionResult> ViewSubscribers()
         {
-            // Retrieve users who are subscribed
-            var subscribedUsers = await _context.Users
-                                                .Where(u => u.isSubscribed)
-                                                .ToListAsync();
-
-            // Pass the list of subscribed users to the View
-            return View(subscribedUsers);
+            var confirmedSubscriptions = await GetConfirmedSubscribedEmailsAsync();
+            // Directly pass the confirmed subscriptions to the view
+            return View(confirmedSubscriptions);
         }
+
+
+
+        //Check If the Users has Subscribed to Our Newsletter 
+        private async Task<bool> IsEmailSubscribedAsync(string email)
+        {
+            List<string> keys = getKeys();
+            using var client = new AmazonSimpleNotificationServiceClient(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+
+            string topicArn = TopicARN;
+
+            string userEndpoint = email;
+
+            var request = new ListSubscriptionsByTopicRequest
+            {
+                TopicArn = TopicARN
+            };
+
+            ListSubscriptionsByTopicResponse response = await client.ListSubscriptionsByTopicAsync(request);
+
+            foreach (var subscription in response.Subscriptions)
+            {
+                if (subscription.Endpoint  == userEndpoint)
+                {
+                    return true; // Email is already subscribed
+                }
+            }
+            return false; // Email is not subscribed
+        }
+
+
+
 
 
     }

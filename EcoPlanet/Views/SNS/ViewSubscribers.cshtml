@@ -1,4 +1,5 @@
-﻿
+﻿@model List<Amazon.SimpleNotificationService.Model.Subscription>
+
 @{
     ViewData["Title"] = "View Subscribers";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -25,16 +26,16 @@
             <tr>
                 <th>No.</th>
                 <th>Email</th>
-                <th>Name</th>
+                <th>Status</th> <!-- Added to show subscription status -->
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in Model)
+            @foreach (var subscription in Model)
             {
                 <tr>
                     <td>@counter</td>
-                    <td>@user.Email</td>
-                    <td>@user.FullName</td>
+                    <td>@subscription.Endpoint</td>
+                    <td>@(subscription.SubscriptionArn != "PendingConfirmation" ? "Confirmed" : "Pending")</td>
                 </tr>
                 counter++;
             }
