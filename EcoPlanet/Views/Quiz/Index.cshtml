@@ -32,11 +32,11 @@
             {
                 <tr>
                     <td>@counter</td>
-                    <td>@item.Title</td>
-                    <td>@item.Correct</td>
-                    <td>@item.Wrong1</td>
-                    <td>@item.Wrong2</td>
-                    <td>@item.Wrong3</td>
+                    <td class="wrap-text">@item.Title</td>
+                    <td class="wrap-text">@item.Correct</td>
+                    <td class="wrap-text">@item.Wrong1</td>
+                    <td class="wrap-text">@item.Wrong2</td>
+                    <td class="wrap-text">@item.Wrong3</td>
                     <td class ="action-buttons">
                         <a href="@Url.Action("EditData", "Quiz", new { Id = item.Id })" class="action-button edit">Edit</a>
                         <a href="@Url.Action("DeleteData", "Quiz", new { Id = item.Id })" class="action-button delete" onclick="return confirm('Are you sure you want to cacncel this questions ?');">Delete</a>
@@ -78,11 +78,12 @@
         width: 100%;
         z-index: 1000;
     }
+
     .action-buttons {
-        display: flex;
         gap: 8px;
         justify-content: center;
     }
+
     .header-container {
         display: flex;
         justify-content: space-between; /* Aligns children to opposite ends */
@@ -130,7 +131,6 @@
     }
 
     .action-buttons {
-        display: flex;
         justify-content: center; /* Center the buttons horizontally */
         align-items: center;
         gap: 10px; /* Adjust the space between buttons */
@@ -195,6 +195,12 @@
         margin: 10px 0; /* Adjust the margins if necessary */
         border: 1px solid #ccc;
         border-radius: 4px;
+    }
+
+    .wrap-text {
+        word-wrap: break-word; /* Allow long words to be able to break and wrap onto the next line */
+        max-width: 200px; /* Set a max-width to the content, adjust as needed */
+        text-align: left;
     }
 </style>
 

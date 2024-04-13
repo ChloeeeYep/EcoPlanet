@@ -8,7 +8,7 @@
     "environment"    : "EcoPlanet-prod",
     "enable-xray"    : false,
     "enhanced-health-type" : "basic",
-    "additional-options"   : "\"aws:autoscaling:launchconfiguration,SecurityGroups\"=\"sg-06bf2d9a6a761a105,sg-0007a97462bc508f9\";\"aws:ec2:vpc,Subnets\"=\"subnet-059128e2bf47a9973\"",
+    "additional-options"   : "",
     "solution-stack"       : "64bit Amazon Linux 2 v2.7.0 running .NET Core",
     "environment-type"     : "SingleInstance",
     "cname"                : "ecoplanet-prodtp055957tp056602",
