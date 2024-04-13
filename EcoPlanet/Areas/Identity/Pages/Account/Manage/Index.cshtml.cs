@@ -174,7 +174,13 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
             {
                 userToEdit.Address = Input.Address;
             }
-            if (Input.UserType != userToEdit.UserType)
+
+            // Preserve UserType unless it's being edited by an admin
+            if (!isEditingAnotherUser || currentUserType != 'A')
+            {
+                Input.UserType = userToEdit.UserType;
+            }
+            else if (Input.UserType != userToEdit.UserType)
             {
                 userToEdit.UserType = Input.UserType;
             }
@@ -201,5 +207,6 @@ namespace EcoPlanet.Areas.Identity.Pages.Account.Manage
             StatusMessage = "Your Profile Has Been Updated";
             return RedirectToPage();
         }
+
     }
 }
