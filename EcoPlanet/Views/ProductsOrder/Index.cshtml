@@ -234,6 +234,14 @@
                 <th>Actions</th>
             </tr>
         </thead>
+        @{
+            if (TempData["AlertMessage"] != null)
+            {
+                <script type="text/javascript">
+                    alert("@TempData["AlertMessage"]");
+                </script>
+            }
+        }
 
         <tbody>
             @foreach (var order in ViewData["Orders"] as IEnumerable<dynamic>)

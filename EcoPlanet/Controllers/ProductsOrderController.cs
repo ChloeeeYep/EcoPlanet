@@ -168,25 +168,34 @@ namespace EcoPlanet.Controllers
         public async Task<IActionResult> CancelOrders(int orderId)
         {
             var order = await _context.ProductsOrderTable
-                                  .FirstOrDefaultAsync(o => o.ProductsOrderId == orderId);
+                                      .FirstOrDefaultAsync(o => o.ProductsOrderId == orderId);
 
             if (order == null)
             {
                 return NotFound();
             }
 
+            // Check if the order status is "In Progress" before cancellation
+            if (order.OrderStatus != "In Progress")
+            {
+                // Set an alert message in TempData to show to the user
+                TempData["AlertMessage"] = "Cancellation is only allowed when the order is In Progress.";
+                // Redirect back to the index action, the alert will be shown there
+                return RedirectToAction("Index", "ProductsOrder");
+            }
+
+            // Proceed with cancellation as the status is "In Progress"
             order.DriverId = null; // Set the DriverId property to null
             order.OrderStatus = "Canceled";
 
-            // You only need to mark the OrderStatus as modified
             _context.Entry(order).Property(o => o.OrderStatus).IsModified = true;
             _context.Entry(order).Property(o => o.DriverId).IsModified = true;
 
             await _context.SaveChangesAsync();
 
-            // Redirect to the index action of ProductsOrderController or any other appropriate action
             return RedirectToAction("Index", "ProductsOrder");
         }
+
 
 
 
