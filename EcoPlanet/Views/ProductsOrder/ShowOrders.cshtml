@@ -6,37 +6,46 @@
 <br></br>
 <br></br>
 <div class="order-tracking-container">
-    @foreach (var order in Model)
+    @if (Model != null && Model.Any())
     {
-        <div class="order-card">
-            <div class="order-header">
-                <h2>Order# @order.ProductsOrderId</h2>
-                <span class="order-status @GetOrderStatusClass(order.OrderStatus)">@order.OrderStatus</span>
-            </div>
-            <div class="order-body">
-                <h3>Items:</h3>
-                @foreach (var item in order.ProductsOrderItems)
-                {
-                    <!-- Wrap the entire order-item with an anchor tag -->
-                    <a href="@Url.Action("ShowOrdersDetails", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="order-item-link">
-                        <div class="order-item">
-                            <img class="order-image" src="@($"{ViewData["BaseUrl"]}{item.productsImage.Trim()}")" alt="@item.productsName">
-                            <div class="item-details">
-                                <div class="item-name">@item.productsName</div>
-                                <div class="item-quantity-and-price">
-                                    <span class="item-quantity">Qty: <span class="quantity-badge">@item.productsQuantity</span></span>
-                                    <span class="item-price">RM @item.productsPrice</span>
+        @foreach (var order in Model)
+        {
+            <div class="order-card">
+                <div class="order-header">
+                    <h2>Order# @order.ProductsOrderId</h2>
+                    <span class="order-status @GetOrderStatusClass(order.OrderStatus)">@order.OrderStatus</span>
+                </div>
+                <div class="order-body">
+                    <h3>Items:</h3>
+                    @foreach (var item in order.ProductsOrderItems)
+                    {
+                        <!-- Wrap the entire order-item with an anchor tag -->
+                        <a href="@Url.Action("ShowOrdersDetails", "ProductsOrder", new { orderId = order.ProductsOrderId })" class="order-item-link">
+                            <div class="order-item">
+                                <img class="order-image" src="@($"{ViewData["BaseUrl"]}{item.productsImage.Trim()}")" alt="@item.productsName">
+                                <div class="item-details">
+                                    <div class="item-name">@item.productsName</div>
+                                    <div class="item-quantity-and-price">
+                                        <span class="item-quantity">Qty: <span class="quantity-badge">@item.productsQuantity</span></span>
+                                        <span class="item-price">RM @item.productsPrice</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                }
-                <div class="order-total">
-                    Total Price: RM @order.TotalPrice
+                        </a>
+                    }
+                    <div class="order-total">
+                        Total Price: RM @order.TotalPrice
+                    </div>
                 </div>
             </div>
+            orderSequence++;
+        }
+    }
+    else
+    {
+        <div class="no-orders-message">
+            <h2>No Orders at The Moment</h2>
         </div>
-        orderSequence++;
     }
 </div>
 
@@ -159,6 +168,14 @@
         position: fixed;
         width: 100%;
     }
+
+    .no-orders-message {
+        text-align: center;
+        margin-top: 325px; /* or your preferred spacing */
+        color: #666; /* subdued text color */
+        font-size: 1.2em; /* larger font size */
+    }
+
 </style>
 
 @functions {
