@@ -187,7 +187,7 @@
                     <td>@item.createdAt</td>
                     <td class="action-buttons">
                         <a href="@Url.Action("EditProducts", "Products", new { productsId = item.productsId })" class="action-button edit">Edit</a>
-                        <a href="@Url.Action("DeleteProducts", "Products", new { productsId = item.productsId })" class="action-button delete" onclick="return confirm('Are you sure you want to cacncel this questions ?');">Delete</a>
+                        <a href="@Url.Action("DeleteProducts", "Products", new { productsId = item.productsId })" class="action-button delete" onclick="return confirm('Are you sure you remove this product ?');">Delete</a>
                     </td>
                 </tr>
                 counter++;

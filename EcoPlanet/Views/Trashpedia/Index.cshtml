@@ -63,7 +63,7 @@
                     <td>@item.CreatedAt</td>
                     <td>
                         <a href="@Url.Action("EditData", "Trashpedia", new { Id = item.Id })" class="action-button edit">Edit</a>
-                        <a href="@Url.Action("DeleteData", "Trashpedia", new { Id = item.Id })" class="action-button delete" onclick="return confirm('Are you sure you want to delete this trashpedia?');">Delete</a>
+                        <a href="@Url.Action("DeleteData", "Trashpedia", new { Id = item.Id })" class="action-button delete" onclick="return confirm('Are you sure you want to remove this trashpedia?');">Delete</a>
                     </td>
                 </tr>
                 counter++;
