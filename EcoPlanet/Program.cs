@@ -2,10 +2,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EcoPlanet.Data;
 using EcoPlanet.Areas.Identity.Data;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Amazon.XRay.Recorder.Handlers.AspNetCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("EcoPlanetContextConnection") ?? throw new InvalidOperationException("Connection string 'EcoPlanetContextConnection' not found.");
+
+AWSSDKHandler.RegisterXRayForAllServices();
 
 builder.Services.AddDbContext<EcoPlanetContext>(options => options.UseSqlServer(connectionString));
 
@@ -27,7 +33,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseXRay("EcoPlanet Server");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

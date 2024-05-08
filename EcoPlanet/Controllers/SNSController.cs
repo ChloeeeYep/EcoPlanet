@@ -8,7 +8,13 @@ using System.IO;
 using System.Security.Cryptography;
 using EcoPlanet.Models; 
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore; 
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace EcoPlanet.Controllers
 {
@@ -49,37 +55,37 @@ namespace EcoPlanet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> subscribeNewsletter(string email)
         {
-            List<string> keys = getKeys();
-            AmazonSimpleNotificationServiceClient agent
-                = new AmazonSimpleNotificationServiceClient(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
-            try
+            using (var client = new HttpClient())
             {
-                bool isSubscribed = await IsEmailSubscribedAsync(email);
-                if (!isSubscribed)
+                var endpoint = "https://7ywb3w0t07.execute-api.us-east-1.amazonaws.com/dev/subscribe";
+
+                if (string.IsNullOrEmpty(email))
                 {
-                    SubscribeRequest request = new SubscribeRequest
-                    {
-                        TopicArn = TopicARN,
-                        Endpoint = email,
-                        Protocol = "email"
-                    };
-                    SubscribeResponse response = await agent.SubscribeAsync(request);
-                    ViewBag.requestID = response.ResponseMetadata.RequestId;
-                    ViewBag.Message = "Thank you for subscribing us!";
-                    return View();
+                    TempData["Error"] = "Email cannot be empty.";
+                    return RedirectToAction("Index", "SNS");
+                }
+                var json = JsonConvert.SerializeObject(new { email = email });
+
+                Console.WriteLine(json);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(endpoint, content);
+                var responseBody = await response.Content.ReadAsStringAsync(); // This will give you the response body
+                Console.WriteLine($"Status: {response.StatusCode}, Body: {responseBody}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Handle success
+                    TempData["Message"] = "Subscription request sent.";
                 }
                 else
                 {
-                    // The user is already subscribed
-                    TempData["AlreadySubscribed"] = true;
-                    TempData["Message"] = "You Already Subscribed Us Before. Thanks!";
-                    return RedirectToAction("Index", "SNS");
+                    // Handle failure
+                    TempData["Error"] = "Failed to subscribe.";
                 }
+
             }
-            catch (AmazonSimpleNotificationServiceException ex)
-            {
-                return BadRequest("Error: " + ex.Message);
-            }
+            return RedirectToAction("Index", "SNS");
         }
 
         //function 3: create admin pae for broadcast the msg to subscribe customer
@@ -188,10 +194,6 @@ namespace EcoPlanet.Controllers
             }
             return false; // Email is not subscribed
         }
-
-
-
-
 
     }
 }

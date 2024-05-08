@@ -10,6 +10,8 @@ using System.IO; // input output
 using Microsoft.AspNetCore.Http;
 using NuGet.Packaging.Signing;
 using System.Drawing;
+using Newtonsoft.Json;
+using System.Text;
 
 
 namespace EcoPlanet.Controllers
@@ -97,50 +99,60 @@ namespace EcoPlanet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddData(Trashpedia trashpedia, List<IFormFile> Images)
         {
-            // 1. Connect to the AWS account and retrieve keys
-            List<string> keys = getKeys();
-            AmazonS3Client agent = new AmazonS3Client(keys[0], keys[1], keys[2], RegionEndpoint.USEast1);
+            var apiUrl = "https://7ywb3w0t07.execute-api.us-east-1.amazonaws.com/dev/upload"; 
 
-            // 2. Upload the image file(s) to S3 and save the filename(s) to the trashpediaImage property
             foreach (var image in Images)
             {
-                // Check for valid image file
                 if (image.Length <= 0)
                 {
-                    return BadRequest("Image of " + image.FileName + " is an empty file. Not able to upload.");
+                    return BadRequest($"Image of {image.FileName} is an empty file. Not able to upload.");
                 }
                 else if (image.Length > 2097152) // 2MB limit
                 {
-                    return BadRequest("Image of " + image.FileName + " is more than 2MB. Not able to upload.");
+                    return BadRequest($"Image of {image.FileName} is more than 2MB. Not able to upload.");
                 }
-                else if (image.ContentType.ToLower() != "image/png" && image.ContentType.ToLower() != "image/jpeg")
+                else if (!image.ContentType.ToLower().Contains("image"))
                 {
-                    return BadRequest("Image of " + image.FileName + " is an invalid file type. Not able to upload.");
+                    return BadRequest($"Image of {image.FileName} is an invalid file type. Not able to upload.");
                 }
 
-                // Upload image to S3
                 try
                 {
-                    PutObjectRequest request = new PutObjectRequest
+                    // Convert image to base64
+                    using (var ms = new MemoryStream())
                     {
-                        InputStream = image.OpenReadStream(),
-                        BucketName = bucketname,
-                        Key = "Images/" + image.FileName, // Specify the S3 key where the image will be stored
-                        CannedACL = S3CannedACL.PublicRead // Set the ACL to allow public read access
-                    };
+                        await image.CopyToAsync(ms);
+                        var imageBytes = ms.ToArray();
+                        var base64Image = Convert.ToBase64String(imageBytes);
 
-                    await agent.PutObjectAsync(request);
+                        // Creating the payload
+                        var payload = new
+                        {
+                            image = base64Image,
+                            contentType = image.ContentType,
+                            filename = Path.GetFileName(image.FileName)
+                        };
 
-                    // Assign the filename (key) to the trashpediaImage property
-                    trashpedia.Images = "Images/" + image.FileName; // Store the S3 key as the trashpediaImage property
-                }
-                catch (AmazonS3Exception ex)
-                {
-                    return BadRequest("Image of " + image.FileName + " is facing technical issues in AWS Side. Error:  " + ex.Message);
+                        var json = JsonConvert.SerializeObject(payload);
+                        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                        using (var client = new HttpClient())
+                        {
+                            var response = await client.PostAsync(apiUrl, content);
+
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                return BadRequest($"Failed to upload {image.FileName} to the cloud service.");
+                            }
+                        }
+                    }
+
+                    // Assign the filename to the trashpediaImage property
+                    trashpedia.Images = $"Images/{image.FileName}";
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest("Image of " + image.FileName + " is facing technical issues. Error: " + ex.Message);
+                    return BadRequest($"Image of {image.FileName} is facing technical issues. Error: {ex.Message}");
                 }
             }
 
@@ -152,8 +164,10 @@ namespace EcoPlanet.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(trashpedia);
         }
+
 
         public async Task<IActionResult> EditData(int? Id)
         {

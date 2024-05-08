@@ -7,15 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="obj\**" />
     <Compile Remove="wwwroot\images\**" />
+    <Content Remove="obj\**" />
     <Content Remove="wwwroot\images\**" />
+    <EmbeddedResource Remove="obj\**" />
     <EmbeddedResource Remove="wwwroot\images\**" />
+    <None Remove="obj\**" />
     <None Remove="wwwroot\images\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.307.3" />
     <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.301.13" />
+    <PackageReference Include="AWSXRayRecorder.Core" Version="2.14.0" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.AspNetCore" Version="2.11.0" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.17" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.17" />
